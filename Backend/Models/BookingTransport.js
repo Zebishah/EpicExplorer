@@ -1,19 +1,15 @@
 import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
-let bookingTourSchema = new Schema({
-    name: {
+let bookingTransportSchema = new Schema({
+    carName: {
         type: String,
         required: true
     },
-    price: {
+    prices: {
         type: Number,
         required: true
     },
-    startDate: {
-        type: Number,
-        required: true
-    },
-    endDate: {
+    seats: {
         type: Number,
         required: true
     },
@@ -21,42 +17,51 @@ let bookingTourSchema = new Schema({
         type: String,
         required: true
     },
-    image: {
-        type: String,
-        required: true
+    checkInDate: {
+        type: Date,
+        default: Date.now,
     },
-    type: {
-        type: String,
-        required: true
-    },
-    departureTime: {
-        type: String,
-        required: true
-    },
-    Departure_ReturnLocation: {
-        type: String,
-        required: true
-    },
-    gallery: [{
+    travelers: [{
         type: String,
         required: true
     }],
-    priceIncludes: [{
+    bookerName: {
+        type: String,
+        required: true
+    },
+    bookerEmail: {
+        type: String,
+        required: true
+    },
+    bookerPhone: {
+        type: String,
+        required: true
+    },
+    bookerAddress: [{
         type: String,
         required: true
     }],
-    priceExcludes: [{
+    suggestion: {
         type: String,
         required: true
+    },
+    bookerId: [{
+        type: mongoose.Types.ObjectId,
+        ref: "User",
+
     }],
-    activities: [{
+    members: {
         type: String,
         required: true
-    }],
-    available: {
+    },
+    bookerId: {
         type: String,
         required: true
-    }
+    },
+    days: {
+        type: String,
+        required: true
+    },
 
 });
-export default mongoose.model('BookingTour', bookingTourSchema);
+export default mongoose.model('BookingTransport', bookingTransportSchema);

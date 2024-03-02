@@ -14,16 +14,20 @@ let bookedTour_Schema = new Schema({
         required: true
     },
     roomType: {
-        type: Number,
+        type: String,
         required: true
     },
     checkoutDate: {
-        type: Number,
+        type: String,
         required: true
     },
     checkInDate: {
         type: Date,
         default: Date.now,
+    },
+    days: {
+        type: String,
+        required: true
     },
     guests: [{
         type: String,
@@ -41,82 +45,24 @@ let bookedTour_Schema = new Schema({
         type: String,
         required: true
     },
-    bookerAddress: [{
+    bookerAddress: {
         type: String,
         required: true
-    }],
+    },
     suggestion: {
         type: String,
         required: true
     },
-    bookerId: [{
+    bookerId: {
         type: mongoose.Types.ObjectId,
         ref: "User",
 
-    }],
+    },
     members: {
         type: String,
         required: true
-    }
-    // proId: {
-    //     type: String,
-    //     required: true
-    // },
-    // name: {
-    //     type: String,
-    //     required: true
-    // },
-    // pics: [{
-    //     type: String,
-    //     required: true
-    // }],
-    // size: {
-    //     type: String,
-    //     required: true
-    // },
-    // price: {
-    //     type: Number,
-    //     required: true
-    // },
-    // sells: {
-    //     type: Number,
-    //     required: true
-    // },
-    // discount: {
-    //     type: Number,
-    //     required: true
-    // },
-    // discountPrice: {
-    //     type: Number,
-    //     required: true
-    // },
-    // description: {
-    //     type: String,
-    //     required: true
-    // },
-    // company: {
-    //     type: String,
-    //     required: true
-    // }, remaining: {
-    //     type: Number,
-    //     required: true
-    // },
-    // quantity: {
-    //     type: Number,
-    //     required: true
-    // }, category: {
-    //     type: String,
-    //     required: true
-    // },
-    // buyer: {
-    //     type: mongoose.Types.ObjectId,
-    //     ref: "User",
+    },
 
-    // },
-    // buyDate: {
-    //     type: Date,
-    //     default: Date.now, // Set the default value to the current date and time
-    // },
 
 
 

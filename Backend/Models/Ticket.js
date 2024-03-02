@@ -1,26 +1,24 @@
 import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
-let ReviewSchema = new Schema({
-    name: {
+let userSchema = new Schema({
+    members: [{
+        type: String,
+        required: true
+    }], bookerName: {
         type: String,
         required: true
     },
-    email: {
+    bookerEmail: {
         type: String,
         required: true
     },
-    reviewedService: {
+    bookerPhone: {
         type: String,
         required: true
     },
-    image: {
+    bookerAddress: {
         type: String,
         required: true
     },
-    words: [{
-        type: String,
-        required: true
-    }],
-
-});
-export default mongoose.model('Review', ReviewSchema);
+})
+export default mongoose.model('User', userSchema);

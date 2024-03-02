@@ -1,12 +1,12 @@
 import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
 let billSchema = new Schema({
-    user: {
+    bookerId: {
         type: String,
         required: true
     },
-    totalDiscount: {
-        type: Number,
+    booker: {
+        type: String,
         required: true
     },
     deliveryCharges: {
@@ -16,11 +16,14 @@ let billSchema = new Schema({
     totalPrice: {
         type: Number,
         required: true
-    },
-    finalPrice: {
+    }, bookedThing: {
         type: Number,
         required: true
     },
+    date: {
+        type: Date,
+        default: Date.now,
+    }
 
 })
 export default mongoose.model('Bill', billSchema);

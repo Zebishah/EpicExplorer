@@ -1,32 +1,31 @@
 import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
-let bookingTourSchema = new Schema({
-
-    tourId: {
+let HotelBookingHistory_Schema = new Schema({
+    hotelId: {
         type: String,
         required: true
     },
-    name: {
+    roomName: {
         type: String,
         required: true
     },
-    price: {
+    roomPrice: {
         type: Number,
         required: true
     },
-    startDate: {
+    roomType: {
         type: String,
         required: true
     },
-    endDate: {
+    checkoutDate: {
         type: String,
         required: true
     },
     checkInDate: {
-        type: Date,
-        default: Date.now,
+        type: String,
+        required: true
     },
-    travelers: [{
+    guests: [{
         type: String,
         required: true
     }],
@@ -38,31 +37,14 @@ let bookingTourSchema = new Schema({
         type: String,
         required: true
     },
-    bookerPhone: {
-        type: String,
-        required: true
-    },
-    bookerAddress: {
-        type: String,
-        required: true
-    },
-    suggestion: {
-        type: String,
-        required: true
-    },
     bookerId: {
-        type: mongoose.Types.ObjectId,
-        ref: "User",
-
+        type: String,
+        required: true
     },
     members: {
         type: String,
         required: true
     },
 
-    buyDate: {
-        type: Date,
-        default: Date.now, // Set the default value to the current date and time
-    },
 });
-export default mongoose.model('BookingTour', bookingTourSchema);
+export default mongoose.model('HotelBookingHistory', HotelBookingHistory_Schema);

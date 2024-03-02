@@ -1,62 +1,74 @@
 import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
-let bookingTourSchema = new Schema({
-    name: {
+let bookingHotelSchema = new Schema({
+    hotelId: {
         type: String,
         required: true
     },
-    prices: {
+    roomId: {
+        type: String,
+        required: true
+    },
+    roomName: {
+        type: String,
+        required: true
+    },
+    roomPrice: {
         type: Number,
         required: true
     },
-    type: {
-        type: Number,
-        required: true
-    },
-    description: {
+    roomType: {
         type: String,
         required: true
     },
-    image: {
+    checkoutDate: {
         type: String,
         required: true
     },
-    gallery: [{
+    checkInDate: {
+        type: Date,
+        default: Date.now,
+    },
+    guests: [{
         type: String,
         required: true
     }],
-    features: [{
-        type: String,
-        required: true
-    }],
-    location: {
+    bookerName: {
         type: String,
         required: true
     },
-    reviews: [{
-        type: mongoose.Types.ObjectId,
-        ref: "Review",
-
-    }], bookers: [{
+    bookerEmail: {
+        type: String,
+        required: true
+    },
+    bookerPhone: {
+        type: String,
+        required: true
+    },
+    bookerAddress: {
+        type: String,
+        required: true
+    },
+    suggestion: {
+        type: String,
+        required: true
+    },
+    bookerId: {
         type: mongoose.Types.ObjectId,
         ref: "User",
 
-    }], priceIncludes: [{
+    }, days: {
         type: String,
         required: true
-    }],
-    priceExcludes: [{
-        type: String,
-        required: true
-    }],
-    noOfGuests: {
-        type: String,
-        required: true
-
     },
-    available: {
+    members: {
         type: String,
         required: true
-    }
+    },
+    bookerId: {
+        type: String,
+        required: true
+    },
+
 });
-export default mongoose.model('BookingTour', bookingTourSchema);
+export default mongoose.model('BookingHotel', bookingHotelSchema);

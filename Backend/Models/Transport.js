@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
-let hotelSchema = new Schema({
-    name: {
+let TransportSchema = new Schema({
+    carName: {
         type: String,
         required: true
     },
@@ -9,7 +9,11 @@ let hotelSchema = new Schema({
         type: Number,
         required: true
     },
-    roomCount: {
+    seats: {
+        type: Number,
+        required: true
+    },
+    type: {
         type: Number,
         required: true
     },
@@ -29,16 +33,11 @@ let hotelSchema = new Schema({
         type: String,
         required: true
     }],
-    location: {
+    allowedGuests: {
         type: String,
         required: true
     },
     reviews: [{
-        type: mongoose.Types.ObjectId,
-        ref: "Review",
-
-    }],
-    rooms: [{
         type: mongoose.Types.ObjectId,
         ref: "Review",
 
@@ -48,4 +47,4 @@ let hotelSchema = new Schema({
         required: true
     }
 });
-export default mongoose.model('Hotels', hotelSchema);
+export default mongoose.model('Transport', TransportSchema);

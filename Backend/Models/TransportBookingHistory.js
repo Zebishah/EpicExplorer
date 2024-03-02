@@ -1,40 +1,38 @@
 import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
-let order_Schema = new Schema({
-    orderNo: {
+let TransportBookingHistory_Schema = new Schema({
+    carName: {
+        type: String,
+        required: true
+    },
+    prices: {
         type: Number,
         required: true
     },
-    userName: {
+    checkInDate: {
         type: String,
         required: true
     },
-    userEmail: {
-        type: String,
-        required: true
-    },
-    userPhone: {
-        type: Number,
-        required: true
-    },
-    userAddress: {
-        type: String,
-        required: true
-    },
-    buyedProducts: [{
+    travelers: [{
         type: String,
         required: true
     }],
-    Bill: [{
+    bookerName: {
         type: String,
         required: true
-    }],
-    buyDate: {
-        type: Date,
-        default: Date.now, // Set the default value to the current date and time
     },
-
-
+    bookerEmail: {
+        type: String,
+        required: true
+    },
+    bookerId: {
+        type: String,
+        required: true
+    },
+    members: {
+        type: String,
+        required: true
+    },
 
 });
-export default mongoose.model('Orders', order_Schema);
+export default mongoose.model('TransportBookingHistory', TransportBookingHistory_Schema);
