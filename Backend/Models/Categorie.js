@@ -1,10 +1,10 @@
 import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
-let subCategorySchema = new Schema({
-    parentCategoryId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Category",
-    },
+let CategorySchema = new Schema({
+    // parentCategoryId: {
+    //     type: mongoose.Schema.Types.ObjectId,
+    //     ref: "Category",
+    // },
     name: {
         type: String,
         required: true
@@ -13,15 +13,15 @@ let subCategorySchema = new Schema({
         type: String,
         required: true
     },
-    admin: {
+    description: {
         type: String,
         required: true
     },
-    products: [{
+    tours: [{
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Product",
+        ref: "Tour",
 
     }],
 
 });
-export default mongoose.model('SubCategory', subCategorySchema);
+export default mongoose.model('Categorie', CategorySchema);

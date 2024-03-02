@@ -26,7 +26,17 @@ let userSchema = new Schema({
         type: Number,
         required: true
     },
-    buyProducts: [{
+    bookedTour: [{
+
+        type: mongoose.Types.ObjectId,
+        ref: "Tour",
+    }],
+    bookedHotels: [{
+
+        type: mongoose.Types.ObjectId,
+        ref: "Product",
+    }],
+    bookedTransport: [{
 
         type: mongoose.Types.ObjectId,
         ref: "Product",

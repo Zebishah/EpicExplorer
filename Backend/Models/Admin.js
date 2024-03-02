@@ -10,6 +10,11 @@ let adminSchema = new Schema({
         required: true,
         unique: true
     },
+    phone: {
+        type: Number,
+        required: true,
+        unique: true
+    },
     password: {
         type: String,
         required: true
@@ -30,14 +35,25 @@ let adminSchema = new Schema({
         type: Date,
         default: Date.now,
     },
-    password: {
-        type: String,
-        required: true
-    },
-    addedProducts: [{
+    addedTrips: [{
+        type: mongoose.Types.ObjectId,
+        ref: "Tour",
+
+    }],
+    addedHotels: [{
         type: mongoose.Types.ObjectId,
         ref: "Product",
 
-    },]
+    }],
+    addedTransports: [{
+        type: mongoose.Types.ObjectId,
+        ref: "Product",
+
+    }],
+    handledTours: [{
+        type: mongoose.Types.ObjectId,
+        ref: "Product",
+
+    }]
 })
 export default mongoose.model('Admin', adminSchema);

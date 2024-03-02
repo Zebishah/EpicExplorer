@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
-let productsSchema = new Schema({
+let bookingTourSchema = new Schema({
     name: {
         type: String,
         required: true
@@ -9,23 +9,11 @@ let productsSchema = new Schema({
         type: Number,
         required: true
     },
-    company: {
-        type: String,
-        required: true
-    },
-    quantity: {
+    startDate: {
         type: Number,
         required: true
     },
-    parentId: {
-        type: String,
-        required: true
-    },
-    sells: {
-        type: Number,
-        required: true
-    },
-    discount: {
+    endDate: {
         type: Number,
         required: true
     },
@@ -33,34 +21,42 @@ let productsSchema = new Schema({
         type: String,
         required: true
     },
-    rating: {
+    image: {
         type: String,
         required: true
     },
-    pics: [{
+    type: {
+        type: String,
+        required: true
+    },
+    departureTime: {
+        type: String,
+        required: true
+    },
+    Departure_ReturnLocation: {
+        type: String,
+        required: true
+    },
+    gallery: [{
         type: String,
         required: true
     }],
-    sizes: [{
+    priceIncludes: [{
         type: String,
         required: true
     }],
-    reviews: [{
+    priceExcludes: [{
         type: String,
         required: true
     }],
-    admins: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Admin",
-
-    }],
-    buyers: [{
-        type: mongoose.Types.ObjectId,
-        ref: "User",
-
+    activities: [{
+        type: String,
+        required: true
     }],
     available: {
-        type: Boolean,
+        type: String,
+        required: true
     }
+
 });
-export default mongoose.model('Product', productsSchema);
+export default mongoose.model('BookingTour', bookingTourSchema);

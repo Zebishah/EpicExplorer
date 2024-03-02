@@ -9,10 +9,6 @@ let categorySchema = new Schema({
         type: String,
         required: true
     },
-    admin: [{
-        type: String,
-        required: true
-    },],
     subCategory: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: "SubCategory",

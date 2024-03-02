@@ -1,33 +1,26 @@
 import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
-let UserFavrt = new Schema({
-    tourId: {
-        type: String,
-        required: true
-    },
+let CategorySchema = new Schema({
     name: {
         type: String,
         required: true
     },
-    price: {
+    email: {
         type: String,
         required: true
     },
-    description: {
+    reviewedService: {
         type: String,
         required: true
     },
-    days: {
-        type: Number,
-        required: true
-    },
-    type: {
+    image: {
         type: String,
         required: true
     },
-    available: {
+    words: [{
         type: String,
         required: true
-    }
+    }],
+
 });
-export default mongoose.model('UserFavrt', UserFavrt);
+export default mongoose.model('Categorie', CategorySchema);
