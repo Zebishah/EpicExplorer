@@ -42,18 +42,26 @@ let adminSchema = new Schema({
     }],
     addedHotels: [{
         type: mongoose.Types.ObjectId,
-        ref: "Product",
+        ref: "Room",
 
     }],
     addedTransports: [{
         type: mongoose.Types.ObjectId,
-        ref: "Product",
+        ref: "Transport",
 
     }],
     handledTours: [{
         type: mongoose.Types.ObjectId,
-        ref: "Product",
+        ref: "Tour",
 
-    }]
+    }], handledTransport: [{
+        type: mongoose.Types.ObjectId,
+        ref: "Transport",
+
+    }], handledHotels: [{
+        type: mongoose.Types.ObjectId,
+        ref: "Hotel",
+
+    }],
 })
 export default mongoose.model('Admin', adminSchema);

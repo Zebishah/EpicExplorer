@@ -10,11 +10,11 @@ let tourSchema = new Schema({
         required: true
     },
     startDate: {
-        type: Number,
+        type: String,
         required: true
     },
     endDate: {
-        type: Number,
+        type: String,
         required: true
     },
     description: {
@@ -41,19 +41,7 @@ let tourSchema = new Schema({
         type: String,
         required: true
     }],
-    priceIncludes: [{
-        type: String,
-        required: true
-    }],
-    priceExcludes: [{
-        type: String,
-        required: true
-    }],
-    activities: [{
-        type: String,
-        required: true
-
-    }],
+  
     bookers: [{
         type: mongoose.Types.ObjectId,
         ref: "User",

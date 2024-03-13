@@ -1,6 +1,10 @@
 import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
 let RoomSchema = new Schema({
+    hotelId:{
+        type: String,
+        required: true
+    },
     name: {
         type: String,
         required: true
@@ -10,7 +14,7 @@ let RoomSchema = new Schema({
         required: true
     },
     type: {
-        type: Number,
+        type: String,
         required: true
     },
     description: {
@@ -41,13 +45,6 @@ let RoomSchema = new Schema({
         type: mongoose.Types.ObjectId,
         ref: "User",
 
-    }], priceIncludes: [{
-        type: String,
-        required: true
-    }],
-    priceExcludes: [{
-        type: String,
-        required: true
     }],
     noOfGuests: {
         type: String,

@@ -1,9 +1,13 @@
-import React from 'react'
+import React from 'react';
+import Tour from './Tour.js';
+// const stripePromise = loadStripe('pk_test_51OlT63EhRIYwGoSWf1KwCnKI6NoAfDGxmMPlWmKTKqiLV4n7GYEOWt0xqzjzE1rVsYGpCjB2hxupQWGkdK8OVnqE00nLgRNBzu');
 
 const Home = () => {
     return (
-        <div> <h1 className='text-red-700 font-sans text-lg '>Hey this is the epic explorer scene </h1></div>
-    )
-}
+        <div>
+            <Tour />
+        </div>
+    );
+};
 
-export default Home
+export default Home;
