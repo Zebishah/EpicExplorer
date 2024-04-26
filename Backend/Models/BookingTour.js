@@ -10,8 +10,15 @@ let bookingTourSchema = new Schema({
         type: String,
         required: true
     },
+    pickupLocation: {
+        type: String,
+        required: true
+    },
     price: {
         type: Number,
+        required: true
+    }, image: {
+        type: String,
         required: true
     },
     startDate: {
@@ -58,11 +65,6 @@ let bookingTourSchema = new Schema({
     members: {
         type: String,
         required: true
-    },
-
-    buyDate: {
-        type: Date,
-        default: Date.now, // Set the default value to the current date and time
     },
 });
 export default mongoose.model('BookingTour', bookingTourSchema);

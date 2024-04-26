@@ -1,6 +1,11 @@
 import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
 let tourSchema = new Schema({
+    tourNo: {
+        type: Number,
+        required: true
+    },
+
     name: {
         type: String,
         required: true
@@ -14,6 +19,10 @@ let tourSchema = new Schema({
         required: true
     },
     endDate: {
+        type: String,
+        required: true
+    },
+    parentCategory: {
         type: String,
         required: true
     },
@@ -41,10 +50,16 @@ let tourSchema = new Schema({
         type: String,
         required: true
     }],
-  
+
     bookers: [{
         type: mongoose.Types.ObjectId,
         ref: "User",
+
+    }],
+
+    bookings: [{
+        type: Date,
+        default: Date.now
 
     }],
     reviews: [{
@@ -52,6 +67,10 @@ let tourSchema = new Schema({
         ref: "Review",
     }],
     available: {
+        type: String,
+        required: true
+    },
+    bookedCount: {
         type: String,
         required: true
     }

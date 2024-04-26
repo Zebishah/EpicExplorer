@@ -1,7 +1,12 @@
 import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
 let RoomSchema = new Schema({
-    hotelId:{
+    roomNo: {
+        type: Number,
+        required: true
+    },
+
+    hotelId: {
         type: String,
         required: true
     },
@@ -54,6 +59,15 @@ let RoomSchema = new Schema({
     available: {
         type: String,
         required: true
-    }
+    },
+    bookedCount: {
+        type: String,
+        required: true
+    },
+    bookings: [{
+
+        type: String,
+        required: true
+    }],
 });
 export default mongoose.model('Room', RoomSchema);

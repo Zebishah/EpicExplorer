@@ -12,6 +12,9 @@ let bookingHotelSchema = new Schema({
     roomName: {
         type: String,
         required: true
+    }, image: {
+        type: String,
+        required: true
     },
     roomPrice: {
         type: Number,
@@ -21,10 +24,7 @@ let bookingHotelSchema = new Schema({
         type: String,
         required: true
     },
-    checkoutDate: {
-        type: String,
-        required: true
-    },
+
     checkInDate: {
         type: Date,
         default: Date.now,
@@ -62,10 +62,6 @@ let bookingHotelSchema = new Schema({
         required: true
     },
     members: {
-        type: String,
-        required: true
-    },
-    bookerId: {
         type: String,
         required: true
     },

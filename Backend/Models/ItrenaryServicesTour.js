@@ -1,6 +1,10 @@
 import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
 let ItrenaryServicesTourSchema = new Schema({
+    tourId: {
+        type: String,
+        required: true
+    },
     priceIncludes: [{
         type: String,
         required: true

@@ -1,6 +1,10 @@
 import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
-let ItrenaryServicesHotelSchema = new Schema({
+let ItServicesHotelSchema = new Schema({
+    roomId: {
+        type: String,
+        required: true
+    },
     priceIncludes: [{
         type: String,
         required: true
@@ -16,7 +20,7 @@ let ItrenaryServicesHotelSchema = new Schema({
     }],
     completeInfo: [{
         attribute: {
-            type: string,
+            type: String,
             required: true
         },
         detail: {
@@ -26,4 +30,4 @@ let ItrenaryServicesHotelSchema = new Schema({
     }]
 
 });
-export default mongoose.model('ItrenaryServicesHotel', ItrenaryServicesHotelSchema);
+export default mongoose.model('ItServicesHotel', ItServicesHotelSchema);

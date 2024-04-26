@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import bcrypt from 'bcrypt'
 const Schema = mongoose.Schema;
 let userSchema = new Schema({
     name: {
@@ -14,7 +15,7 @@ let userSchema = new Schema({
         type: String,
         required: true
     },
-     phone: {
+    phone: {
         type: Number,
         required: true
     },
@@ -31,24 +32,24 @@ let userSchema = new Schema({
         required: true
     },
     bookedTour: [{
-
         type: mongoose.Types.ObjectId,
         ref: "Tour",
     }],
     bookedHotels: [{
 
         type: mongoose.Types.ObjectId,
-        ref: "Product",
+        ref: "Room",
     }],
     bookedTransport: [{
 
         type: mongoose.Types.ObjectId,
-        ref: "Product",
+        ref: "Transport",
     }],
     wishList: [{
 
         type: mongoose.Types.ObjectId,
-        ref: "Product",
+        ref: "UserFavrt",
     }]
 })
+
 export default mongoose.model('User', userSchema);

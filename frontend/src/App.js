@@ -22,7 +22,7 @@ function App() {
           <Route exact path="/" element={<Home key="home" />} />
           <Route exact path="/Main" element={<Main key="Main" />} />
           {/* {/* <Route exact path="/about" element={<About key=" About" />} /> */}
-          <Route exact path="/Success" element={<Success key="Success" />} />
+          <Route exact path="/Success/:amount" element={<Success key="Success" />} />
           <Route exact path="/Cancel" element={<Cancel key="Cancel" />} />
           {/* <Route exact path="/SignUp" element={<SignUp key=" signUp" />} />
           <Route exact path="/contact" element={<Contacts key="contacts" />} />

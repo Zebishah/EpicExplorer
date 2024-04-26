@@ -5,15 +5,15 @@ let HotelBookingHistory_Schema = new Schema({
         type: String,
         required: true
     },
+    roomId: {
+        type: String,
+        required: true
+    },
     roomName: {
         type: String,
         required: true
     },
-    roomPrice: {
-        type: Number,
-        required: true
-    },
-    roomType: {
+    image: {
         type: String,
         required: true
     },
@@ -21,27 +21,15 @@ let HotelBookingHistory_Schema = new Schema({
         type: String,
         required: true
     },
-    checkInDate: {
-        type: String,
-        required: true
+    bookingDate: {
+        type: Date,
+        default: Date.now
     },
-    guests: [{
-        type: String,
-        required: true
-    }],
     bookerName: {
         type: String,
         required: true
     },
-    bookerEmail: {
-        type: String,
-        required: true
-    },
     bookerId: {
-        type: String,
-        required: true
-    },
-    members: {
         type: String,
         required: true
     },

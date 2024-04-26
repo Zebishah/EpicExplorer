@@ -1,38 +1,34 @@
 import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
 let TransportBookingHistory_Schema = new Schema({
+    transportId: {
+        type: String,
+        required: true
+    },
     carName: {
         type: String,
         required: true
     },
-    prices: {
-        type: Number,
-        required: true
-    },
-    checkInDate: {
+    image: {
         type: String,
         required: true
     },
-    travelers: [{
-        type: String,
-        required: true
-    }],
-    bookerName: {
+    bookingDate: {
+        type: Date,
+        default: Date.now
+    },
+    bookersName: {
         type: String,
         required: true
     },
-    bookerEmail: {
-        type: String,
-        required: true
-    },
-    bookerId: {
-        type: String,
-        required: true
-    },
-    members: {
+    bookersId: {
         type: String,
         required: true
     },
 
+    checkOutDate: {
+        type: String,
+        required: true
+    }
 });
 export default mongoose.model('TransportBookingHistory', TransportBookingHistory_Schema);

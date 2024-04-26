@@ -13,14 +13,21 @@ let ReviewSchema = new Schema({
         type: String,
         required: true
     },
+    reviewedServiceId: {
+        type: String,
+        required: true
+    },
     image: {
         type: String,
         required: true
     },
-    words: [{
+    words: {
         type: String,
         required: true
-    }],
-
+    },
+    rating: {
+        type: String,
+        required: true
+    }
 });
 export default mongoose.model('Review', ReviewSchema);

@@ -9,23 +9,15 @@ let TourBookingHistory_Schema = new Schema({
         type: String,
         required: true
     },
-    price: {
-        type: Number,
-        required: true
-    },
-    checkInDate: {
+    image: {
         type: String,
         required: true
     },
-    travelers: [{
-        type: String,
-        required: true
-    }],
+    bookingDate: {
+        type: Date,
+        default: Date.now
+    },
     bookerName: {
-        type: String,
-        required: true
-    },
-    bookerEmail: {
         type: String,
         required: true
     },
@@ -33,10 +25,9 @@ let TourBookingHistory_Schema = new Schema({
         type: mongoose.Types.ObjectId,
         ref: "User",
     },
-    members: {
+    checkOutDate: {
         type: String,
         required: true
-    },
-
+    }
 });
 export default mongoose.model('TourBookingHistory', TourBookingHistory_Schema);

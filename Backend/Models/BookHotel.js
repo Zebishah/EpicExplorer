@@ -1,11 +1,22 @@
 import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
-let bookedTour_Schema = new Schema({
+let bookedHotel_Schema = new Schema({
+    bookedRoomNo: {
+        type: Number,
+        required: true
+    },
+
     hotelId: {
+        type: String,
+        required: true
+    }, roomId: {
         type: String,
         required: true
     },
     roomName: {
+        type: String,
+        required: true
+    }, image: {
         type: String,
         required: true
     },
@@ -62,9 +73,12 @@ let bookedTour_Schema = new Schema({
         type: String,
         required: true
     },
-
+    BooksCount: {
+        type: Number,
+        required: true
+    }
 
 
 
 });
-export default mongoose.model('BookProduct', bookedTour_Schema);
+export default mongoose.model('BookHotel', bookedHotel_Schema);

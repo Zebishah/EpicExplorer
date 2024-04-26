@@ -1,6 +1,10 @@
 import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
 let bookedTour_Schema = new Schema({
+    bookedTourNo: {
+        type: Number,
+        required: true
+    },
     tourId: {
         type: String,
         required: true
@@ -11,6 +15,9 @@ let bookedTour_Schema = new Schema({
     },
     price: {
         type: Number,
+        required: true
+    }, image: {
+        type: String,
         required: true
     },
     startDate: {
@@ -59,12 +66,10 @@ let bookedTour_Schema = new Schema({
         required: true
     },
 
-    buyDate: {
-        type: Date,
-        default: Date.now, // Set the default value to the current date and time
-    },
-
-
+    BooksCount: {
+        type: Number,
+        required: true
+    }
 
 
 });

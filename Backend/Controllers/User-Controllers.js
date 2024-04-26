@@ -1,20 +1,31 @@
 import { validationResult } from 'express-validator';
 import jwt from 'jsonwebtoken';
-import StellarSdk from 'stellar-sdk';
 import * as crypto from 'crypto';
 import bcrypt from 'bcrypt';
 import fetch from 'node-fetch';
+import StellarSdk from 'stellar-sdk';
 import { Server } from 'stellar-sdk/lib/horizon/server.js';
-const server = new Server("https://horizon-testnet.stellar.org");
+const server = new Server("https://horizon-testnet.stellar.org/");
 import User from '../Models/User.js';
 import Admin from '../Models/Admin.js';
 import Token from '../Models/Token.js';
-import moment from 'moment';
-import config from '../config.js';
-import transporter from '../Mailer.js';
 import stripePackage from 'stripe';
 import dotenv from 'dotenv';
-import express from 'express';
+import express, { response } from 'express';
+import sendEmail from '../Utils/NodeMailer.js';
+import tokenCreation from '../Utils/TokenCreator.js';
+import BookTour from '../Models/BookTour.js';
+import Tour from '../Models/Tour.js';
+import BookingTour from '../Models/BookingTour.js';
+import ToursBookingHistory from '../Models/ToursBookingHistory.js';
+import Bill from '../Models/Bill.js';
+import makingTourBill from '../Models/makingTourBill.js';
+import TransportBookingHistory from '../Models/TransportBookingHistory.js';
+import HotelBookingHistory from '../Models/HotelBookingHistory.js';
+import StellarTransaction from '../Utils/Transaction.js';
+import KeysCreations from '../Utils/AdminStellarKeysGenerator.js';
+
+
 const app = express();
 dotenv.config();
 const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
@@ -23,52 +34,30 @@ const stripe = new stripePackage(stripeSecretKey);
 let success = null;
 export const createUser = async (req, res, next) => {
     let balance = "2";
-
+    //getting user input from request Body  
     const { name, email, phone, password, confirmPassword, wishList, bookedTour, bookedHotels, bookedTransport } = req.body;
+
     if ((name.trim() === "" || email.trim() === "" || phone === "" || password.trim() === "")) {
         return res.status(400).json({ success: false, message: "enter ur credentials first" });
     }
+
     if (confirmPassword !== password) {
         return res.status(400).json({ success: false, message: "passwords are not matching with each other" });
     }
+
     try {
-        let existingUser = await User.findOne({ email });
-        if (existingUser) {
-            return res.status(400).json({ success: false, message: "User already exists" });
+        let user = req.user;//getting user from middleware
+
+        if (user) {
+            return res.status(400).json({ success: false, message: "user already existed" });
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
-        // const hashedConfirmedPassword = await bcrypt.hash(confirmPassword, 10);
-        const sourcePair = StellarSdk.Keypair.random();
-        const sourceAccountId = sourcePair.publicKey();
-        const sourceSecretSeed = sourcePair.secret();
+        const { sourceAccountId, sourceSecretSeed } = await KeysCreations();
 
-        // Load admin account
-        const adminAccountId = process.env.ADMIN_ACCOUNT_ID; // Replace with your admin account ID
-        const adminAccount = await server.loadAccount(adminAccountId);
-
-        // Create a transaction to fund the new user account
-        const transaction = new StellarSdk.TransactionBuilder(adminAccount, {
-            fee: StellarSdk.BASE_FEE,
-            networkPassphrase: StellarSdk.Networks.TESTNET,
-        })
-            .addOperation(
-                StellarSdk.Operation.createAccount({
-                    destination: sourceAccountId, // New user's account ID
-                    startingBalance: balance.toString(),
-                    // Fund the account with 2.5 XLM
-                })
-
-            )
-            .setTimeout(180)
-            .build();
-
-        // Sign the transaction with the admin's secret seed
-        transaction.sign(StellarSdk.Keypair.fromSecret(process.env.ADMIN_SECRET_SEED)); // Replace with your admin's secret seed
-
-        // Submit the transaction to the Stellar network
-        await server.submitTransaction(transaction);
-
+        const adminAccount = await server.loadAccount(process.env.ADMIN_ACCOUNT_ID);
+        const adminKeyPair = StellarSdk.Keypair.fromSecret(process.env.ADMIN_SECRET_SEED);
+        const response = await StellarTransaction(adminAccount, balance, adminKeyPair);
         // Create the new user in your database
         const newUser = new User({
             name,
@@ -82,119 +71,49 @@ export const createUser = async (req, res, next) => {
             bookedTour, bookedTransport, bookedHotels // Set to 0 initially
         });
         await newUser.save();
-
-        return res.status(200).json({ success: true, message: "User signed up successfully", user: newUser });
+        console.log(user)
+        return res.status(200).json({ success: true, message: "User signed up successfully", user: newUser, response: response });
     } catch (error) {
         console.error('Error creating user:', error);
-        return res.status(500).json({ success: false, message: "Error creating user", error });
+        return res.status(500).json({ success: false, message: "error Occurs while making account ", error });
     }
 
 }
 
 export const userLogin = async (req, res, next) => {
-
+    //getting user input from request Body  
     let { email, password } = req.body;
+
     if (email.trim() === "" || password.trim() === "") {
         return res.status(400).json({ success: false, message: "enter ur credentials first" });
     }
-    let existingUser;
-    try {
-        existingUser = await User.findOne({ email });
-    } catch (error) {
-        return next(error);
-    }
-
-    if (!existingUser) {
-        success = false;
-        return res.status(400).json({ success, message: "Unauthenticated login detected" })
-    }
-    const isCorrectPassword = bcrypt.compareSync(password, existingUser.password)
+    let user = req.user;//getting User from middleware
+    const isCorrectPassword = bcrypt.compareSync(password, user.password)
 
     if (!isCorrectPassword) {
         success = false;
         return res.status(400).json({ success, message: "wrong password" })
     }
-    const token = jwt.sign({ id: existingUser._id }, process.env.JWT_SECRET, {
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
         expiresIn: "7d"
     });
     success = true;
-    return res.status(200).json({ message: "User signed in successfully", token: token, id: existingUser._id, user: existingUser })
+    return res.status(200).json({ message: "User signed in successfully", token: token, id: user._id, user: user })
 
 }
 
 //get all userss
 export const getUsers = async (req, res, next) => {
-    const extractedToken = req.header("auth-token");
-    let adminId;
-    if (!extractedToken || extractedToken.trim() === "") {
-        success = false;
-        return res.status(400).json({ success, message: "No token found..." })
-    }
 
-    jwt.verify(extractedToken, process.env.JWT_SECRET, (err, decrypted) => {
-        if (err) {
-            success = false;
-            return res.status(400).json({ success, message: "wrong one token is not authenticated...", error: err })
-        }
-        else {
-            adminId = decrypted.id;
-        }
-    })
-    let admins;
-    try {
-        admins = await Admin.findById(adminId);
-    } catch (error) {
-        return next(error);
-    }
-    if (admins) {
-        let user;
-        try {
-            user = await User.find();
-        } catch (error) {
-            return next(error);
-        }
 
-        if (!user) {
-            success = false;
-            return res.status(400).json({ success, message: "no Users are here" })
-        }
-        success = true;
-        return res.status(200).json({ success, message: "here are your all Users", user: user })
-    }
-    else {
-        success = false;
-        return res.status(400).json({ success, message: "unauthenticated admin" })
-    }
+    let user = req.user;//getting User from middleware
+    success = true;
+    return res.status(200).json({ success, message: "here are your all Users", user: user })
 }
 export const checkUserBalance = async (req, res, next) => {
 
-
-    const extractedToken = req.header("auth-token");
-    let userId;
-    if (!extractedToken || extractedToken.trim() == "") {
-        return res.status(400).json({ success: false, message: "No token found..." });
-    }
-
-    jwt.verify(extractedToken, process.env.JWT_SECRET, (err, decrypted) => {
-        if (err) {
-            return res.status(400).json({ success: false, message: "Token is not authenticated...", error: err });
-        } else {
-            userId = decrypted.id;
-        }
-    });
-
-    let user_Find;
-    try {
-        user_Find = await User.findById(userId);
-    } catch (error) {
-        return next(error);
-    }
-
-    if (!user_Find) {
-        return res.status(400).json({ success: false, message: "No user found" });
-    }
-
-    server.loadAccount(user_Find.AccountId)
+    let user = req.user;//getting User from middleware
+    server.loadAccount(user.AccountId)
         .then(account => {
             // Iterate through balances to find XLM balance
             let xlmBalance;
@@ -210,27 +129,11 @@ export const checkUserBalance = async (req, res, next) => {
         });
 }
 export const deleteUser = async (req, res, next) => {
-    const extractedToken = req.header("auth-token");
-    let adminId;
-    if (!extractedToken && extractedToken.trim() == "") {
-        success = false;
-        return res.status(400).json({ success, message: "No token found..." })
-    }
-
-    jwt.verify(extractedToken, process.env.JWT_SECRET, (err, decrypted) => {
-        if (err) {
-            success = false;
-            return res.status(400).json({ success, message: "wrong one token is not authenticated...", error: err })
-        }
-        else {
-            adminId = decrypted.id;
-        }
-    })
-
     let id = req.params.id;
     if (!id) {
         return res.status(400).json({ success, message: "no id detected" });
     }
+
     let deletedUser;
     try {
         deletedUser = await User.findByIdAndDelete(id);
@@ -243,7 +146,7 @@ export const deleteUser = async (req, res, next) => {
         return res.status(400).json({ success, message: "User not existed that u are trying to delete" });
     }
     success = true;
-    return res.status(200).json({ success, message: "User deleted successfully", deletedUser: deletedUser, admin: adminId })
+    return res.status(200).json({ success, message: "User deleted successfully", deletedUser: deletedUser })
 }
 
 export const updatePassword = async (req, res, next) => {
@@ -252,34 +155,11 @@ export const updatePassword = async (req, res, next) => {
     if ((oldPassword.trim() === "" || newPassword.trim() === "" || confirmPassword.trim() === "")) {
         return res.status(400).json({ success: false, message: "enter ur credentials first" });
     }
+
+    let user = req.user;//getting User from middleware
+
     if (confirmPassword !== newPassword) {
         return res.status(400).json({ success: false, message: "passwords are not matching with each other" });
-    }
-    const extractedToken = req.header("auth-token");
-    let userId;
-    if (!extractedToken && extractedToken.trim() == "") {
-        success = false;
-        return res.status(400).json({ success, message: "No token found..." })
-    }
-
-    jwt.verify(extractedToken, process.env.JWT_SECRET, (err, decrypted) => {
-        if (err) {
-            success = false;
-            return res.status(400).json({ success, message: "wrong one token is not authenticated...", error: err })
-        }
-        else {
-            userId = decrypted.id;
-        }
-    })
-    let user;
-    try {
-        user = await User.findById(userId)
-    } catch (error) {
-        return next(error)
-    }
-
-    if (!user) {
-        return res.status(400).json({ success: false, message: "no user detected" });
     }
     const isCorrectPassword = bcrypt.compareSync(oldPassword, user.password);
     if (!(isCorrectPassword)) {
@@ -289,55 +169,25 @@ export const updatePassword = async (req, res, next) => {
     const hashedNewPassword = bcrypt.hashSync(newPassword, 10);
     user.password = hashedNewPassword;
     await user.save();
-    let updatedUser;
-    try {
-        updatedUser = await User.findById(userId);
-    } catch (error) {
-        return next(error);
-    }
 
-    if (!updatedUser) {
-        success = false;
-        return res.status(400).json({ success, message: "User not existed that u are trying to delete" });
-    }
     success = true;
-    return res.status(200).json({ success, message: "password updated successfully", updatedUser: updatedUser, user: userId })
+    return res.status(200).json({ success, message: "password updated successfully", updatedUser: user, user: userId })
 }
 export const forgetPassword = async (req, res, next) => {
+    let options = [{}];
+    let user = await req.user;
+    // token creation
+
+    let hash = await tokenCreation(user);
 
     try {
-        const user = await User.findOne({ email: req.body.email });
-        if (!user) {
-            return res.status(400).json({ success: false, message: "No user with this email found..." });
-        }
-
-        const token = crypto.randomBytes(32).toString("hex");
-        const hash = bcrypt.hashSync(token, 10);
-
-        const expiry = moment.utc().add(config.tokenExpiry, "seconds");
-
-        const newToken = new Token({
-            userId: user._id,
-            token: hash,
-            createdAt: Date.now(),
-        });
-
-        await newToken.save();
 
         const resetUrl = `${process.env.BASE_URL}/User/resetPassword/${hash}`;
 
-        // send email with reset link
         const message = `<p>Please click the following link to reset your password:</p>
               <p><a href="${resetUrl}">${resetUrl}</a></p>`;
-
-        const mailOptions = {
-            from: process.env.USER,
-            to: user.email,
-            subject: "Password Reset Request",
-            html: message,
-        };
-        await transporter.sendMail(mailOptions);
-
+        options.push({ email: user.email, message: message })
+        sendEmail(options);
 
         return res.status(200).json({
             success: true,
@@ -346,7 +196,6 @@ export const forgetPassword = async (req, res, next) => {
             message,
         });
     } catch (error) {
-        console.error("Error sending email:", error);
         return res.status(400).json({
             success: false,
             message: "Password reset link not sent to you.",
@@ -355,16 +204,11 @@ export const forgetPassword = async (req, res, next) => {
 
 }
 export const resetPassword = async (req, res, next) => {
+
+    let user = req.user;//getting User from middleware
     try {
-        const extractedToken = req.header("auth-token");
-        if (!extractedToken || extractedToken.trim() === "") {
-            return res.status(400).json({ success: false, message: "No token found..." });
-        }
-
-        const { id: userId } = jwt.verify(extractedToken, process.env.JWT_SECRET);
-
         const token = await Token.findOne({
-            userId: userId,
+            userId: user.id,
             token: req.params.hash,
         });
 
@@ -372,7 +216,6 @@ export const resetPassword = async (req, res, next) => {
             return res.status(400).json({ success: false, message: "Invalid token found..." });
         }
 
-        const user = await User.findById(userId);
 
         const salt = await bcrypt.genSalt(10);
         user.password = await bcrypt.hash(req.body.password, salt);
@@ -390,137 +233,315 @@ export const resetPassword = async (req, res, next) => {
     }
 }
 
-
-
-
-
 export const confirmOrder = async (req, res, next) => {
 
-    const extractedToken = req.header('auth_token');
 
-    let userId;
-    if (!extractedToken && extractedToken.trim() == "") {
-        success = false;
-        return res.status(400).json({ success, message: "No token found..." })
+    let user = req.user;//getting User from middleware
+    try {
+        console.log("a gye")
+        const paymentIntent = await stripe.paymentIntents.create({
+            amount: 105000, // Amount in cents
+            currency: 'pkr',
+            // Verify your integration in this guide by including this parameter
+            metadata: { integration_check: 'accept_a_payment' },
+        });
+        return res.status(200).json({ clientSecret: paymentIntent.client_secret, id: paymentIntent.id, name: user.name, email: user.email });
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ error: 'An error occurred while creating PaymentIntent' });
     }
 
-    jwt.verify(extractedToken, process.env.JWT_SECRET, async (err, decrypted) => {
-        if (err) {
-            success = false;
-            return res.status(400).json({ success, message: "wrong one token is not authenticated...", error: err })
-        } else {
-            userId = decrypted.id;
-            let user;
-            try {
-                user = await User.findById(userId)
-            } catch (error) {
-                return next(error)
-            }
 
-            if (!user) {
-                return res.status(400).json({ success: false, message: "no user detected" });
-            }
-            try {
-                console.log("a gye")
-                const paymentIntent = await stripe.paymentIntents.create({
-                    amount: 105000, // Amount in cents
-                    currency: 'pkr',
-                    // Verify your integration in this guide by including this parameter
-                    metadata: { integration_check: 'accept_a_payment' },
-                });
-                return res.status(200).json({ clientSecret: paymentIntent.client_secret, id: paymentIntent.id, name: user.name, email: user.email });
-            } catch (err) {
-                console.error(err);
-                return res.status(500).json({ error: 'An error occurred while creating PaymentIntent' });
-            }
-        }
-    });
 };
 
 export const confirmOrders = async (req, res, next) => {
 
-    const extractedToken = req.header('auth_token');
+    let user = req.user;//getting User from middleware
+    let amount = 2000;
 
-    let userId;
-    if (!extractedToken && extractedToken.trim() == "") {
-        success = false;
-        return res.status(400).json({ success, message: "No token found..." })
+    try {
+        const session = await stripe.checkout.sessions.create({
+            payment_method_types: ['card'],
+            line_items: [
+                {
+                    price_data: {
+                        currency: 'usd',
+                        product_data: {
+                            name: 'T-shirt',
+                        },
+                        unit_amount: amount, // Amount in cents
+                    },
+                    quantity: 1,
+                },
+            ],
+            mode: 'payment',
+            success_url: `http://localhost:3000/Success/${amount}`,
+            cancel_url: 'http://localhost:3000/Cancel',
+            customer_email: user.email
+            // clientReferenceId:
+        });
+
+        res.json({ sessionId: session, clientSecret: session.client_secret, amount: amount });
+    } catch (error) {
+        return next(error);
     }
 
-    jwt.verify(extractedToken, process.env.JWT_SECRET, async (err, decrypted) => {
-        if (err) {
-            success = false;
-            return res.status(400).json({ success, message: "wrong one token is not authenticated...", error: err })
-        } else {
-            userId = decrypted.id;
-            let user;
-            try {
-                user = await User.findById(userId)
-            } catch (error) {
-                return next(error)
-            }
 
-            if (!user) {
-                return res.status(400).json({ success: false, message: "no user detected" });
-            }
-            try {
-                const session = await stripe.checkout.sessions.create({
-                    payment_method_types: ['card'],
-                    line_items: [
-                        {
-                            price_data: {
-                                currency: 'usd',
-                                product_data: {
-                                    name: 'T-shirt',
-                                },
-                                unit_amount: 2000, // Amount in cents
-                            },
-                            quantity: 1,
-                        },
-                    ],
-                    mode: 'payment',
-                    success_url: 'http://localhost:3000/Success',
-                    cancel_url: 'http://localhost:3000/Cancel',
-                    customer_email: user.email
-                    // clientReferenceId:
-                });
+};
+export const requestBalance = async (req, res, next) => {
+    const { amount } = req.body;
+    let user = await req.user;
 
-                res.json({ sessionId: session });
+
+    try {
+
+        const adminSecretKey = process.env.ADMIN_SECRET_SEED;
+        const adminKeypair = StellarSdk.Keypair.fromSecret(adminSecretKey);
+        const adminPublicKey = adminKeypair.publicKey();
+
+        try {
+            const account = await server.loadAccount(adminPublicKey);
+            let xlm = (Number.parseFloat(amount) / 6.75).toFixed(7);
+            const transaction = new StellarSdk.TransactionBuilder(account, {
+                fee: StellarSdk.BASE_FEE,
+                networkPassphrase: StellarSdk.Networks.TESTNET
+            })
+                .addOperation(StellarSdk.Operation.payment({
+                    destination: user.AccountId, // Admin account's public key
+                    asset: StellarSdk.Asset.native(),
+                    amount: xlm.toString() // Amount of XLM to add to the admin account
+                }))
+                .setTimeout(180)
+                .build();
+
+            transaction.sign(adminKeypair);
+
+            const response = await server.submitTransaction(transaction);
+            let xlmAmount = Number(xlm);//here will use bill amoun'
+            // Update admin balance
+            let admin = await Admin.findOne({ AccountId: process.env.ADMIN_ACCOUNT_ID });
+            admin.Balance = Number(admin.Balance) - xlmAmount;
+            await admin.save();
+
+            // Update user balance
+            user.Balance = Number(user.Balance) + xlmAmount;
+            await user.save();
+            console.log("payment 1 finished ")
+
+
+            return res.status(200).json({ success: true, message: "Payment Successful", response: response });
+
+        } catch (error) {
+            console.error(error);
+            return res.status(400).json({ success: false, message: "Payment error", error: error });
+        }
+    } catch (error) {
+        console.error(error);
+        return res.status(400).json({ success: false, message: "Token is not authenticated...", error: error });
+    }
+};
+
+
+export const stellarPayment = async (req, res, next) => {
+
+    const { amount } = req.body;
+    let user = await req.user;
+    let booksCount = 0;
+    let tourId = req.params.id;
+    const xlm = Number.parseFloat(amount).toFixed(7);
+    const userSecretKey = user.SecretSeed;
+    const userKeypair = StellarSdk.Keypair.fromSecret(userSecretKey);
+    const userPublicKey = userKeypair.publicKey();
+
+
+    try {
+        const account = await server.loadAccount(userPublicKey);
+
+        if (parseFloat(account.balances[0].balance) < xlm) {
+            return res.status(400).json({ success: false, message: 'Insufficient balance go and add balance in ur stellar account by paying ', balance: account.balances[0].balance });
+        }
+
+        const response = await StellarTransaction(account, xlm, userKeypair);
+
+
+        try {
+
+            const xlm = (Number.parseFloat(amount).toFixed(7));
+            const xlmAmount = Number(xlm);
+            let admin = await Admin.findOne({ AccountId: process.env.ADMIN_ACCOUNT_ID })
+            admin.Balance = Number(admin.Balance) + xlmAmount;;
+            await admin.save();
+            user.Balance = Number(user.Balance) - xlmAmount;
+            await user.save();
+
+            let tourBooking;
+            try {
+
+                tourBooking = await BookingTour.findOne({ tourId: tourId });
             } catch (error) {
                 return next(error);
             }
+
+            let tourBooked;
+            try {
+                tourBooked = await BookTour.findOne({ tourId: tourBooking.tourId, bookerEmail: tourBooking.bookerEmail })
+            } catch (error) {
+                return next(error);
+            }
+
+            if (tourBooked) {
+                tourBooked.BooksCount = tourBooked.BooksCount + 1;
+                booksCount = tourBooked.BooksCount
+                return res.status(400).json({ success, message: "Tour already booked and existed " });
+            }
+
+            let maxBookedTourNo;
+            try {
+                const maxTourBooking = await BookTour.findOne({}, { bookedTourNo: 1 }, { sort: { bookedTourNo: -1 } });
+                if (maxTourBooking) {
+                    maxBookedTourNo = maxTourBooking.bookedTourNo;
+                } else {
+                    maxBookedTourNo = 0; // If no bookings exist yet, set the initial value
+                }
+            } catch (error) {
+                return next(error);
+            }
+            try {
+                // tourNo = tourNo + 1;
+                const newBookedTourNo = maxBookedTourNo + 1;
+
+                tourBooked = new BookTour({ BooksCount: booksCount, bookedTourNo: newBookedTourNo, tourId: tourBooking.tourId, name: tourBooking.name, image: tourBooking.image, price: tourBooking.price, startDate: tourBooking.startDate, endDate: tourBooking.endDate, checkInDate: tourBooking.checkInDate, travelers: tourBooking.travelers, bookerName: tourBooking.bookerName, bookerEmail: tourBooking.bookerEmail, bookerPhone: tourBooking.bookerPhone, bookerAddress: tourBooking.bookerAddress, suggestion: tourBooking.suggestion, bookerId: user.id, members: tourBooking.suggestion, pickupLocation: tourBooking.pickupLocation });
+
+                tourBooked = await tourBooked.save();
+
+
+            } catch (error) {
+                return next(error);
+            }
+            let tourHistory;
+            try {
+                // tourNo = tourNo + 1;
+                tourHistory = await ToursBookingHistory.findOne({ tourId: tourId });
+            } catch (error) {
+                return next(error);
+            }
+            if (tourHistory) {
+
+                return res.status(400).json({ success, message: "Tour already existed " });
+            }
+            let date = new Date();
+            let tour;
+
+            try {
+                tour = await Tour.findById(tourBooking.tourId);
+                tourHistory = new ToursBookingHistory({ tourId: tourBooking.tourId, name: tourBooking.name, image: tourBooking.image, bookingDate: tourBooking.checkInDate, bookerName: tourBooking.bookerName, bookerId: tourBooking.bookerId, checkOutDate: tour.endDate })
+                await tourHistory.save();
+                tour.bookers.push(user.id);
+                tour.bookings.push(tourBooking.checkInDate);
+                user.bookedTour.push(tourBooking.tourId)
+                await tour.save();
+                await user.save();
+            } catch (error) {
+                return next(error);
+            }
+
+            if (!tour) {
+                success = false;
+                return res.status(400).json({ success, message: "Tour not existed " });
+            }
+            let bill, deliveryCharges = "free", bookingTimes = 0;
+
+            try {
+
+
+                bill = new Bill({ booking: tourBooked.id, bookerId: user.id, senderAccountId: user.AccountId, ReceiverAccountId: process.env.ADMIN_ACCOUNT_ID, booker: user.name, deliveryCharges: deliveryCharges, totalPrice: tour.price, tourName: tour.name, date });
+                bill = await bill.save();
+                await BookingTour.findOneAndDelete({ tourId: tourBooking.tourId, bookerId: user.id });
+                await makingTourBill.findOneAndDelete({ bookerId: user.id, booking: tourBooking.id })
+            } catch (error) {
+                return next(error);
+            }
+
+            return res.status(200).json({ success: true, message: "Payment Successful", response: response });
+        } catch (error) {
+
+            return res.status(400).json({ success: false, message: "Payment error", error: error });
         }
-    });
-};
 
-
-export const requestBalance = async (req, res, next) => {
-
-    const extractedToken = req.header('auth_token');
-
-    let userId;
-    if (!extractedToken && extractedToken.trim() == "") {
-        success = false;
-        return res.status(400).json({ success, message: "No token found..." })
+    } catch (error) {
+        console.log(error)
     }
 
-    jwt.verify(extractedToken, process.env.JWT_SECRET, async (err, decrypted) => {
-        if (err) {
-            success = false;
-            return res.status(400).json({ success, message: "wrong one token is not authenticated...", error: err })
-        } else {
-            userId = decrypted.id;
-            let user;
-            try {
-                user = await User.findById(userId)
-            } catch (error) {
-                return next(error)
-            }
-
-            if (!user) {
-                return res.status(400).json({ success: false, message: "no user detected" });
-            }
-
-        }
-    });
 };
+export const userTourBookings = async (req, res, next) => {
+    let user = req.user;//getting User from middleware
+    let tourId = req.params.id;
+    let TourBookings;
+    try {
+        TourBookings = await ToursBookingHistory.find({ bookerId: user.id, tourId: tourId });
+    } catch (error) {
+        return next(error);
+    }
+
+    if (!TourBookings) {
+        success = false;
+        return res.status(400).json({ success, message: "no TourBookings are here" })
+    }
+
+    success = true;
+    return res.status(200).json({ message: "here are your all TourBookings", TourBookings: TourBookings })
+}
+export const userHotelBookings = async (req, res, next) => {
+    let user = req.user;//getting User from middleware
+    let hotelId = req.params.id;
+    let HotelBookings;
+    try {
+        HotelBookings = await HotelBookingHistory.find({ bookerId: user.id, hotelId: hotelId });
+    } catch (error) {
+        return next(error);
+    }
+
+    if (!HotelBookings) {
+        success = false;
+        return res.status(400).json({ success, message: "no HotelBookings are here" })
+    }
+
+    success = true;
+    return res.status(200).json({ message: "here are your all HotelBookings", HotelBookings: HotelBookings })
+}
+export const userTransportBookings = async (req, res, next) => {
+    let user = req.user;//getting User from middleware
+    let transportId = req.params.id;
+    let TransportBookings;
+    try {
+        TransportBookings = await TransportBookingHistory.find({ bookerId: user.id, transportId: transportId });
+    } catch (error) {
+        return next(error);
+    }
+
+    if (!TransportBookings) {
+        success = false;
+        return res.status(400).json({ success, message: "no TransportBookings are here" })
+    }
+
+    success = true;
+    return res.status(200).json({ message: "here are your all TransportBookings", TransportBookings: TransportBookings })
+}
+
+export const getUserInfo = async (req, res, next) => {
+    let user = req.user;//getting User from middleware
+    let userInfo;
+    try {
+        userInfo = await User.findById(user.id);
+    } catch (error) {
+        return next(error);
+    }
+
+    if (!userInfo) {
+        success = false;
+        return res.status(400).json({ success, message: "no userInfo are here" })
+    }
+
+    success = true;
+    return res.status(200).json({ message: "here is your userInfo", userInfo: userInfo })
+}

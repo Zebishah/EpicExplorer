@@ -1,7 +1,15 @@
 import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
 let UserFavrt = new Schema({
-    tourId: {
+    compId: {
+        type: String,
+        required: true
+    },
+    userName: {
+        type: String,
+        required: true
+    },
+    userId: {
         type: String,
         required: true
     },
@@ -17,11 +25,7 @@ let UserFavrt = new Schema({
         type: String,
         required: true
     },
-    days: {
-        type: Number,
-        required: true
-    },
-    type: {
+    image: {
         type: String,
         required: true
     },

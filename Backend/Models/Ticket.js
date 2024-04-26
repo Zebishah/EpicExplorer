@@ -1,6 +1,10 @@
 import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
 let userSchema = new Schema({
+    ticketNo: {
+        type: Number,
+        required: true
+    },
     members: [{
         type: String,
         required: true
@@ -13,6 +17,12 @@ let userSchema = new Schema({
         required: true
     },
     bookerPhone: {
+        type: String,
+        required: true
+    }, tourName: {
+        type: String,
+        required: true
+    }, ticketNo: {
         type: String,
         required: true
     },

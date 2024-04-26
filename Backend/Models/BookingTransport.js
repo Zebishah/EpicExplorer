@@ -1,6 +1,10 @@
 import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
 let bookingTransportSchema = new Schema({
+    transportId: {
+        type: String,
+        required: true
+    },
     carName: {
         type: String,
         required: true
@@ -8,19 +12,20 @@ let bookingTransportSchema = new Schema({
     prices: {
         type: Number,
         required: true
+    }, image: {
+        type: String,
+        required: true
     },
     seats: {
         type: Number,
         required: true
     },
-    description: {
-        type: String,
-        required: true
-    },
+
     checkInDate: {
         type: Date,
         default: Date.now,
     },
+
     travelers: [{
         type: String,
         required: true
@@ -37,27 +42,24 @@ let bookingTransportSchema = new Schema({
         type: String,
         required: true
     },
-    bookerAddress: [{
+    bookerAddress: {
         type: String,
         required: true
-    }],
+    },
     suggestion: {
         type: String,
         required: true
     },
-    bookerId: [{
+    bookerId: {
         type: mongoose.Types.ObjectId,
         ref: "User",
 
-    }],
+    },
     members: {
         type: String,
         required: true
     },
-    bookerId: {
-        type: String,
-        required: true
-    },
+
     days: {
         type: String,
         required: true

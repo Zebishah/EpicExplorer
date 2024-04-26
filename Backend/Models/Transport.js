@@ -1,6 +1,10 @@
 import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
 let TransportSchema = new Schema({
+    transportNo: {
+        type: Number,
+        required: true
+    },
     carName: {
         type: String,
         required: true
@@ -45,6 +49,21 @@ let TransportSchema = new Schema({
     available: {
         type: String,
         required: true
-    }
+    },
+    bookedCount: {
+        type: Number,
+
+    }, bookers: [{
+        type: mongoose.Types.ObjectId,
+        ref: "User",
+
+    }],
+
+    bookings: [{
+        type: Date,
+        default: Date.now
+
+    }],
+
 });
 export default mongoose.model('Transport', TransportSchema);

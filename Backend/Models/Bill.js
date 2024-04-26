@@ -1,7 +1,20 @@
 import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
 let billSchema = new Schema({
+
+    booking: {
+        type: String,
+        required: true
+    },
     bookerId: {
+        type: String,
+        required: true
+    },
+    senderAccountId: {
+        type: String,
+        required: true
+    },
+    ReceiverAccountId: {
         type: String,
         required: true
     },
@@ -16,8 +29,8 @@ let billSchema = new Schema({
     totalPrice: {
         type: Number,
         required: true
-    }, bookedThing: {
-        type: Number,
+    }, tourName: {
+        type: String,
         required: true
     },
     date: {

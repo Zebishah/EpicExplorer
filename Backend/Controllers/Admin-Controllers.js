@@ -12,7 +12,7 @@ const server = new Server("https://horizon-testnet.stellar.org");
 let success = null;
 
 export const createAdmin = async (req, res, next) => {
-
+    let adminNo = 0;
     let { name, email, phone, password, confirmPassword, addedTrips, addedHotels, addedTransports, handledTours, handledTransport, handledHotels } = req.body;
     //checking if signup credentials are empty or not 
     if ((name.trim() === "" || email.trim() === "" || phone === "" || password.trim() === "")) {
@@ -21,9 +21,9 @@ export const createAdmin = async (req, res, next) => {
     if (confirmPassword !== password) {
         return res.status(400).json({ success: false, message: "passwords are not matching with each other" });
     }
-    let existingAdmin;
-    existingAdmin = await Admin.findOne({ email });
-    if (existingAdmin) {
+    let admin = req.admin;
+
+    if (admin) {
         return res.status(400).json({ success: false, message: "User already exists" });
     }
     //making hashing account
@@ -55,13 +55,10 @@ export const createAdmin = async (req, res, next) => {
     account.balances.forEach(function (balance) {
         Balance = balance.balance;
     });
-    // Continue with your code
 
-    let admin;
     try {
-
-
-        admin = new Admin({ name, email, phone, password: hashedPassword, addedTrips, addedHotels, addedTransports, handledTours, handledTransport, handledHotels, AccountId: sourceAccountId, SecretSeed: sourceSecretSeed, Balance })
+        adminNo = adminNo + 1;
+        admin = new Admin({ adminNo, name, email, phone, password: hashedPassword, addedTrips, addedHotels, addedTransports, handledTours, handledTransport, handledHotels, AccountId: sourceAccountId, SecretSeed: sourceSecretSeed, Balance })
         admin = await admin.save();
     } catch (error) {
         return next(error);
@@ -70,17 +67,9 @@ export const createAdmin = async (req, res, next) => {
     if (!admin) {
         return res.status(400).json({ success: false, message: "User not found" });
     }
-
-
-
     return res.status(200).json({ success: true, message: "Admin account created successfully", sourceAccountId, sourceSecretSeed, account, admin });
 
 };
-
-// Example usage
-
-
-
 
 
 export const adminLogin = async (req, res, next) => {
@@ -89,67 +78,29 @@ export const adminLogin = async (req, res, next) => {
     if (email.trim() === "" || password.trim() === "") {
         return res.status(400).json({ success: false, message: "enter ur credentials first" });
     }
-    let existingAdmin;
-    try {
-        existingAdmin = await Admin.findOne({ email: email });
-    } catch (error) {
-        return next(error);
-    }
+    let admin = req.admin;
 
-    if (!existingAdmin) {
-        success = false;
-        return res.status(400).json({ success, message: "Unauthenticated login detected" })
-    }
-    const isCorrectPassword = bcrypt.compareSync(password, existingAdmin.password)
+    const isCorrectPassword = bcrypt.compareSync(password, admin.password)
 
     if (!isCorrectPassword) {
         success = false;
         return res.status(400).json({ success, message: "user not found" })
     }
-    const token = jwt.sign({ id: existingAdmin._id }, process.env.JWT_SECRET, {
+    const token = jwt.sign({ id: admin._id }, process.env.JWT_SECRET, {
         expiresIn: "7d"
     });
     success = true;
-    return res.status(200).json({ success, message: "User signed in successfully", token: token, id: existingAdmin._id, admin: existingAdmin })
+    return res.status(200).json({ success, message: "User signed in successfully", token: token, id: admin._id, admin: admin })
 
 }
 
 //get all admins
 export const getAdmins = async (req, res, next) => {
 
-    //extracting admin token and checking admin is valid or not
-
-    const extractedToken = req.header("auth-token");
-    console.log(extractedToken)
-    let adminId;
-    if (!extractedToken && extractedToken.trim() === "") {
-        success = false;
-        return res.status(400).json({ success, message: "No token found..." })
-    }
-
-    jwt.verify(extractedToken, process.env.JWT_SECRET, (err, decrypted) => {
-        if (err) {
-            success = false;
-            return res.status(400).json({ success, message: "wrong one token is not authenticated...", error: err })
-        }
-        else {
-            adminId = decrypted.id;
-        }
-    })
-    let admins;
-    try {
-        admins = await Admin.find();
-    } catch (error) {
-        return next(error);
-    }
-
-    if (!admins) {
-        success = false;
-        return res.status(400).json({ success, message: "no admins are here" })
-    }
+    let admin = req.admin;
 
     success = true;
-    return res.status(200).json({ message: "here are your all admins", admins: admins })
+    return res.status(200).json({ message: "here are your all admins", admins: admin })
 }
 
 let Balance = 0; // Initialize outside of the request handler
@@ -157,33 +108,11 @@ let Balance = 0; // Initialize outside of the request handler
 export const addBalance = async (req, res, next) => {
 
     const { amount } = req.body;
-    const extractedToken = req.header("auth-token");
-    let adminId;
-    if (!extractedToken || extractedToken.trim() == "") {
-        return res.status(400).json({ success: false, message: "No token found..." });
-    }
 
-    jwt.verify(extractedToken, process.env.JWT_SECRET, (err, decrypted) => {
-        if (err) {
-            return res.status(400).json({ success: false, message: "Token is not authenticated...", error: err });
-        } else {
-            adminId = decrypted.id;
-        }
-    });
-
-    let admin_Find;
-    try {
-        admin_Find = await Admin.findById(adminId);
-    } catch (error) {
-        return next(error);
-    }
-
-    if (!admin_Find) {
-        return res.status(400).json({ success: false, message: "No admins found" });
-    }
+    let admin = req.admin;
 
 
-    const adminSecretKey = admin_Find.SecretSeed;
+    const adminSecretKey = admin.SecretSeed;
     //generating key pair
     const adminKeypair = StellarSdk.Keypair.fromSecret(adminSecretKey);
     // Admin account's public key
@@ -224,9 +153,9 @@ export const addBalance = async (req, res, next) => {
             await server.submitTransaction(transaction);
 
 
-            admin_Find.Balance = (parseFloat(Balance) + parseFloat(amount)).toFixed(5);
+            admin.Balance = (parseFloat(Balance) + parseFloat(amount)).toFixed(5);
 
-            await admin_Find.save();
+            await admin.save();
 
             // Reload account to get updated balance
             const updatedAccount = await server.loadAccount(adminPublicKey);
@@ -244,31 +173,8 @@ export const addBalance = async (req, res, next) => {
 };
 export const checkBalance = async (req, res, next) => { //for checking admin stellar account balance
     // extracting token and validating admin
-    const extractedToken = req.header("auth-token");
-    let adminId;
-    if (!extractedToken || extractedToken.trim() == "") {
-        return res.status(400).json({ success: false, message: "No token found..." });
-    }
-
-    jwt.verify(extractedToken, process.env.JWT_SECRET, (err, decrypted) => {
-        if (err) {
-            return res.status(400).json({ success: false, message: "Token is not authenticated...", error: err });
-        } else {
-            adminId = decrypted.id;
-        }
-    });
-
-    let admin_Find;
-    try {
-        admin_Find = await Admin.findById(adminId);
-    } catch (error) {
-        return next(error);
-    }
-
-    if (!admin_Find) {
-        return res.status(400).json({ success: false, message: "No admins found" });
-    }
-    server.loadAccount(admin_Find.AccountId)
+    let admin = req.admin;
+    server.loadAccount(admin.AccountId)
         .then(account => {
             // Iterate through balances to find XLM balance
             let xlmBalance;
@@ -285,25 +191,7 @@ export const checkBalance = async (req, res, next) => { //for checking admin ste
 }
 export const HotelBookings = async (req, res, next) => {
 
-    //extracting admin token and checking admin is valid or not
 
-    const extractedToken = req.header("auth-token");
-    console.log(extractedToken)
-    let adminId;
-    if (!extractedToken && extractedToken.trim() === "") {
-        success = false;
-        return res.status(400).json({ success, message: "No token found..." })
-    }
-
-    jwt.verify(extractedToken, process.env.JWT_SECRET, (err, decrypted) => {
-        if (err) {
-            success = false;
-            return res.status(400).json({ success, message: "wrong one token is not authenticated...", error: err })
-        }
-        else {
-            adminId = decrypted.id;
-        }
-    })
     let HotelBookings;
     try {
         HotelBookings = await HotelBookingHistory.find();
@@ -321,25 +209,6 @@ export const HotelBookings = async (req, res, next) => {
 }
 export const TourBookings = async (req, res, next) => {
 
-    //extracting admin token and checking admin is valid or not
-
-    const extractedToken = req.header("auth-token");
-    console.log(extractedToken)
-    let adminId;
-    if (!extractedToken && extractedToken.trim() === "") {
-        success = false;
-        return res.status(400).json({ success, message: "No token found..." })
-    }
-
-    jwt.verify(extractedToken, process.env.JWT_SECRET, (err, decrypted) => {
-        if (err) {
-            success = false;
-            return res.status(400).json({ success, message: "wrong one token is not authenticated...", error: err })
-        }
-        else {
-            adminId = decrypted.id;
-        }
-    })
     let TourBookings;
     try {
         TourBookings = await ToursBookingHistory.find();
@@ -360,23 +229,7 @@ export const TransportBookings = async (req, res, next) => {
 
     //extracting admin token and checking admin is valid or not
 
-    const extractedToken = req.header("auth-token");
-    console.log(extractedToken)
-    let adminId;
-    if (!extractedToken && extractedToken.trim() === "") {
-        success = false;
-        return res.status(400).json({ success, message: "No token found..." })
-    }
 
-    jwt.verify(extractedToken, process.env.JWT_SECRET, (err, decrypted) => {
-        if (err) {
-            success = false;
-            return res.status(400).json({ success, message: "wrong one token is not authenticated...", error: err })
-        }
-        else {
-            adminId = decrypted.id;
-        }
-    })
     let TransportBookings;
     try {
         TransportBookings = await TransportBookingHistory.find();
@@ -393,3 +246,59 @@ export const TransportBookings = async (req, res, next) => {
     return res.status(200).json({ message: "here are your all TransportBookings", TransportBookings: TransportBookings })
 }
 
+export const UserHotelBookings = async (req, res, next) => {
+    let { bookerName } = req.body;
+
+    let HotelBookings;
+    try {
+        HotelBookings = await HotelBookingHistory.find({ bookerName: bookerName });
+    } catch (error) {
+        return next(error);
+    }
+
+    if (!HotelBookings) {
+        success = false;
+        return res.status(400).json({ success, message: "no HotelBookings are here" })
+    }
+
+    success = true;
+    return res.status(200).json({ message: "here are your all HotelBookings", HotelBookings: HotelBookings })
+}
+export const UserTourBookings = async (req, res, next) => {
+    let { bookerName } = req.body;
+    let TourBookings;
+    try {
+        TourBookings = await ToursBookingHistory.find({ bookerName: bookerName });
+    } catch (error) {
+        return next(error);
+    }
+
+    if (!TourBookings) {
+        success = false;
+        return res.status(400).json({ success, message: "no TourBookings are here" })
+    }
+
+    success = true;
+    return res.status(200).json({ message: "here are your all TourBookings", TourBookings: TourBookings })
+}
+
+export const UserTransportBookings = async (req, res, next) => {
+
+    //extracting admin token and checking admin is valid or not
+    let { bookerName } = req.body;
+
+    let TransportBookings;
+    try {
+        TransportBookings = await TransportBookingHistory.find({ bookerName: bookerName });
+    } catch (error) {
+        return next(error);
+    }
+
+    if (!TransportBookings) {
+        success = false;
+        return res.status(400).json({ success, message: "no TransportBookings are here" })
+    }
+
+    success = true;
+    return res.status(200).json({ message: "here are your all TransportBookings", TransportBookings: TransportBookings })
+}

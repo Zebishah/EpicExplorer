@@ -1,6 +1,10 @@
 import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
 let adminSchema = new Schema({
+    adminNo: {
+        type: Number,
+        required: true
+    },
     name: {
         type: String,
         required: true

@@ -1,32 +1,46 @@
 import express from 'express';
 
-import { checkUserBalance, confirmOrder, confirmOrders, createUser, deleteUser, forgetPassword, getUsers, requestBalance, resetPassword, updatePassword, userLogin } from '../Controllers/User-Controllers.js';
+import { checkUserBalance, confirmOrder, confirmOrders, createUser, deleteUser, forgetPassword, getUserInfo, getUsers, requestBalance, resetPassword, stellarPayment, updatePassword, userHotelBookings, userLogin, userTourBookings, userTransportBookings } from '../Controllers/User-Controllers.js';
+import verifyToken from '../middleware/IdFromToken.js';
+import UserFromEmail from '../middleware/UserFromEmail.js';
+import getallUser from '../middleware/AllUser.js';
+import getUserById from '../middleware/UserFromId.js';
 
 const UserRoutes = express.Router();
 
 
-UserRoutes.post('/createUser', createUser);
+UserRoutes.post('/createUser', UserFromEmail, createUser);
 
-UserRoutes.post('/userLogin', userLogin);
+UserRoutes.post('/userLogin', UserFromEmail, userLogin);
 
-UserRoutes.get('/getUsers', getUsers);
+UserRoutes.get('/getUsers', getallUser, getUsers);
 
-UserRoutes.get('/checkUserBalance', checkUserBalance);
+UserRoutes.get('/checkUserBalance', verifyToken, getUserById, checkUserBalance);
 
-UserRoutes.post('/deleteUser/:id', deleteUser);
+UserRoutes.post('/deleteUser/:id', verifyToken, deleteUser);
 
-UserRoutes.post('/updatePassword', updatePassword);
+UserRoutes.post('/updatePassword', verifyToken, getUserById, updatePassword);
 
-UserRoutes.post('/forgetPassword', forgetPassword);
+UserRoutes.post('/forgetPassword', UserFromEmail, forgetPassword);
 
-UserRoutes.post("/resetPassword/:hash", resetPassword);
+UserRoutes.post("/resetPassword/:hash", verifyToken, getUserById, resetPassword);
 
-UserRoutes.post("/requestBalance", resetPassword);
+UserRoutes.post('/create-payment-intent', verifyToken, confirmOrder);
 
-UserRoutes.post('/create-payment-intent', confirmOrder);
+UserRoutes.post('/create-checkout-session', verifyToken, confirmOrders);
 
-UserRoutes.post('/create-checkout-session', confirmOrders);
+UserRoutes.post('/requestBalance/:id', verifyToken, getUserById, requestBalance);
 
-UserRoutes.post('/requestBalance ', requestBalance);
+UserRoutes.post('/stellarPayment/:id', verifyToken, getUserById, stellarPayment);
+
+UserRoutes.post("/TourHistory/:id", verifyToken, getUserById, userTourBookings);
+
+UserRoutes.post("/TransportHistory/:id", verifyToken, getUserById, userTransportBookings);
+
+UserRoutes.post("/HotelHistory/:id", verifyToken, getUserById, userHotelBookings);
+
+UserRoutes.post("/userInfo/:id", verifyToken, getUserById, getUserInfo);
+
+
 
 export default UserRoutes;
