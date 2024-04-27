@@ -13,6 +13,7 @@ let success = null;
 
 export const addTransportServices = async (req, res, next) => {
 
+    //fetching data from request body
     let { transportId, priceIncludes, priceExcludes, services, completeInfo } = req.body;
 
     let TransportServices;

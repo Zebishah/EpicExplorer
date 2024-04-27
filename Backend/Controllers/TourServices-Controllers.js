@@ -12,7 +12,7 @@ let success = null;
 
 export const addTourServices = async (req, res, next) => {
     let { tourId, priceIncludes, priceExcludes, activities, daysServices } = req.body;
-    let admin = req.admin;
+    let admin = await req.admin;
 
     let servicesIT;
     try {

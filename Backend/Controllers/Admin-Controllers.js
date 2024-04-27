@@ -18,15 +18,16 @@ export const createAdmin = async (req, res, next) => {
     if ((name.trim() === "" || email.trim() === "" || phone === "" || password.trim() === "")) {
         return res.status(400).json({ success: false, message: "enter ur credentials first" });
     }
+    //checking that confirm password matches the above set password
     if (confirmPassword !== password) {
         return res.status(400).json({ success: false, message: "passwords are not matching with each other" });
     }
-    let admin = req.admin;
-
+    // fetching admin
+    let admin = await req.admin;
     if (admin) {
         return res.status(400).json({ success: false, message: "User already exists" });
     }
-    //making hashing account
+    //hashing password 
     const hashedPassword = await bcrypt.hash(password, 10);
 
     //making stellar account
@@ -52,11 +53,14 @@ export const createAdmin = async (req, res, next) => {
         }
     }
     let Balance = 0;
+    //check for the account balance of admin
     account.balances.forEach(function (balance) {
-        Balance = balance.balance;
+        if (balance.asset_type === 'native') {
+            Balance = balance.balance;
+        }
     });
 
-    try {
+    try { //creating new admin
         adminNo = adminNo + 1;
         admin = new Admin({ adminNo, name, email, phone, password: hashedPassword, addedTrips, addedHotels, addedTransports, handledTours, handledTransport, handledHotels, AccountId: sourceAccountId, SecretSeed: sourceSecretSeed, Balance })
         admin = await admin.save();
@@ -65,8 +69,10 @@ export const createAdmin = async (req, res, next) => {
     }
 
     if (!admin) {
+        //sending failed response
         return res.status(400).json({ success: false, message: "User not found" });
     }
+    //sending success response
     return res.status(200).json({ success: true, message: "Admin account created successfully", sourceAccountId, sourceSecretSeed, account, admin });
 
 };
@@ -78,7 +84,8 @@ export const adminLogin = async (req, res, next) => {
     if (email.trim() === "" || password.trim() === "") {
         return res.status(400).json({ success: false, message: "enter ur credentials first" });
     }
-    let admin = req.admin;
+    //fetching admin 
+    let admin = await req.admin;
 
     const isCorrectPassword = bcrypt.compareSync(password, admin.password)
 
@@ -86,81 +93,60 @@ export const adminLogin = async (req, res, next) => {
         success = false;
         return res.status(400).json({ success, message: "user not found" })
     }
-    const token = jwt.sign({ id: admin._id }, process.env.JWT_SECRET, {
+    const token = jwt.sign({ id: admin._id }, process.env.JWT_SECRET, {  //signing jwt token
         expiresIn: "7d"
     });
-    success = true;
-    return res.status(200).json({ success, message: "User signed in successfully", token: token, id: admin._id, admin: admin })
+
+    return res.status(200).json({ success: true, message: "User signed in successfully", token: token, id: admin._id, admin: admin })
 
 }
 
 //get all admins
 export const getAdmins = async (req, res, next) => {
+    //fetching admin
+    let admin = await req.admin;
 
-    let admin = req.admin;
 
-    success = true;
-    return res.status(200).json({ message: "here are your all admins", admins: admin })
+    return res.status(200).json({ success: true, message: "here are your all admins", admins: admin })
 }
 
 let Balance = 0; // Initialize outside of the request handler
 
 export const addBalance = async (req, res, next) => {
 
-    const { amount } = req.body;
-
-    let admin = req.admin;
-
+    const { amount } = req.body;  //fetching data from request body
+    //fetching admin
+    let admin = await req.admin;
 
     const adminSecretKey = admin.SecretSeed;
     //generating key pair
-    const adminKeypair = StellarSdk.Keypair.fromSecret(adminSecretKey);
+    const adminKeyPair = StellarSdk.Keypair.fromSecret(adminSecretKey);
     // Admin account's public key
-    const adminPublicKey = adminKeypair.publicKey();
+    const adminPublicKey = adminKeyPair.publicKey();
 
     try {
         //getting admin account balance
         const account = await server.loadAccount(adminPublicKey);
-
+        //checking account balance 
         let Balance = 0;
         account.balances.forEach(function (balance) {
             if (balance.asset_type === 'native') {
                 Balance = balance.balance;
             }
         });
-
-
-        // Transaction to add balance to the admin account
-
-        console.log(adminPublicKey, adminKeypair)
-        const transaction = new StellarSdk.TransactionBuilder(account, {
-            fee: StellarSdk.BASE_FEE,
-            networkPassphrase: StellarSdk.Networks.TESTNET
-        })
-            .addOperation(StellarSdk.Operation.payment({
-                destination: adminPublicKey, // Admin account's public key
-                asset: StellarSdk.Asset.native(),
-                amount: amount.toString() // Amount of XLM to add to the admin account
-            }))
-            .setTimeout(180)
-            .build();
-
-        // Sign the transaction with the admin account's secret key
-        transaction.sign(adminKeypair);
-
         try {
-            // Submit the transaction to the testnet
-            await server.submitTransaction(transaction);
+            let destinationAcc = adminPublicKey;
+            let response = UserStellarTransaction(account, amount, adminKeyPair, destinationAcc)
+            // Transaction to add balance to the admin account
 
-
+            //updating admin Balance
             admin.Balance = (parseFloat(Balance) + parseFloat(amount)).toFixed(5);
-
+            //saving admin
             await admin.save();
 
             // Reload account to get updated balance
             const updatedAccount = await server.loadAccount(adminPublicKey);
             const updatedBalance = updatedAccount.balances.find(balance => balance.asset_type === 'native').balance;
-
             return res.status(200).json({ success: true, message: "Admin account has been balanced successfully", Balance: updatedBalance });
         } catch (error) {
             console.error('Transaction failed:', error.response.data.extras.result_codes);
@@ -194,7 +180,7 @@ export const HotelBookings = async (req, res, next) => {
 
     let HotelBookings;
     try {
-        HotelBookings = await HotelBookingHistory.find();
+        HotelBookings = await HotelBookingHistory.find(); //checking hotel bookings
     } catch (error) {
         return next(error);
     }
@@ -209,7 +195,7 @@ export const HotelBookings = async (req, res, next) => {
 }
 export const TourBookings = async (req, res, next) => {
 
-    let TourBookings;
+    let TourBookings; //checking Tour bookings
     try {
         TourBookings = await ToursBookingHistory.find();
     } catch (error) {
@@ -227,9 +213,7 @@ export const TourBookings = async (req, res, next) => {
 
 export const TransportBookings = async (req, res, next) => {
 
-    //extracting admin token and checking admin is valid or not
-
-
+    //checking Transport Bookings
     let TransportBookings;
     try {
         TransportBookings = await TransportBookingHistory.find();
@@ -247,6 +231,8 @@ export const TransportBookings = async (req, res, next) => {
 }
 
 export const UserHotelBookings = async (req, res, next) => {
+
+    //checking specific user hotel bookings
     let { bookerName } = req.body;
 
     let HotelBookings;
@@ -265,6 +251,8 @@ export const UserHotelBookings = async (req, res, next) => {
     return res.status(200).json({ message: "here are your all HotelBookings", HotelBookings: HotelBookings })
 }
 export const UserTourBookings = async (req, res, next) => {
+
+    //checking specific user Tour bookings
     let { bookerName } = req.body;
     let TourBookings;
     try {
@@ -284,7 +272,7 @@ export const UserTourBookings = async (req, res, next) => {
 
 export const UserTransportBookings = async (req, res, next) => {
 
-    //extracting admin token and checking admin is valid or not
+    //checking specific userTransport bookings
     let { bookerName } = req.body;
 
     let TransportBookings;

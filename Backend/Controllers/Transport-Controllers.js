@@ -151,8 +151,8 @@ export const openTransport = async (req, res, next) => {
     }
 
     if (!transportServiceIt) {
-        success = false;
-        return res.status(400).json({ success, message: "Transport not existed that u are trying to open" });
+
+        return res.status(400).json({ success: false, message: "Transport not existed that u are trying to open" });
     }
 
     return res.status(200).json({ success: true, transport: transport, transportServiceIt: transportServiceIt });
@@ -160,7 +160,7 @@ export const openTransport = async (req, res, next) => {
 }
 
 export const getFormData = async (req, res, next) => {
-
+    //fetching Id from url parameters I
     let id = req.params.id;
     let { travelers, bookerName, bookerEmail, bookerPhone, bookerAddress, suggestion, members, days, seats } = req.body;
     let user = await req.user;
@@ -189,7 +189,7 @@ export const getFormData = async (req, res, next) => {
         return res.status(400).json({ success, message: "Transport already existed in booking database" });
     }
     let transportBooking;
-    transport.prices = transport.prices * days;
+    transport.prices = transport.prices * days;  //calculating price according to days
     try {
         // tourNo = tourNo + 1;
         transportBooking = new BookingTransport({ transportId: transport.id, carName: transport.carName, prices: transport.prices, checkInDate: date, travelers, bookerName, bookerEmail, bookerPhone, bookerAddress, suggestion, bookerId: user.id, members, days, seats, image: transport.image });
@@ -198,10 +198,10 @@ export const getFormData = async (req, res, next) => {
     } catch (error) {
         return next(error);
     }
-    let bill, billNo = 0, deliveryCharges = "free";
+    let bill, deliveryCharges = "free";
 
     try {
-        billNo = billNo + 1;
+
         bill = new makingTransportBill({ booking: transportBooking.id, bookerId: user.id, booker: user.name, deliveryCharges: deliveryCharges, totalPrice: transport.prices, transportName: transport.carName, date });
         bill = await bill.save();
 
@@ -222,45 +222,39 @@ export const transportPayment = async (req, res, next) => {
     let transportId = req.params.id;
     const xlm = Number.parseFloat(amount).toFixed(7);
     const userSecretKey = user.SecretSeed;
-    const userKeypair = StellarSdk.Keypair.fromSecret(userSecretKey);
+    const userKeyPair = StellarSdk.Keypair.fromSecret(userSecretKey);
 
     // Admin account's public key
-    const userPublicKey = userKeypair.publicKey();
+    const userPublicKey = userKeyPair.publicKey();
 
 
     try {
         const account = await server.loadAccount(userPublicKey);
-
+        //checking that balance in user account is enough or not
         if (parseFloat(account.balances[0].balance) < xlm) {
             return res.status(400).json({ success: false, message: 'Insufficient balance go and add balance in ur stellar account by paying ', balance: account.balances[0].balance });
         }
-
-        const response = await StellarTransaction(account, xlm, userKeypair);
-
-
+        const response = await StellarTransaction(account, xlm, userKeyPair);
         try {
             const xlm = (Number.parseFloat(amount).toFixed(7));
             const xlmAmount = Number(xlm);
-
+            // updating admin balance
             let admin = await Admin.findOne({ AccountId: process.env.ADMIN_ACCOUNT_ID })
             admin.Balance = Number(admin.Balance) + xlmAmount;;
             await admin.save();
-
-
+            // updating User balance
             user.Balance = Number(user.Balance) - xlmAmount;
-
             await user.save();
 
             let date = new Date();
-            let transportBooking;
+            let transportBooking; //fetching the transport which is being in process for booking by user 
             try {
-                // tourNo = tourNo + 1;
                 transportBooking = await BookingTransport.findOne({ transportId: transportId });
             } catch (error) {
                 return next(error);
             }
 
-            let transportBooked;
+            let transportBooked; //checking that this transport booked information by that user is already in database or not
             try {
                 transportBooked = await BookTransport.findOne({ transportId: transportBooking.transportId, bookerEmail: transportBooking.bookerEmail })
             } catch (error) {
@@ -269,10 +263,10 @@ export const transportPayment = async (req, res, next) => {
 
             if (transportBooked) {
                 transportBooked.BooksCount = transportBooked.BooksCount + 1;
-                booksCount = tourBooked.BooksCount
-                return res.status(400).json({ success, message: "Tour already booked and existed " });
+                booksCount = transportBooked.BooksCount
+                return res.status(400).json({ success, message: "Transport already booked and existed " });
             }
-            let maxBookedTransportNo;
+            let maxBookedTransportNo;  //incrementing the booked transport value if its already booked by user some other time 
             try {
                 const maxTransportBooking = await BookTransport.findOne({}, { bookedTransportNo: 1 }, { sort: { bookedTransportNo: -1 } });
                 if (maxTransportBooking) {
@@ -283,7 +277,7 @@ export const transportPayment = async (req, res, next) => {
             } catch (error) {
                 return next(error);
             }
-            try {
+            try {//adding booked transport information in database
                 const newBookedTransportNo = maxBookedTransportNo + 1;
                 transportBooked = new BookTransport({ bookedTransportNo: newBookedTransportNo, transportId: transportBooking.transportId, image: transportBooking.image, carName: transportBooking.carName, prices: transportBooking.prices, seats: transportBooking.seats, checkInDate: transportBooking.checkInDate, travelers: transportBooking.travelers, bookerName: transportBooking.bookerName, bookerEmail: transportBooking.bookerEmail, bookerPhone: transportBooking.bookerPhone, bookerAddress: transportBooking.bookerAddress, suggestion: transportBooking.suggestion, bookerId: transportBooking.transportId, members: transportBooking.members, days: transportBooking.days, buyDate: date, BooksCount: booksCount });
                 transportBooked = await transportBooked.save();
@@ -292,8 +286,7 @@ export const transportPayment = async (req, res, next) => {
                 return next(error);
             }
             let transportHistory;
-            try {
-                // tourNo = tourNo + 1;
+            try {//checking booked transport information in booked tour history that its already present or not
                 transportHistory = await TransportBookingHistory.findOne({ transportId: transportId });
             } catch (error) {
                 return next(error);
@@ -318,10 +311,9 @@ export const transportPayment = async (req, res, next) => {
                 transportHistory = new TransportBookingHistory({ transportId: transportBooking.transportId, image: transportBooking.image, carName: transportBooking.carName, checkOutDate: checkoutDate, bookingDate: transportBooking.checkInDate, bookersName: transportBooking.bookerName, bookersId: transportBooking.bookerId })
                 await transportHistory.save();
                 transport.bookers.push(user.id);
-                transport.bookings.push(transportBooking.checkInDate);
-
+                transport.bookings.push(transportBooking.checkInDate); //updating attributes information of collections in database
                 user.bookedTransport.push(transportBooking.transportId)
-                await transport.save();
+                await transport.save();//saving data after updating 
                 await user.save();
             } catch (error) {
                 return next(error);
@@ -334,7 +326,7 @@ export const transportPayment = async (req, res, next) => {
             let transportBill, deliveryCharges = "free";
 
             try {
-
+                //saving bill information and updating database data 
                 transportBill = new TransportBill({ booking: transportBooked.id, bookerId: user.id, senderAccountId: user.AccountId, ReceiverAccountId: process.env.ADMIN_ACCOUNT_ID, booker: user.name, deliveryCharges: deliveryCharges, totalPrice: transportBooking.prices, transportName: transportBooking.carName, date });
                 transportBill = await transportBill.save();
             } catch (error) {
@@ -357,7 +349,7 @@ export const countTransports = async (req, res, next) => {
     let TransportCounter;
     try {
 
-        TransportCounter = await Transport.find().estimatedDocumentCount();
+        TransportCounter = await Transport.find().estimatedDocumentCount();  //counting total transport
 
     } catch (error) {
         return next(error);
@@ -374,7 +366,7 @@ export const searchTransport = async (req, res, next) => {
     let { name } = req.body;
     let Transports;
     try {
-        Transports = await Transport.find({ name: name });
+        Transports = await Transport.find({ name: name });  //search transport through name
     } catch (error) {
         return next(error);
     }

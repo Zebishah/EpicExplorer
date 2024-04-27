@@ -331,7 +331,7 @@ export const searchTour = async (req, res, next) => {
         return res.status(400).json({ success, message: "no tours found in database" })
     }
 
-    const filteredTours = tours.filter((tour) =>
+    const filteredTours = tours.filter((tour) =>  //filtering searched tour information
         tour.name.toLowerCase().includes(name.toLowerCase())
     );
 

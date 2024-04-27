@@ -1,6 +1,6 @@
 import express from 'express';
 
-import { checkUserBalance, confirmOrder, confirmOrders, createUser, deleteUser, forgetPassword, getUserInfo, getUsers, requestBalance, resetPassword, stellarPayment, updatePassword, userHotelBookings, userLogin, userTourBookings, userTransportBookings } from '../Controllers/User-Controllers.js';
+import { checkUserBalance, confirmOrder, confirmOrders, createUser, deleteUser, forgetPassword, getUserInfo, getUsers, requestBalance, resetPassword, searchUserStellarAcc, stellarLedger, stellarPayment, updatePassword, userHotelBookings, userLogin, userTourBookings, userTransportBookings } from '../Controllers/User-Controllers.js';
 import verifyToken from '../middleware/IdFromToken.js';
 import UserFromEmail from '../middleware/UserFromEmail.js';
 import getallUser from '../middleware/AllUser.js';
@@ -41,6 +41,8 @@ UserRoutes.post("/HotelHistory/:id", verifyToken, getUserById, userHotelBookings
 
 UserRoutes.post("/userInfo/:id", verifyToken, getUserById, getUserInfo);
 
+UserRoutes.get("/stellarLedger", stellarLedger);
 
+UserRoutes.get("/searchStellarAccount", searchUserStellarAcc);
 
 export default UserRoutes;
