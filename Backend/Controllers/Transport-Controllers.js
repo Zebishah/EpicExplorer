@@ -14,6 +14,8 @@ import TransportBill from '../Models/TransportBill.js';
 import StellarSdk from 'stellar-sdk';
 import { Server } from 'stellar-sdk/lib/horizon/server.js';
 import StellarTransaction from '../Utils/Transaction.js';
+import NotificationsAdmin from '../Models/NotificationsAdmin.js';
+import NotificationsUser from '../Models/NotificationsUser.js';
 const server = new Server("https://horizon-testnet.stellar.org/");
 const app = express();
 dotenv.config();
@@ -43,6 +45,11 @@ export const addTransport = async (req, res, next) => {
         transportNo = transportNo + 1;
         transport = new Transport({ transportNo, carName, prices, seats, type, description, image, gallery, features, allowedGuests, reviews, available, bookers, bookings, bookedCount });
         transport = await transport.save();
+        let date = new Date();
+        let notificationAdmin = new NotificationsAdmin({ accommodationName: user.name, Category: "new transport added", message: `one transport ${carName} is added in our site `, date: date })
+        await notificationAdmin.save();
+        let notificationUser = new NotificationsUser({ accommodationName: user.name, Category: "new transport added", message: `new transport ${carName} is added....`, date: date })
+        await notificationUser.save();
     } catch (error) {
         return next(error);
     }
@@ -83,11 +90,15 @@ export const deleteTransport = async (req, res, next) => {
     }
 
     if (!deleteTransport) {
-        success = false;
-        return res.status(400).json({ success, message: "Transport not existed that u are trying to delete" });
+
+        return res.status(400).json({ success: true, message: "Transport not existed that u are trying to delete" });
     }
-    success = true;
-    return res.status(200).json({ success, message: "Transport deleted successfully", deleteTransport: deleteTransport, admin: adminId })
+    let date = new Date();
+    let notificationAdmin = new NotificationsAdmin({ accommodationName: user.name, Category: "new transport deleted", message: `one transport ${carName} is deleted from our site `, date: date })
+    await notificationAdmin.save();
+    let notificationUser = new NotificationsUser({ accommodationName: user.name, Category: "new transport deleted", message: `new transport ${carName} is deleted....`, date: date })
+    await notificationUser.save();
+    return res.status(200).json({ success: false, message: "Transport deleted successfully", deleteTransport: deleteTransport, admin: adminId })
 }
 
 export const updateTransport = async (req, res, next) => {
@@ -120,9 +131,12 @@ export const updateTransport = async (req, res, next) => {
         transport.features.push(newFeature);
     }
 
-
-
     await transport.save();
+    let date = new Date();
+    let notificationAdmin = new NotificationsAdmin({ accommodationName: user.name, Category: "new transport information updated", message: `one transport ${carName} is information updated from our site `, date: date })
+    await notificationAdmin.save();
+    let notificationUser = new NotificationsUser({ accommodationName: user.name, Category: "new transport information updated", message: `transport ${carName} information updated....`, date: date })
+    await notificationUser.save();
     return res.status(200).json({ success: true, message: 'transport updated successfully', transport: transport });
 
 
@@ -329,6 +343,11 @@ export const transportPayment = async (req, res, next) => {
                 //saving bill information and updating database data 
                 transportBill = new TransportBill({ booking: transportBooked.id, bookerId: user.id, senderAccountId: user.AccountId, ReceiverAccountId: process.env.ADMIN_ACCOUNT_ID, booker: user.name, deliveryCharges: deliveryCharges, totalPrice: transportBooking.prices, transportName: transportBooking.carName, date });
                 transportBill = await transportBill.save();
+                let date = new Date();
+                let notificationAdmin = new NotificationsAdmin({ accommodationName: user.name, Category: "transport booking payment", message: `one transport ${transportBooking.carName} is booked just now and payment happened `, date: date })
+                await notificationAdmin.save();
+                let notificationUser = new NotificationsUser({ accommodationName: user.name, Category: "transport booking payment", message: `${user.name} you did payment of this transport ${transportBooking.carName}....`, date: date })
+                await notificationUser.save();
             } catch (error) {
                 console.log(error)
                 return next(error);

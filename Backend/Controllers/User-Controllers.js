@@ -25,6 +25,8 @@ import HotelBookingHistory from '../Models/HotelBookingHistory.js';
 import StellarTransaction from '../Utils/Transaction.js';
 import KeysCreations from '../Utils/AdminStellarKeysGenerator.js';
 import UserStellarTransaction from '../Utils/UserTransaction.js';
+import NotificationsAdmin from '../Models/NotificationsAdmin.js';
+import NotificationsUser from '../Models/NotificationsUser.js';
 
 
 const app = express();
@@ -72,7 +74,10 @@ export const createUser = async (req, res, next) => {
             bookedTour, bookedTransport, bookedHotels // Set to 0 initially
         });
         await newUser.save();
-        console.log(user)
+        let date = new Date();
+        let notificationAdmin = new NotificationsAdmin({ accommodationName: name, Category: "user", message: `one user ${name} is added in our site `, date: date })
+        await notificationAdmin.save();
+
         return res.status(200).json({ success: true, message: "User signed up successfully", user: newUser, response: response });
     } catch (error) {
         console.error('Error creating user:', error);
@@ -92,20 +97,18 @@ export const userLogin = async (req, res, next) => {
     const isCorrectPassword = bcrypt.compareSync(password, user.password)
 
     if (!isCorrectPassword) {
-        success = false;
-        return res.status(400).json({ success, message: "wrong password" })
+        return res.status(400).json({ success: false, message: "wrong password" })
     }
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { //signing a JWT token 
         expiresIn: "7d"
     });
-    success = true;
-    return res.status(200).json({ message: "User signed in successfully", token: token, id: user._id, user: user })
+
+    return res.status(200).json({ success: true, message: "User signed in successfully", token: token, id: user._id, user: user })
 
 }
 
 //get all userss
 export const getUsers = async (req, res, next) => {
-
 
     let user = req.user;//getting User from middleware
     success = true;
@@ -143,11 +146,13 @@ export const deleteUser = async (req, res, next) => {
     }
 
     if (!deletedUser) {
-        success = false;
-        return res.status(400).json({ success, message: "User not existed that u are trying to delete" });
+
+        return res.status(400).json({ success: false, message: "User not existed that u are trying to delete" });
     }
-    success = true;
-    return res.status(200).json({ success, message: "User deleted successfully", deletedUser: deletedUser })
+    let date = new Date();
+    let notificationAdmin = new NotificationsAdmin({ accommodationName: deleteUser.name, Category: "userDeleted", message: `one user ${deleteUser.name} is deleted from our site `, date: date })
+    await notificationAdmin.save();
+    return res.status(200).json({ success: true, message: "User deleted successfully", deletedUser: deletedUser })
 }
 
 export const updatePassword = async (req, res, next) => {
@@ -300,7 +305,7 @@ export const requestBalance = async (req, res, next) => {
 
         try {
             const account = await server.loadAccount(adminPublicKey);
-            let xlm = (Number.parseFloat(amount) / 6.75).toFixed(7);
+            let xlm = (Number.parseFloat(amount) / 32.15).toFixed(7);
             let destinationAcc = user.AccountId;
             let response = UserStellarTransaction(account, xlm, adminKeyPair, destinationAcc)
             let xlmAmount = Number(xlm);//here will use bill amount'
@@ -311,7 +316,11 @@ export const requestBalance = async (req, res, next) => {
             // Update user balance
             user.Balance = Number(user.Balance) + xlmAmount;
             await user.save();
-
+            let date = new Date();
+            let notificationAdmin = new NotificationsAdmin({ accommodationName: user.name, Category: "requested Balance", message: `one user ${user.name} is requested ${amount} balance from our site `, date: date })
+            await notificationAdmin.save();
+            let notificationUser = new NotificationsUser({ accommodationName: user.name, Category: "requested Balance", message: `${user.name} You requested ${amount} balance from our site `, date: date })
+            await notificationUser.save();
             return res.status(200).json({ success: true, message: "Payment Successful", response: response });
 
         } catch (error) {
@@ -426,6 +435,11 @@ export const stellarPayment = async (req, res, next) => {
                 user.bookedTour.push(tourBooking.tourId)
                 await tour.save(); //saving data after updating 
                 await user.save();
+                let date = new Date();
+                let notificationAdmin = new NotificationsAdmin({ accommodationName: user.name, Category: "payment of tour", message: `one user ${user.name} is did ${amount} xlm payment from our site `, date: date })
+                await notificationAdmin.save();
+                let notificationUser = new NotificationsUser({ accommodationName: user.name, Category: "payment of tour", message: `${user.name} You did ${amount} xlm payment to our site `, date: date })
+                await notificationUser.save();
             } catch (error) {
                 return next(error);
             }
