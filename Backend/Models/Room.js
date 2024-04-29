@@ -1,10 +1,6 @@
 import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
 let RoomSchema = new Schema({
-    roomNo: {
-        type: Number,
-        required: true
-    },
 
     hotelId: {
         type: String,

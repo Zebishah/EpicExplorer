@@ -1,9 +1,5 @@
-import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
-import express, { response } from 'express';
-import Admin from '../Models/Admin.js';
 import ItServicesHotel from '../Models/ItServicesHotel.js';
-const app = express();
 dotenv.config();
 
 let success = null;
@@ -15,7 +11,7 @@ export const addHotelServices = async (req, res, next) => {
     let checkServicesIT;
     try {
         checkServicesIT = await ItServicesHotel.findOne({ roomId: roomId });
-        checkServicesIT = await checkServicesIT.save();
+
     } catch (error) {
         return next(error);
     }
@@ -27,7 +23,7 @@ export const addHotelServices = async (req, res, next) => {
     let servicesIT;
     try {
         servicesIT = new ItServicesHotel({ roomId, priceIncludes, priceExcludes, services, completeInfo });
-        servicesIT = await servicesIT.save();
+        await servicesIT.save();
     } catch (error) {
         return next(error);
     }

@@ -23,13 +23,13 @@ UserRoutes.post('/updatePassword', verifyToken, getUserById, updatePassword);
 
 UserRoutes.post('/forgetPassword', UserFromEmail, forgetPassword);
 
-UserRoutes.post("/resetPassword/:hash", verifyToken, getUserById, resetPassword);
+UserRoutes.post("/resetPassword", verifyToken, getUserById, resetPassword);
 
 UserRoutes.post('/create-payment-intent', verifyToken, confirmOrder);
 
 UserRoutes.post('/create-checkout-session', verifyToken, confirmOrders);
 
-UserRoutes.post('/requestBalance/:id', verifyToken, getUserById, requestBalance);
+UserRoutes.post('/requestBalance', verifyToken, getUserById, requestBalance);
 
 UserRoutes.post('/stellarPayment/:id', verifyToken, getUserById, stellarPayment);
 

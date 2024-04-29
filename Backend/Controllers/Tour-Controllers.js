@@ -10,6 +10,8 @@ import BookingTour from '../Models/BookingTour.js';
 import Bill from '../Models/Bill.js';
 import makingBill from '../Models/makingTourBill.js';
 import makingTourBill from '../Models/makingTourBill.js';
+import NotificationsAdmin from '../Models/NotificationsAdmin.js';
+import NotificationsUser from '../Models/NotificationsUser.js';
 const app = express();
 dotenv.config();
 
@@ -50,7 +52,11 @@ export const addTour = async (req, res, next) => {
     } catch (error) {
         return next(error);
     }
-
+    let date = new Date();
+    let notificationAdmin = new NotificationsAdmin({ accommodationName: name, Category: "new tour added", message: `one tour ${name} is added in our site`, date: date })
+    await notificationAdmin.save();
+    let notificationUser = new NotificationsUser({ accommodationName: name, Category: "new tour added", message: `new tour ${name} is added `, date: date })
+    await notificationUser.save();
     return res.status(200).json({ success: true, message: "New Tour is created", tour: tour });
 
 
@@ -75,20 +81,27 @@ export const getTours = async (req, res, next) => {
 export const deleteTour = async (req, res, next) => {
     let id = req.params.id;
 
-    let deletedTour;
     try {
-        deletedTour = await Tour.findByIdAndDelete(id);
-    } catch (error) {
-        return next(error);
-    }
+        let tour = await Tour.findByIdAndDelete(id);
 
-    if (!deletedTour) {
-        success = false;
-        return res.status(400).json({ success, message: "Tour not existed that u are trying to delete" });
+        if (!tour) {
+            return res.status(400).json({ success: false, message: "Tour not found for deletion" });
+        }
+
+        let date = new Date();
+        let notificationAdmin = new NotificationsAdmin({ accommodationName: tour.name, Category: "tour deleted", message: `Tour ${tour.name} is deleted from our site`, date: date });
+        await notificationAdmin.save();
+
+        let notificationUser = new NotificationsUser({ accommodationName: tour.name, Category: "tour deleted", message: `Tour ${tour.name} is deleted`, date: date });
+        await notificationUser.save();
+
+        return res.status(200).json({ success: true, message: "Tour deleted successfully", deletedTour: tour });
+    } catch (error) {
+        console.error('Error deleting tour:', error);
+        return res.status(500).json({ success: false, message: "Error deleting tour", error: error.message });
     }
-    success = true;
-    return res.status(200).json({ success, message: "Tour deleted successfully", deletedTour: deletedTour })
-}
+};
+
 
 export const updateTour = async (req, res, next) => {
     let id = req.params.id;
@@ -119,10 +132,11 @@ export const updateTour = async (req, res, next) => {
     if (newImage) {
         tour.gallery.push(newImage);
     }
-
-
-
     await tour.save();
+    let date = new Date();
+    let notificationAdmin = new NotificationsAdmin({ accommodationName: tour.name, Category: "tour is updated", message: `one tour ${tour.name} information is updated in our site`, date: date })
+    await notificationAdmin.save();
+
     return res.status(200).json({ success: true, message: 'Tour updated successfully', tour: tour });
 
 
@@ -325,10 +339,10 @@ export const searchTour = async (req, res, next) => {
     } catch (error) {
         return next(error);
     }
+    console.log(tours)
+    if (tours == "") {
 
-    if (!tours) {
-        success = false;
-        return res.status(400).json({ success, message: "no tours found in database" })
+        return res.status(400).json({ success: false, message: "no tours found in database" })
     }
 
     const filteredTours = tours.filter((tour) =>  //filtering searched tour information

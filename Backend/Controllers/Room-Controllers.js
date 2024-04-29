@@ -15,18 +15,18 @@ import RoomBill from '../Models/RoomBill.js';
 import StellarSdk from 'stellar-sdk';
 import { Server } from 'stellar-sdk/lib/horizon/server.js';
 import StellarTransaction from '../Utils/Transaction.js';
+import NotificationsAdmin from '../Models/NotificationsAdmin.js';
+import NotificationsUser from '../Models/NotificationsUser.js';
 const server = new Server("https://horizon-testnet.stellar.org/");
 const app = express();
 dotenv.config();
-let booksCount = 0, bookedRoomNo = 0;
+let booksCount = 0;
 let success = null;
-let roomNo = 0, billNo = 0;
 export const addRoom = async (req, res, next) => {
 
     //fetching data from request body
     let { hotelId, name, prices, type, description, image, gallery, features, location, reviews, bookers, noOfGuests, available, bookings, bookedCount } = req.body;
 
-    let admin = await eq.admin;
     let existingRoom;  //checking that this room is already existed in database or not 
     try {
         existingRoom = await Room.findOne({ name: name });
@@ -60,6 +60,13 @@ export const addRoom = async (req, res, next) => {
         success = false;
         return res.status(400).json({ success, message: "Hotel not found " });
     }
+
+    let date = new Date();
+    let notificationAdmin = new NotificationsAdmin({ accommodationName: room.name, Category: "new room deleted", message: `one room ${room.name} is deleted in our site`, date: date })
+    await notificationAdmin.save();
+    let notificationUser = new NotificationsUser({ accommodationName: name, Category: "one room is deleted", message: `new room ${room.name} is deleted `, date: date })
+    await notificationUser.save();
+
     return res.status(200).json({ success: true, message: "New Room is created", Room: room });
 
 
@@ -239,7 +246,8 @@ export const roomPayment = async (req, res, next) => {
         if (parseFloat(account.balances[0].balance) < xlm) {
             return res.status(400).json({ success: false, message: 'Insufficient balance go and add balance in ur stellar account by paying ', balance: account.balances[0].balance });
         }
-        const response = await StellarTransaction(account, xlm, userKeyPair);
+        let destinationAcc = process.env.ADMIN_ACCOUNT_ID;
+        const response = await StellarTransaction(account, xlm, userKeyPair, destinationAcc);
         try {
 
             const xlm = (Number.parseFloat(amount).toFixed(7));

@@ -5,12 +5,11 @@ const UserFromEmail = async (req, res, next) => {
     let user;
     try {
         user = await User.findOne({ email: email });
-        if (!user) {
-            return res.status(404).json({ success: false, message: 'User not found' });
-        }
+
         req.user = user; // Attach the user object to the request object
         next();
-        return; // This ensures that the code below does not execute after calling next()
+        return;
+        // This ensures that the code below does not execute after calling next()
     } catch (error) {
         return res.status(500).json({ success: false, message: 'Internal server error' });
     }

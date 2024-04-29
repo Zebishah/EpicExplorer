@@ -4,7 +4,7 @@ import verifyToken from '../middleware/IdFromToken.js';
 import getUserById from '../middleware/UserFromId.js';
 const TourServiceRoutes = express.Router();
 
-TourServiceRoutes.post('/addTourServices', verifyToken, getUserById, addTourServices);
+TourServiceRoutes.post('/addTourServices', addTourServices);
 
 TourServiceRoutes.post('/getTourServices', getTourServicesIT);
 

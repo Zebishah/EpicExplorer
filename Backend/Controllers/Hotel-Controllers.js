@@ -14,10 +14,7 @@ let success = null;
 
 export const addHotel = async (req, res, next) => {
     let hotelNo = 0;
-    let adminId = req.userId;
     let { name, prices, roomCount, description, image, gallery, features, location, reviews, rooms, available } = req.body;
-
-    let admin = req.admin;
     let existingHotel;
     try {
         existingHotel = await Hotels.findOne({ name: name });
@@ -37,9 +34,6 @@ export const addHotel = async (req, res, next) => {
     } catch (error) {
         return next(error);
     }
-
-
-
     return res.status(200).json({ success: true, message: "New Hotel is created", hotel: hotel });
 
 };

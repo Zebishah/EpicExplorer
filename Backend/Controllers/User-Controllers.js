@@ -36,52 +36,79 @@ const stripe = new stripePackage(stripeSecretKey);
 
 let success = null;
 export const createUser = async (req, res, next) => {
-    let balance = "2";
-    //getting user input from request Body  
+
+
+    let user = await req.user;
+
     const { name, email, phone, password, confirmPassword, wishList, bookedTour, bookedHotels, bookedTransport } = req.body;
 
-    if ((name.trim() === "" || email.trim() === "" || phone === "" || password.trim() === "")) {
-        return res.status(400).json({ success: false, message: "enter ur credentials first" });
+    if (name.trim() === "" || email.trim() === "" || phone === "" || password.trim() === "") {
+        return res.status(400).json({ success: false, message: "Enter your credentials first" });
     }
 
     if (confirmPassword !== password) {
-        return res.status(400).json({ success: false, message: "passwords are not matching with each other" });
+        return res.status(400).json({ success: false, message: "Passwords do not match" });
     }
 
     try {
-        let user = req.user;//getting user from middleware
-
         if (user) {
-            return res.status(400).json({ success: false, message: "user already existed" });
+            return res.status(400).json({ success: false, message: "User already exists" });
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
-        const { sourceAccountId, sourceSecretSeed } = await KeysCreations();
 
-        const adminAccount = await server.loadAccount(process.env.ADMIN_ACCOUNT_ID);
-        const adminKeyPair = StellarSdk.Keypair.fromSecret(process.env.ADMIN_SECRET_SEED);
-        const response = await StellarTransaction(adminAccount, balance, adminKeyPair);
-        // Create the new user in your database
+        const userKeypair = StellarSdk.Keypair.random();
+        let userPublicKey = userKeypair.publicKey();
+        let userPrivateKey = userKeypair.secret();
+        let account;
+        try {
+            account = await server.loadAccount(userPublicKey);
+        } catch (error) {
+            if (error instanceof StellarSdk.NotFoundError) {
+                // Account not found, create it using Friendbot
+                try {
+                    await fetch(`https://friendbot.stellar.org/?addr=${userPublicKey}`);
+                    // Retry loading the account
+                    account = await server.loadAccount(userPublicKey);
+                } catch (friendbotError) {
+                    return res.status(400).json({ success: false, message: "Failed to create account using Friendbot" });
+                }
+            } else {
+                // Other error, handle as needed
+                return res.status(400).json({ success: false, message: "Failed to load account" });
+            }
+        }
+        let Balance = 0;
+        //check for the account balance of admin
+        account.balances.forEach(function (balance) {
+            if (balance.asset_type === 'native') {
+                Balance = balance.balance;
+            }
+        });
         const newUser = new User({
             name,
             email,
             phone,
             password: hashedPassword,
             wishList,
-            AccountId: sourceAccountId,
-            SecretSeed: sourceSecretSeed,
-            Balance: "0",
-            bookedTour, bookedTransport, bookedHotels // Set to 0 initially
+            AccountId: userPublicKey,
+            SecretSeed: userPrivateKey,
+            Balance: Balance,
+            bookedTour,
+            bookedTransport,
+            bookedHotels
         });
         await newUser.save();
+
+
         let date = new Date();
-        let notificationAdmin = new NotificationsAdmin({ accommodationName: name, Category: "user", message: `one user ${name} is added in our site `, date: date })
+        let notificationAdmin = new NotificationsAdmin({ accommodationName: name, Category: "user", message: `One user ${name} is added to our site`, date: date });
         await notificationAdmin.save();
 
-        return res.status(200).json({ success: true, message: "User signed up successfully", user: newUser, response: response });
+        return res.status(200).json({ success: true, message: "User signed up successfully", newUser: newUser });
     } catch (error) {
-        console.error('Error creating user:', error);
-        return res.status(500).json({ success: false, message: "error Occurs while making account ", error });
+
+        return res.status(500).json({ success: false, message: "Error occurred while making account", error: error.message });
     }
 
 }
@@ -110,13 +137,13 @@ export const userLogin = async (req, res, next) => {
 //get all userss
 export const getUsers = async (req, res, next) => {
 
-    let user = req.user;//getting User from middleware
+    let user = await req.user;//getting User from middleware
     success = true;
     return res.status(200).json({ success, message: "here are your all Users", user: user })
 }
-export const checkUserBalance = async (req, res, next) => {
-
-    let user = await req.user;//getting User from middleware
+export const checkUserBalance = async (req, res, next) => { //for checking admin stellar account balance
+    // extracting token and validating admin
+    let user = req.user;
     server.loadAccount(user.AccountId)
         .then(account => {
             // Iterate through balances to find XLM balance
@@ -176,8 +203,8 @@ export const updatePassword = async (req, res, next) => {
     user.password = hashedNewPassword;
     await user.save();
 
-    success = true;
-    return res.status(200).json({ success, message: "password updated successfully", updatedUser: user, user: userId })
+
+    return res.status(200).json({ success: true, message: "password updated successfully", updatedUser: user, })
 }
 export const forgetPassword = async (req, res, next) => {
     let options = [{}];
@@ -187,12 +214,13 @@ export const forgetPassword = async (req, res, next) => {
 
     try {
         //making reset URL
-        const resetUrl = `${process.env.BASE_URL}/User/resetPassword/${hash}`;
+        const resetUrl = `${process.env.BASE_URL}/User/resetPassword`;
 
         const message = `<p>Please click the following link to reset your password:</p>
               <p><a href="${resetUrl}">${resetUrl}</a></p>`;
-        options.push({ email: user.email, message: message })
-        sendEmail(options);
+
+        const options = { email: user.email, message: message };
+        await sendEmail(options);
 
         return res.status(200).json({
             success: true,
@@ -210,24 +238,22 @@ export const forgetPassword = async (req, res, next) => {
 }
 export const resetPassword = async (req, res, next) => {
 
-    let user = req.user; //getting User from middleware
+    let user = await req.user; //getting User from middleware
+    const hash = req.header('hash');
     try {
         const token = await Token.findOne({   //Finding reset Token
             userId: user.id,
-            token: req.params.hash,
+            token: hash,
         });
 
         if (!token) {
             return res.status(400).json({ success: false, message: "Invalid token found..." });
         }
-
-
         const salt = await bcrypt.genSalt(10); //hashing password by adding some salt(some extra hashing) 
         user.password = await bcrypt.hash(req.body.password, salt);
+        console.log(user.password)
         await user.save();
-
         await token.deleteOne(); //deleting token that we made for reset 
-
         res.status(200).json({
             success: true, message: "Password changed successfully.",
         });
@@ -307,7 +333,7 @@ export const requestBalance = async (req, res, next) => {
             const account = await server.loadAccount(adminPublicKey);
             let xlm = (Number.parseFloat(amount) / 32.15).toFixed(7);
             let destinationAcc = user.AccountId;
-            let response = UserStellarTransaction(account, xlm, adminKeyPair, destinationAcc)
+            let response = await UserStellarTransaction(account, xlm, adminKeyPair, destinationAcc)
             let xlmAmount = Number(xlm);//here will use bill amount'
             // Update admin balance
             let admin = await Admin.findOne({ AccountId: process.env.ADMIN_ACCOUNT_ID });
@@ -321,7 +347,7 @@ export const requestBalance = async (req, res, next) => {
             await notificationAdmin.save();
             let notificationUser = new NotificationsUser({ accommodationName: user.name, Category: "requested Balance", message: `${user.name} You requested ${amount} balance from our site `, date: date })
             await notificationUser.save();
-            return res.status(200).json({ success: true, message: "Payment Successful", response: response });
+            return res.status(200).json({ success: true, message: "Payment Successful", response });
 
         } catch (error) {
             console.error(error);
@@ -352,8 +378,8 @@ export const stellarPayment = async (req, res, next) => {
         if (parseFloat(account.balances[0].balance) < xlm) {
             return res.status(400).json({ success: false, message: 'Insufficient balance go and add balance in ur stellar account by paying ', balance: account.balances[0].balance });
         }
-
-        const response = await StellarTransaction(account, xlm, userKeyPair);
+        let destinationAcc = process.env.ADMIN_ACCOUNT_ID;
+        const response = await StellarTransaction(account, xlm, userKeyPair, destinationAcc);
 
 
         try {
@@ -421,7 +447,7 @@ export const stellarPayment = async (req, res, next) => {
             }
             if (tourHistory) {
 
-                return res.status(400).json({ success, message: "Tour already existed " });
+                return res.status(400).json({ success: false, message: "Tour already existed " });
             }
             let date = new Date(); //getting date
             let tour;
@@ -528,10 +554,11 @@ export const userTransportBookings = async (req, res, next) => {
 }
 
 export const getUserInfo = async (req, res, next) => {
-    let user = req.user;//getting User from middleware
+    let user = req.user;
+    let id = req.params.id;//getting User from middleware
     let userInfo;
     try {  // fetching specific user info
-        userInfo = await User.findById(user.id);
+        userInfo = await User.findById(id);
     } catch (error) {
         return next(error);
     }

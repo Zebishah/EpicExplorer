@@ -46,9 +46,9 @@ export const addTransport = async (req, res, next) => {
         transport = new Transport({ transportNo, carName, prices, seats, type, description, image, gallery, features, allowedGuests, reviews, available, bookers, bookings, bookedCount });
         transport = await transport.save();
         let date = new Date();
-        let notificationAdmin = new NotificationsAdmin({ accommodationName: user.name, Category: "new transport added", message: `one transport ${carName} is added in our site `, date: date })
+        let notificationAdmin = new NotificationsAdmin({ accommodationName: carName, Category: "new transport added", message: `one transport ${carName} is added in our site `, date: date })
         await notificationAdmin.save();
-        let notificationUser = new NotificationsUser({ accommodationName: user.name, Category: "new transport added", message: `new transport ${carName} is added....`, date: date })
+        let notificationUser = new NotificationsUser({ accommodationName: carName, Category: "new transport added", message: `new transport ${carName} is added....`, date: date })
         await notificationUser.save();
     } catch (error) {
         return next(error);
@@ -248,7 +248,8 @@ export const transportPayment = async (req, res, next) => {
         if (parseFloat(account.balances[0].balance) < xlm) {
             return res.status(400).json({ success: false, message: 'Insufficient balance go and add balance in ur stellar account by paying ', balance: account.balances[0].balance });
         }
-        const response = await StellarTransaction(account, xlm, userKeyPair);
+        let destinationAcc = process.env.ADMIN_ACCOUNT_ID;
+        const response = await StellarTransaction(account, xlm, userKeyPair, destinationAcc);
         try {
             const xlm = (Number.parseFloat(amount).toFixed(7));
             const xlmAmount = Number(xlm);
@@ -340,10 +341,11 @@ export const transportPayment = async (req, res, next) => {
             let transportBill, deliveryCharges = "free";
 
             try {
-                //saving bill information and updating database data 
+                //saving bill information and updating database data
+                let date = new Date();
                 transportBill = new TransportBill({ booking: transportBooked.id, bookerId: user.id, senderAccountId: user.AccountId, ReceiverAccountId: process.env.ADMIN_ACCOUNT_ID, booker: user.name, deliveryCharges: deliveryCharges, totalPrice: transportBooking.prices, transportName: transportBooking.carName, date });
                 transportBill = await transportBill.save();
-                let date = new Date();
+
                 let notificationAdmin = new NotificationsAdmin({ accommodationName: user.name, Category: "transport booking payment", message: `one transport ${transportBooking.carName} is booked just now and payment happened `, date: date })
                 await notificationAdmin.save();
                 let notificationUser = new NotificationsUser({ accommodationName: user.name, Category: "transport booking payment", message: `${user.name} you did payment of this transport ${transportBooking.carName}....`, date: date })

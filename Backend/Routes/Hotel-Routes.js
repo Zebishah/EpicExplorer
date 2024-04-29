@@ -4,7 +4,7 @@ import verifyToken from '../middleware/IdFromToken.js';
 import getUserById from '../middleware/UserFromId.js';
 const HotelRoutes = express.Router();
 
-HotelRoutes.post('/addHotel', verifyToken, getUserById, addHotel);
+HotelRoutes.post('/addHotel', addHotel);
 
 HotelRoutes.get('/showHotel', getHotel);
 

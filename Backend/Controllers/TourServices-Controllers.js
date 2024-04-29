@@ -12,8 +12,6 @@ let success = null;
 
 export const addTourServices = async (req, res, next) => {
     let { tourId, priceIncludes, priceExcludes, activities, daysServices } = req.body;
-    let admin = await req.admin;
-
     let servicesIT;
     try {
         servicesIT = new ItrenaryServicesTour({ tourId, priceIncludes, priceExcludes, activities, daysServices });

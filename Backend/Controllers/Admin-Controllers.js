@@ -8,11 +8,12 @@ import jwt from 'jsonwebtoken'
 import HotelBookingHistory from '../Models/HotelBookingHistory.js';
 import TransportBookingHistory from '../Models/TransportBookingHistory.js';
 import ToursBookingHistory from '../Models/ToursBookingHistory.js';
+import UserStellarTransaction from '../Utils/UserTransaction.js';
 const server = new Server("https://horizon-testnet.stellar.org");
 let success = null;
 
 export const createAdmin = async (req, res, next) => {
-    let adminNo = 0;
+
     let { name, email, phone, password, confirmPassword, addedTrips, addedHotels, addedTransports, handledTours, handledTransport, handledHotels } = req.body;
     //checking if signup credentials are empty or not 
     if ((name.trim() === "" || email.trim() === "" || phone === "" || password.trim() === "")) {
@@ -61,8 +62,8 @@ export const createAdmin = async (req, res, next) => {
     });
 
     try { //creating new admin
-        adminNo = adminNo + 1;
-        admin = new Admin({ adminNo, name, email, phone, password: hashedPassword, addedTrips, addedHotels, addedTransports, handledTours, handledTransport, handledHotels, AccountId: sourceAccountId, SecretSeed: sourceSecretSeed, Balance })
+
+        admin = new Admin({ name, email, phone, password: hashedPassword, addedTrips, addedHotels, addedTransports, handledTours, handledTransport, handledHotels, AccountId: sourceAccountId, SecretSeed: sourceSecretSeed, Balance })
         admin = await admin.save();
     } catch (error) {
         return next(error);
@@ -118,7 +119,7 @@ export const addBalance = async (req, res, next) => {
     //fetching admin
     let admin = await req.admin;
 
-    const adminSecretKey = admin.SecretSeed;
+    const adminSecretKey = process.env.ADMIN_SECRET_SEED;
     //generating key pair
     const adminKeyPair = StellarSdk.Keypair.fromSecret(adminSecretKey);
     // Admin account's public key
@@ -134,23 +135,40 @@ export const addBalance = async (req, res, next) => {
                 Balance = balance.balance;
             }
         });
-        try {
-            let destinationAcc = adminPublicKey;
-            let response = UserStellarTransaction(account, amount, adminKeyPair, destinationAcc)
-            // Transaction to add balance to the admin account
 
+        try {
+            let destinationAcc = admin.AccountId;
+            let Amount = (Number.parseFloat(amount) / 32.15).toFixed(7);
+            // Transaction to add balance to the admin account
+            let response = await UserStellarTransaction(account, Amount, adminKeyPair, destinationAcc)
             //updating admin Balance
-            admin.Balance = (parseFloat(Balance) + parseFloat(amount)).toFixed(5);
-            //saving admin
-            await admin.save();
+
 
             // Reload account to get updated balance
-            const updatedAccount = await server.loadAccount(adminPublicKey);
-            const updatedBalance = updatedAccount.balances.find(balance => balance.asset_type === 'native').balance;
-            return res.status(200).json({ success: true, message: "Admin account has been balanced successfully", Balance: updatedBalance });
+            const updatedAccount = await server.loadAccount(destinationAcc);
+            let updatedBalance;
+            updatedAccount.balances.forEach(function (balance) {
+                if (balance.asset_type === 'native') {
+                    updatedBalance = balance.balance;
+                }
+            })
+            const updatedMainAccount = await server.loadAccount(adminPublicKey);
+            let updatedMainBalance;
+            updatedMainAccount.balances.forEach(function (balance) {
+                if (balance.asset_type === 'native') {
+                    updatedMainBalance = balance.balance;
+                }
+            })
+            let mainAdmin = await Admin.findOne({ AccountId: adminPublicKey })
+            mainAdmin.Balance = updatedMainBalance;
+            admin.Balance = updatedBalance;
+            //saving admin
+            await admin.save();
+            await mainAdmin.save();
+            return res.status(200).json({ success: true, message: "Admin account has been balanced successfully", Balance: updatedBalance, balanceDB: updatedBalance });
         } catch (error) {
-            console.error('Transaction failed:', error.response.data.extras.result_codes);
-            return res.status(500).json({ success: false, message: "Transaction failed", error: error });
+
+            return res.status(500).json({ success: false, message: "Transaction failed", error: error.response.data.extras.result_codes });
         }
     } catch (error) {
         console.error('Error loading account or building transaction:', error);
