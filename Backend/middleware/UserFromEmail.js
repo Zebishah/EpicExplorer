@@ -11,8 +11,9 @@ const UserFromEmail = async (req, res, next) => {
         return;
         // This ensures that the code below does not execute after calling next()
     } catch (error) {
-        return res.status(500).json({ success: false, message: 'Internal server error' });
+        return res.status(400).json({ success: false, message: 'No user found', statusCode: 400 });
     }
+
 };
 
 export default UserFromEmail;

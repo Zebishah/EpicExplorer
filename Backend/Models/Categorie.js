@@ -17,7 +17,7 @@ let CategorySchema = new Schema({
         type: String,
         required: true
     },
-    tours: [{
+    items: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: "Tour",
 

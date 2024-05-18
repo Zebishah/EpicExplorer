@@ -1,14 +1,9 @@
-import jwt from 'jsonwebtoken';
-import bcrypt from 'bcrypt';
 import dotenv from 'dotenv';
 import express, { response } from 'express';
 import Tour from '../Models/Tour.js';
-import Admin from '../Models/Admin.js';
 import Categorie from '../Models/Categorie.js';
 import ItrenaryServicesTour from '../Models/ItrenaryServicesTour.js';
 import BookingTour from '../Models/BookingTour.js';
-import Bill from '../Models/Bill.js';
-import makingBill from '../Models/makingTourBill.js';
 import makingTourBill from '../Models/makingTourBill.js';
 import NotificationsAdmin from '../Models/NotificationsAdmin.js';
 import NotificationsUser from '../Models/NotificationsUser.js';
@@ -19,10 +14,7 @@ let success = null;
 
 export const addTour = async (req, res, next) => {
 
-    let adminId = req.userId, tourNo = 0;
-
     let { name, price, startDate, endDate, parentCategory, description, image, type, departureTime, Departure_ReturnLocation, gallery, bookers, reviews, available, bookings, bookedCount } = req.body;
-    let admin = req.admin;
     let existingTour;
     try {
         existingTour = await Tour.findOne({ name: name });
@@ -32,12 +24,11 @@ export const addTour = async (req, res, next) => {
     }
     if (existingTour) {
         success = false;
-        return res.status(400).json({ success, message: "Tour already existed " });
+        return res.status(400).json({ success, message: "Tour already existed ", statusCode: 400 });
     }
     let tour;
     try {
-        tourNo = tourNo + 1;
-        tour = new Tour({ tourNo, name, price, startDate, endDate, parentCategory, description, image, type, departureTime, Departure_ReturnLocation, gallery, bookers, reviews, available, bookings, bookedCount });
+        tour = new Tour({ name, price, startDate, endDate, parentCategory, description, image, type, departureTime, Departure_ReturnLocation, gallery, bookers, reviews, available, bookings, bookedCount });
         tour = await tour.save();
     } catch (error) {
         return next(error);
@@ -47,17 +38,21 @@ export const addTour = async (req, res, next) => {
     try {
         category = await Categorie.findById(parentCategory);
 
-        category.tours.push(tour.id);
+        category.items.push(tour.id);
         category.save();
     } catch (error) {
         return next(error);
     }
+    if(!category)
+        {
+        return res.status(400).json({ success: false, message: "category not found", statusCode:400});
+        }
     let date = new Date();
     let notificationAdmin = new NotificationsAdmin({ accommodationName: name, Category: "new tour added", message: `one tour ${name} is added in our site`, date: date })
     await notificationAdmin.save();
     let notificationUser = new NotificationsUser({ accommodationName: name, Category: "new tour added", message: `new tour ${name} is added `, date: date })
     await notificationUser.save();
-    return res.status(200).json({ success: true, message: "New Tour is created", tour: tour });
+    return res.status(200).json({ success: true, message: "New Tour is created", tour: tour, statusCode: 200 });
 
 
 };
@@ -268,7 +263,7 @@ export const openTour = async (req, res, next) => {
 
     if (!tourServiceIt) {
         success = false;
-        return res.status(400).json({ success, message: "Tour not existed that u are trying to open" });
+        return res.status(400).json({ success, message: "Tour services not existed that u are trying to open" });
     }
 
 

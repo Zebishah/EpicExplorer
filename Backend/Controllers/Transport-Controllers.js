@@ -19,9 +19,7 @@ import NotificationsUser from '../Models/NotificationsUser.js';
 const server = new Server("https://horizon-testnet.stellar.org/");
 const app = express();
 dotenv.config();
-
 let success = null;
-let bookedTransportNo = 0, bookedCount = 0;
 export const addTransport = async (req, res, next) => {
     let transportNo = 0;
 
@@ -53,12 +51,7 @@ export const addTransport = async (req, res, next) => {
     } catch (error) {
         return next(error);
     }
-
-
-
     return res.status(200).json({ success: true, message: "New Transport is created", transport: transport });
-
-
 };
 export const getTransport = async (req, res, next) => {
 
@@ -153,8 +146,7 @@ export const openTransport = async (req, res, next) => {
     }
 
     if (!transport) {
-        success = false;
-        return res.status(400).json({ success, message: "transport not existed that u are trying to open" });
+        return res.status(400).json({ success: false, message: "transport not existed that u are trying to open" });
     }
 
     let transportServiceIt;
@@ -308,7 +300,7 @@ export const transportPayment = async (req, res, next) => {
             }
             if (transportHistory) {
 
-                return res.status(400).json({ success, message: "Transport already existed " });
+                return res.status(400).json({ success: false, message: "Transport already existed " });
             }
 
             let transport;
@@ -335,8 +327,8 @@ export const transportPayment = async (req, res, next) => {
             }
 
             if (!transport) {
-                success = false;
-                return res.status(400).json({ success, message: "Transport not existed " });
+
+                return res.status(400).json({ success: false, message: "Transport not existed " });
             }
             let transportBill, deliveryCharges = "free";
 
@@ -369,19 +361,16 @@ export const transportPayment = async (req, res, next) => {
 export const countTransports = async (req, res, next) => {
     let TransportCounter;
     try {
-
         TransportCounter = await Transport.find().estimatedDocumentCount();  //counting total transport
-
     } catch (error) {
         return next(error);
     }
 
     if (!TransportCounter) {
-        success = false;
-        return res.status(400).json({ success, message: "no Transports found" })
+        return res.status(400).json({ success: false, message: "no Transports found" })
     }
-    success = true
-    res.status(200).json({ success, message: "here is your Transport count", TransportCounter: TransportCounter })
+
+    res.status(200).json({ success: true, message: "here is your Transport count", TransportCounter: TransportCounter })
 }
 export const searchTransport = async (req, res, next) => {
     let { name } = req.body;
@@ -403,3 +392,67 @@ export const searchTransport = async (req, res, next) => {
 
     return res.status(200).json({ success: true, message: "here are your all Transports", filteredTransports: filteredTransports })
 }
+// const catchAsync=fn=>{
+//     return(req,res,next)=>{
+//         fn(req,res,next).catch(next)
+//     }
+// }
+// class appError extends Error{
+//     constructor(message,statusCode){
+//         super(message)
+//         this.statusCode=statusCode
+//         this.isOperational=true;
+//         this.status=`${statusCode}`.startsWith(4)?'fail':'error',
+//         this.captureStackTrace(this,this.constructor)
+//     }
+// }
+// app.all('*',(req,res,next)=>{
+//     return next(new appError('This route not exists',400))
+// })
+// const errorProd=(err,res)=>{
+//     if(err.isOperational)
+//     res.status(err.statusCode).json({
+//         message:err.message,
+//         status:err.status,
+
+//     })
+// }
+// const errorDev=(err,res)=>{
+//     res.status(err.statusCode).json({
+//         message:err.message,
+//         status:err.status,
+//         error:err,
+//         stackTrace:err.stack
+//     })
+// }
+// const getValidationError=err=>{
+//     const error=Object.values(err.error).map(el=>message[el])
+//     const message=`User ${error}`;
+//     return new appError(message,404)
+// }
+// const castError=err=>{
+//     const message=`Invalid ${err.path}:${err.value}`;
+//     return new appError(message,400)
+// }
+// const duplicateKeyError=err=>{
+//     const value=Object.keys(err.keyPatteran)[0];
+//     const message=`Duplicate ${value}`;
+//     return new appError(message,400)
+// }
+// module.exports=(err,req,res,next)=>{
+//    let error={...err};
+//    if(process.env.NODE_DEV='production'){
+//     if(error.statusCode===500){
+//         error=duplicateKeyError(error)
+//     }
+//     if(error.name==='CastError'){
+//         error=castError(error)
+//     }
+//     if(error.ValidationError){
+//         error=getValidationError;
+//     }
+// errorProd(err,res)
+//    }else if(process.env.NODE_DEV='development'){
+//     errorDev(err,res)
+//    }
+// }

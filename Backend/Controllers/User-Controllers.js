@@ -1,6 +1,4 @@
-import { validationResult } from 'express-validator';
 import jwt from 'jsonwebtoken';
-import * as crypto from 'crypto';
 import bcrypt from 'bcrypt';
 import fetch from 'node-fetch';
 import StellarSdk from 'stellar-sdk';
@@ -23,40 +21,33 @@ import makingTourBill from '../Models/makingTourBill.js';
 import TransportBookingHistory from '../Models/TransportBookingHistory.js';
 import HotelBookingHistory from '../Models/HotelBookingHistory.js';
 import StellarTransaction from '../Utils/Transaction.js';
-import KeysCreations from '../Utils/AdminStellarKeysGenerator.js';
 import UserStellarTransaction from '../Utils/UserTransaction.js';
 import NotificationsAdmin from '../Models/NotificationsAdmin.js';
 import NotificationsUser from '../Models/NotificationsUser.js';
-
-
 const app = express();
 dotenv.config();
 const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
 const stripe = new stripePackage(stripeSecretKey);
-
 let success = null;
+
 export const createUser = async (req, res, next) => {
-
-
     let user = await req.user;
 
     const { name, email, phone, password, confirmPassword, wishList, bookedTour, bookedHotels, bookedTransport } = req.body;
-
+    //checks for data
     if (name.trim() === "" || email.trim() === "" || phone === "" || password.trim() === "") {
         return res.status(400).json({ success: false, message: "Enter your credentials first" });
     }
-
     if (confirmPassword !== password) {
         return res.status(400).json({ success: false, message: "Passwords do not match" });
     }
+    if (user) {
+        return res.status(400).json({ success: false, message: "User already exists" });
+    }
 
     try {
-        if (user) {
-            return res.status(400).json({ success: false, message: "User already exists" });
-        }
 
         const hashedPassword = await bcrypt.hash(password, 10);
-
         const userKeypair = StellarSdk.Keypair.random();
         let userPublicKey = userKeypair.publicKey();
         let userPrivateKey = userKeypair.secret();
@@ -75,7 +66,7 @@ export const createUser = async (req, res, next) => {
                 }
             } else {
                 // Other error, handle as needed
-                return res.status(400).json({ success: false, message: "Failed to load account" });
+                return res.status(400).json({ success: false, message: "Failed to load account", statusCode: 400 });
             }
         }
         let Balance = 0;
@@ -98,17 +89,21 @@ export const createUser = async (req, res, next) => {
             bookedTransport,
             bookedHotels
         });
+        if (!newUser) {
+            return res.status(400).json({ success: false, message: "new user not created", statusCode: 400 });
+        }
         await newUser.save();
-
 
         let date = new Date();
         let notificationAdmin = new NotificationsAdmin({ accommodationName: name, Category: "user", message: `One user ${name} is added to our site`, date: date });
         await notificationAdmin.save();
 
-        return res.status(200).json({ success: true, message: "User signed up successfully", newUser: newUser });
+        const options = { email: email, AccountId: userPublicKey, SecretSeed: userPrivateKey, message: `Your account has been created successfully Here are your stellar account attributes and ur data AccountId${userPublicKey} and SecretSeed${userPrivateKey} ` };
+        await sendEmail(options);
+        return res.status(200).json({ success: true, message: "User signed up successfully", newUser: newUser, statusCode: 200 });
     } catch (error) {
 
-        return res.status(500).json({ success: false, message: "Error occurred while making account", error: error.message });
+        return res.status(500).json({ success: false, message: "Error occurred while making account", error: error.message, statusCode: 400 });
     }
 
 }
@@ -118,28 +113,26 @@ export const userLogin = async (req, res, next) => {
     let { email, password } = req.body;
 
     if (email.trim() === "" || password.trim() === "") {
-        return res.status(400).json({ success: false, message: "enter ur credentials first" });
+        return res.status(400).json({ success: false, message: "enter ur credentials first", statusCode: 400 });
     }
     let user = req.user;//getting User from middleware
+
     const isCorrectPassword = bcrypt.compareSync(password, user.password)
 
     if (!isCorrectPassword) {
-        return res.status(400).json({ success: false, message: "wrong password" })
+        return res.status(400).json({ success: false, message: "wrong password", statusCode: 400 })
     }
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { //signing a JWT token 
         expiresIn: "7d"
     });
 
-    return res.status(200).json({ success: true, message: "User signed in successfully", token: token, id: user._id, user: user })
-
+    return res.status(200).json({ success: true, message: "User signed in successfully", token: token, id: user._id, user: user, statusCode: 200 })
 }
 
 //get all userss
 export const getUsers = async (req, res, next) => {
-
     let user = await req.user;//getting User from middleware
-    success = true;
-    return res.status(200).json({ success, message: "here are your all Users", user: user })
+    return res.status(200).json({ success: true, message: "here are your all Users", user: user, statusCode: 400 })
 }
 export const checkUserBalance = async (req, res, next) => { //for checking admin stellar account balance
     // extracting token and validating admin
@@ -153,16 +146,16 @@ export const checkUserBalance = async (req, res, next) => { //for checking admin
                     xlmBalance = balance.balance;
                 }
             });
-            return res.status(200).json({ success: true, message: "xlm balance is here:", Balance: xlmBalance });
+            return res.status(200).json({ success: true, message: "xlm balance is here:", Balance: xlmBalance, statusCode: 200 });
         })
         .catch(error => {
-            return res.status(500).json({ success: false, message: "did'nt get balance", error: error });
+            return res.status(500).json({ success: false, message: "did'nt get balance", error: error, statusCode: 400 });
         });
 }
 export const deleteUser = async (req, res, next) => {
     let id = req.params.id;
     if (!id) {
-        return res.status(400).json({ success, message: "no id detected" });
+        return res.status(400).json({ success, message: "no id found", statusCode: 400 });
     }
 
     let deletedUser;
@@ -174,40 +167,36 @@ export const deleteUser = async (req, res, next) => {
 
     if (!deletedUser) {
 
-        return res.status(400).json({ success: false, message: "User not existed that u are trying to delete" });
+        return res.status(400).json({ success: false, message: "User not existed that u are trying to delete", statusCode: 400 });
     }
     let date = new Date();
     let notificationAdmin = new NotificationsAdmin({ accommodationName: deleteUser.name, Category: "userDeleted", message: `one user ${deleteUser.name} is deleted from our site `, date: date })
     await notificationAdmin.save();
-    return res.status(200).json({ success: true, message: "User deleted successfully", deletedUser: deletedUser })
+    return res.status(200).json({ success: true, message: "User deleted successfully", deletedUser: deletedUser, statusCode: 200 })
 }
 
 export const updatePassword = async (req, res, next) => {
     let { oldPassword, newPassword, confirmPassword } = req.body;
-
-    if ((oldPassword.trim() === "" || newPassword.trim() === "" || confirmPassword.trim() === "")) {
-        return res.status(400).json({ success: false, message: "enter ur credentials first" });
-    }
-
     let user = req.user; //getting User from middleware
 
+    if ((oldPassword.trim() === "" || newPassword.trim() === "" || confirmPassword.trim() === "")) {
+        return res.status(400).json({ success: false, message: "enter ur credentials first", statusCode: 400 });
+    }
+
     if (confirmPassword !== newPassword) {
-        return res.status(400).json({ success: false, message: "passwords are not matching with each other" });
+        return res.status(400).json({ success: false, message: "passwords are not matching with each other", statusCode: 400 });
     }
     const isCorrectPassword = bcrypt.compareSync(oldPassword, user.password); //comparing Passwords 
     if (!(isCorrectPassword)) {
-        return res.status(400).json({ success: false, message: "wrong old password" });
+        return res.status(400).json({ success: false, message: "wrong old password", statusCode: 400 });
 
     }
     const hashedNewPassword = bcrypt.hashSync(newPassword, 10); //hashing new Password
     user.password = hashedNewPassword;
     await user.save();
-
-
-    return res.status(200).json({ success: true, message: "password updated successfully", updatedUser: user, })
+    return res.status(200).json({ success: true, message: "password updated successfully", updatedUser: user, statusCode: 200 })
 }
 export const forgetPassword = async (req, res, next) => {
-    let options = [{}];
     let user = await req.user;
     // token creation
     let hash = await tokenCreation(user);
@@ -227,11 +216,12 @@ export const forgetPassword = async (req, res, next) => {
             message: "Password reset link has been sent to your email.",
             hash,
             message,
+            statusCode: 200
         });
     } catch (error) {
         return res.status(400).json({
             success: false,
-            message: "Password reset link not sent to you.",
+            message: "Password reset link not sent to you.", statusCode: 400
         });
     }
 
@@ -240,33 +230,25 @@ export const resetPassword = async (req, res, next) => {
 
     let user = await req.user; //getting User from middleware
     const hash = req.header('hash');
+    let id = user.id;
     try {
-        const token = await Token.findOne({   //Finding reset Token
-            userId: user.id,
-            token: hash,
-        });
-
+        const token = await Token.findOne({ token: hash });
         if (!token) {
-            return res.status(400).json({ success: false, message: "Invalid token found..." });
+            return res.status(400).json({ success: false, message: "Invalid token found...", statusCode: 400 });
         }
         const salt = await bcrypt.genSalt(10); //hashing password by adding some salt(some extra hashing) 
         user.password = await bcrypt.hash(req.body.password, salt);
-        console.log(user.password)
-        await user.save();
+        await user.save();                // Find and  update can be used
         await token.deleteOne(); //deleting token that we made for reset 
         res.status(200).json({
-            success: true, message: "Password changed successfully.",
+            success: true, message: "Password changed successfully.", statusCode: 200
         });
     } catch (error) {
-        res.status(400).json({
-            success: false, error: error.message,
-        });
+        res.status(400).json({ success: false, error: error.message, statusCode: 400 });
     }
 }
 
 export const confirmOrder = async (req, res, next) => {
-
-
     let user = req.user;//getting User from middleware
     try {
         console.log("a gye")
@@ -286,10 +268,10 @@ export const confirmOrder = async (req, res, next) => {
 };
 
 export const confirmOrders = async (req, res, next) => {
-
-    let user = req.user;//getting User from middleware
+    console.log("a getUserById")
+    let user = await req.user;//getting User from middleware
     let amount = 2000;
-
+    console.log(user.email)
     try {
         // stripe payment session
         const session = await stripe.checkout.sessions.create({
@@ -307,13 +289,13 @@ export const confirmOrders = async (req, res, next) => {
                 },
             ],
             mode: 'payment',
-            success_url: `http://localhost:3000/Success/${amount}`,  //url where wo go if our task will be successful
-            cancel_url: 'http://localhost:3000/Cancel', //url where wo go if our task will be unsuccessful
+            success_url: `http://localhost:5173/Success/${amount}`,  //url where wo go if our task will be successful
+            cancel_url: 'http://localhost:5173/Cancel', //url where wo go if our task will be unsuccessful
             customer_email: user.email
             // clientReferenceId:
         });
 
-        res.json({ sessionId: session, clientSecret: session.client_secret, amount: amount });
+        return res.json({ sessionId: session, clientSecret: session.client_secret, amount: amount, statusCode: 200 });
     } catch (error) {
         return next(error);
     }
@@ -322,6 +304,7 @@ export const confirmOrders = async (req, res, next) => {
 };
 export const requestBalance = async (req, res, next) => {
     const { amount } = req.body;
+    console.log("enter request balance ")
     let user = await req.user;
     try {
 
@@ -337,6 +320,9 @@ export const requestBalance = async (req, res, next) => {
             let xlmAmount = Number(xlm);//here will use bill amount'
             // Update admin balance
             let admin = await Admin.findOne({ AccountId: process.env.ADMIN_ACCOUNT_ID });
+            if (!admin) {
+                return res.status(400).json({ success: false, message: "admin not found", error: error, statusCode: 400 });
+            }
             admin.Balance = Number(admin.Balance) - xlmAmount;
             await admin.save();
             // Update user balance
@@ -347,15 +333,13 @@ export const requestBalance = async (req, res, next) => {
             await notificationAdmin.save();
             let notificationUser = new NotificationsUser({ accommodationName: user.name, Category: "requested Balance", message: `${user.name} You requested ${amount} balance from our site `, date: date })
             await notificationUser.save();
-            return res.status(200).json({ success: true, message: "Payment Successful", response });
+            return res.status(200).json({ success: true, message: "Payment Successful", response, statusCode: 200 });
 
         } catch (error) {
-            console.error(error);
-            return res.status(400).json({ success: false, message: "Payment error", error: error });
+            return res.status(400).json({ success: false, message: "Payment error", error: error, statusCode: 400 });
         }
     } catch (error) {
-        console.error(error);
-        return res.status(400).json({ success: false, message: "Token is not authenticated...", error: error });
+        return res.status(400).json({ success: false, message: "Token is not authenticated...", error: error, statusCode: 400 });
     }
 };
 
@@ -366,7 +350,8 @@ export const stellarPayment = async (req, res, next) => {
     let user = await req.user;
     let booksCount = 0;
     let tourId = req.params.id;
-    const xlm = Number.parseFloat(amount).toFixed(7);
+
+    let xlm = (Number.parseFloat(amount) / 32.15).toFixed(7);
     const userSecretKey = user.SecretSeed;
     const userKeyPair = StellarSdk.Keypair.fromSecret(userSecretKey);
     const userPublicKey = userKeyPair.publicKey();
@@ -376,32 +361,33 @@ export const stellarPayment = async (req, res, next) => {
         const account = await server.loadAccount(userPublicKey);
 
         if (parseFloat(account.balances[0].balance) < xlm) {
-            return res.status(400).json({ success: false, message: 'Insufficient balance go and add balance in ur stellar account by paying ', balance: account.balances[0].balance });
+            return res.status(400).json({ success: false, message: 'Insufficient balance go and add balance in ur stellar account by paying ', balance: account.balances[0].balance, statusCode: 400 });
         }
         let destinationAcc = process.env.ADMIN_ACCOUNT_ID;
         const response = await StellarTransaction(account, xlm, userKeyPair, destinationAcc);
 
-
         try {
 
-            const xlm = (Number.parseFloat(amount).toFixed(7));
             const xlmAmount = Number(xlm);
+
             let admin = await Admin.findOne({ AccountId: process.env.ADMIN_ACCOUNT_ID })//finding admin
             // updating admin balance
-            admin.Balance = Number(admin.Balance) + xlmAmount;;
+            admin.Balance = Number(admin.Balance) + xlmAmount;
             await admin.save();
+
             // updating User balance
             user.Balance = Number(user.Balance) - xlmAmount;
             await user.save();
 
             let tourBooking; //fetching the tour which is being in process for booking by user 
             try {
-
                 tourBooking = await BookingTour.findOne({ tourId: tourId });
             } catch (error) {
                 return next(error);
             }
-
+            if (!tourBooking) {
+                return res.status(400).json({ success, message: "This tour not existed ", statusCode: 400 });
+            }
             let tourBooked; //checking that this tour booked information by that user is already in database or not 
             try {
                 tourBooked = await BookTour.findOne({ tourId: tourBooking.tourId, bookerEmail: tourBooking.bookerEmail })
@@ -412,7 +398,7 @@ export const stellarPayment = async (req, res, next) => {
             if (tourBooked) {
                 tourBooked.BooksCount = tourBooked.BooksCount + 1;
                 booksCount = tourBooked.BooksCount
-                return res.status(400).json({ success, message: "Tour already booked and existed " });
+                return res.status(400).json({ success, message: "Tour already booked and existed ", statusCode: 400 });
             }
 
             let maxBookedTourNo; //incrementing the booked tour value if its already booked by user some other time 
@@ -426,6 +412,7 @@ export const stellarPayment = async (req, res, next) => {
             } catch (error) {
                 return next(error);
             }
+
             try { //adding booked tour information in database
 
                 const newBookedTourNo = maxBookedTourNo + 1;
@@ -447,8 +434,9 @@ export const stellarPayment = async (req, res, next) => {
             }
             if (tourHistory) {
 
-                return res.status(400).json({ success: false, message: "Tour already existed " });
+                return res.status(400).json({ success: false, message: "Tour already existed ", statusCode: 400 });
             }
+
             let date = new Date(); //getting date
             let tour;
 
@@ -456,16 +444,22 @@ export const stellarPayment = async (req, res, next) => {
                 tour = await Tour.findById(tourBooking.tourId); //adding booked tour information in database
                 tourHistory = new ToursBookingHistory({ tourId: tourBooking.tourId, name: tourBooking.name, image: tourBooking.image, bookingDate: tourBooking.checkInDate, bookerName: tourBooking.bookerName, bookerId: tourBooking.bookerId, checkOutDate: tour.endDate })
                 await tourHistory.save();
+                if (!tourHistory) {
+                    return res.status(400).json({ success: false, message: "tour history you created is null", statusCode: 400 });
+                }
+
                 tour.bookers.push(user.id);
                 tour.bookings.push(tourBooking.checkInDate);  //updating attributes information of collections in database
                 user.bookedTour.push(tourBooking.tourId)
                 await tour.save(); //saving data after updating 
                 await user.save();
+
                 let date = new Date();
                 let notificationAdmin = new NotificationsAdmin({ accommodationName: user.name, Category: "payment of tour", message: `one user ${user.name} is did ${amount} xlm payment from our site `, date: date })
                 await notificationAdmin.save();
                 let notificationUser = new NotificationsUser({ accommodationName: user.name, Category: "payment of tour", message: `${user.name} You did ${amount} xlm payment to our site `, date: date })
                 await notificationUser.save();
+
             } catch (error) {
                 return next(error);
             }
@@ -474,8 +468,7 @@ export const stellarPayment = async (req, res, next) => {
                 success = false;
                 return res.status(400).json({ success, message: "Tour not existed " });
             }
-            let bill, deliveryCharges = "free", bookingTimes = 0;
-
+            let bill, deliveryCharges = "free";
             try {
 
                 //saving bill information and updating database data 
@@ -483,18 +476,19 @@ export const stellarPayment = async (req, res, next) => {
                 bill = await bill.save();
                 await BookingTour.findOneAndDelete({ tourId: tourBooking.tourId, bookerId: user.id });
                 await makingTourBill.findOneAndDelete({ bookerId: user.id, booking: tourBooking.id })
+
             } catch (error) {
                 return next(error);
             }
 
-            return res.status(200).json({ success: true, message: "Payment Successful", response: response });
+            return res.status(200).json({ success: true, message: "Payment Successful", response: response, statusCode: 200 });
         } catch (error) {
 
-            return res.status(400).json({ success: false, message: "Payment error", error: error });
+            return res.status(400).json({ success: false, message: "Payment error", error: error, statusCode: 400 });
         }
 
     } catch (error) {
-        console.log(error)
+        return next(error);
     }
 
 };
@@ -507,14 +501,11 @@ export const userTourBookings = async (req, res, next) => {
     } catch (error) {
         return next(error);
     }
-
-    if (!TourBookings) {
-        success = false;
-        return res.status(400).json({ success, message: "no TourBookings are here" })
+    if (TourBookings == "") {
+        return res.status(400).json({ success: false, message: "no TourBookings are here", statusCode: 400 })
     }
 
-    success = true;
-    return res.status(200).json({ message: "here are your all TourBookings", TourBookings: TourBookings })
+    return res.status(200).json({ success: true, message: "here are your all TourBookings", TourBookings: TourBookings, statusCode: 200 })
 }
 export const userHotelBookings = async (req, res, next) => {
     let user = req.user;//getting User from middleware
@@ -527,12 +518,10 @@ export const userHotelBookings = async (req, res, next) => {
     }
 
     if (!HotelBookings) {
-        success = false;
-        return res.status(400).json({ success, message: "no HotelBookings are here" })
+        return res.status(400).json({ success: false, message: "no HotelBookings are here", statusCode: 400 })
     }
 
-    success = true;
-    return res.status(200).json({ message: "here are your all HotelBookings", HotelBookings: HotelBookings })
+    return res.status(200).json({ success: true, message: "here are your all HotelBookings", HotelBookings: HotelBookings, statusCode: 200 })
 }
 export const userTransportBookings = async (req, res, next) => {
     let user = req.user;//getting User from middleware
@@ -545,12 +534,10 @@ export const userTransportBookings = async (req, res, next) => {
     }
 
     if (!TransportBookings) {
-        success = false;
-        return res.status(400).json({ success, message: "no TransportBookings are here" })
+        return res.status(400).json({ success: false, message: "no TransportBookings are here", statusCode: 400 })
     }
 
-    success = true;
-    return res.status(200).json({ message: "here are your all TransportBookings", TransportBookings: TransportBookings })
+    return res.status(200).json({ success: true, message: "here are your all TransportBookings", TransportBookings: TransportBookings, statusCode: 200 })
 }
 
 export const getUserInfo = async (req, res, next) => {
@@ -565,11 +552,9 @@ export const getUserInfo = async (req, res, next) => {
 
     if (!userInfo) {
 
-        return res.status(400).json({ success: false, message: "no userInfo are here" })
+        return res.status(400).json({ success: false, message: "no userInfo are here", statusCode: 400 })
     }
-
-
-    return res.status(200).json({ success: true, message: "here is your userInfo", userInfo: userInfo })
+    return res.status(200).json({ success: true, message: "here is your userInfo", userInfo: userInfo, statusCode: 200 })
 }
 
 export const stellarLedger = async (req, res, next) => {
@@ -580,10 +565,10 @@ export const stellarLedger = async (req, res, next) => {
         .call()
         .then((response) => {
             const ledger = response.records[0];
-            return res.status(200).json({ success: true, message: "here is your ledger", ledger: ledger })
+            return res.status(200).json({ success: true, message: "here is your ledger", ledger: ledger, statusCode: 200 })
         })
         .catch((error) => {
-            return res.status(400).json({ success: false, message: "no ledger are here", error })
+            return res.status(400).json({ success: false, message: "no ledger are here", error, statusCode: 400 })
         });
 
 }
@@ -592,9 +577,9 @@ export const searchUserStellarAcc = async (req, res, next) => {
     let { accountId } = req.body;
     const account = await server.loadAccount(accountId);
     if (!account) {
-        return res.status(200).json({ success: true, message: "here is your ledger", ledger: ledger })
+        return res.status(200).json({ success: true, message: "here is your account", account: account, statusCode: 200 })
     }
     else {
-        return res.status(400).json({ success: false, message: "no ledger are here", error })
+        return res.status(400).json({ success: false, message: "no account are here", error, statusCode: 400 })
     }
 }

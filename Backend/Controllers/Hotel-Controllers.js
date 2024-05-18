@@ -1,9 +1,6 @@
-import jwt from 'jsonwebtoken';
-import bcrypt from 'bcrypt';
 import dotenv from 'dotenv';
 import express, { response } from 'express';
 import Admin from '../Models/Admin.js';
-import Categorie from '../Models/Categorie.js';
 import Hotels from '../Models/Hotels.js';
 import Room from '../Models/Room.js';
 
@@ -13,7 +10,7 @@ dotenv.config();
 let success = null;
 
 export const addHotel = async (req, res, next) => {
-    let hotelNo = 0;
+
     let { name, prices, roomCount, description, image, gallery, features, location, reviews, rooms, available } = req.body;
     let existingHotel;
     try {
@@ -23,18 +20,18 @@ export const addHotel = async (req, res, next) => {
         return next(error);
     }
     if (existingHotel) {
-        success = false;
-        return res.status(400).json({ success, message: "Hotel already existed " });
+
+        return res.status(400).json({ success: false, message: "Hotel already existed ", statusCode: 400 });
     }
     let hotel;
     try {
-        hotelNo = hotelNo + 1;
-        hotel = new Hotels({ hotelNo, name, prices, roomCount, description, image, gallery, features, location, reviews, rooms, available });
+
+        hotel = new Hotels({ name, prices, roomCount, description, image, gallery, features, location, reviews, rooms, available });
         hotel = await hotel.save();
     } catch (error) {
         return next(error);
     }
-    return res.status(200).json({ success: true, message: "New Hotel is created", hotel: hotel });
+    return res.status(200).json({ success: true, message: "New Hotel is created", hotel: hotel, statusCode: 200 });
 
 };
 export const getHotel = async (req, res, next) => {
@@ -47,30 +44,24 @@ export const getHotel = async (req, res, next) => {
     }
 
     if (!Hotels) {
-        success = false;
-        return res.status(400).json({ success, message: "no Hotels found in database" })
+        return res.status(400).json({ success: false, message: "no Hotels found in database", statusCode: 400 })
     }
 
-    return res.status(200).json({ success: true, message: "here are your all Hotels", Hotels: Hotels })
+    return res.status(200).json({ success: true, message: "here are your all Hotels", Hotels: Hotels, statusCode: 200 })
 }
 
 export const deleteHotel = async (req, res, next) => {
     let id = req.params.id;
-
-    let adminId = req.userId;
     let deleteHotel;
     try {
         deleteHotel = await Hotels.findByIdAndDelete(id);
     } catch (error) {
         return next(error);
     }
-
     if (!deleteHotel) {
-        success = false;
-        return res.status(400).json({ success, message: "Hotel not existed that u are trying to delete" });
+        return res.status(400).json({ success: false, message: "Hotel not existed that u are trying to delete", statusCode: 400 });
     }
-    success = true;
-    return res.status(200).json({ success, message: "Hotel deleted successfully", deleteHotel: deleteHotel, admin: adminId })
+    return res.status(200).json({ success: true, message: "Hotel deleted successfully", deleteHotel: deleteHotel, statusCode: 200 })
 }
 
 export const updateHotel = async (req, res, next) => {
@@ -85,7 +76,7 @@ export const updateHotel = async (req, res, next) => {
     }
 
     if (!Hotel) {
-        return res.status(400).json({ success: false, message: "Hotel not existed" });
+        return res.status(400).json({ success: false, message: "Hotel not existed", statusCode: 400 });
     }
 
     // Update hotel information
@@ -104,13 +95,8 @@ export const updateHotel = async (req, res, next) => {
     if (newFeature) {
         Hotel.features.push(newFeature);
     }
-
-
-
     await Hotel.save();
-    return res.status(200).json({ success: true, message: 'Hotel updated successfully', Hotel: Hotel });
-
-
+    return res.status(200).json({ success: true, message: 'Hotel updated successfully', Hotel: Hotel, statusCode: 200 });
 }
 export const getHotelRooms = async (req, res, next) => {
     let id = req.params.id;
@@ -122,27 +108,23 @@ export const getHotelRooms = async (req, res, next) => {
     }
 
     if (!rooms) {
-        success = false;
-        return res.status(400).json({ success, message: "no rooms found in database" })
+        return res.status(400).json({ success: false, message: "no rooms found in database", statusCode: 400 })
     }
 
-    return res.status(200).json({ success: true, message: "here are your all rooms", Hotels: Hotels })
+    return res.status(200).json({ success: true, message: "here are your all rooms", Hotels: Hotels, statusCode: 200 })
 }
 
 export const countHotels = async (req, res, next) => {
     let HotelCount;
     try {
-
         HotelCount = await Hotels.find().estimatedDocumentCount();
-
     } catch (error) {
         return next(error);
     }
 
     if (!HotelCount) {
-        success = false;
-        return res.status(400).json({ success, message: "no Hotel found" })
+        return res.status(400).json({ success: false, message: "no Hotels found", statusCode: 400 })
     }
-    success = true
-    res.status(200).json({ success, message: "here is your Hotel count", HotelCount: HotelCount })
+
+    res.status(200).json({ success: true, message: "here is your Hotel count", HotelCount: HotelCount, statusCode: 200 })
 }

@@ -1,0 +1,6 @@
+{
+  "editor.bracketPairColorization.independentColorPoolPerBracketType": true,
+  "editor.defaultFormatter": "svipas.prettier-plus",
+  "editor.formatOnSave": true,
+  "editor.formatOnPaste": true
+}

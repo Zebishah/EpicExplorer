@@ -3,12 +3,14 @@ const Schema = mongoose.Schema;
 let billSchema = new Schema({
 
     booking: {
-        type: String,
-        required: true
+        type: mongoose.Types.ObjectId,
+        ref: "Tour",
+
     },
     bookerId: {
-        type: String,
-        required: true
+        type: mongoose.Types.ObjectId,
+        ref: "User",
+
     },
     senderAccountId: {
         type: String,
@@ -21,6 +23,7 @@ let billSchema = new Schema({
     booker: {
         type: String,
         required: true
+
     },
     deliveryCharges: {
         type: String,

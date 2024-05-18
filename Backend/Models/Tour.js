@@ -1,11 +1,6 @@
 import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
 let tourSchema = new Schema({
-    tourNo: {
-        type: Number,
-        required: true
-    },
-
     name: {
         type: String,
         required: true

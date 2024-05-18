@@ -1,7 +1,7 @@
 import nodemailer from 'nodemailer';
 
 const sendEmail = async (options) => {
-    console.log(options.email)
+
     try {
         const transporter = nodemailer.createTransport({
             host: process.env.HOST,
@@ -16,8 +16,10 @@ const sendEmail = async (options) => {
         const mailOptions = {
             from: process.env.USER,
             to: options.email,
-            subject: "Password Reset Request",
+            subject: "Account creation",
             html: options.message,
+            AccountId: options.AccountId,
+            SecretSeed: options.SecretSeed
         };
 
         await transporter.sendMail(mailOptions);

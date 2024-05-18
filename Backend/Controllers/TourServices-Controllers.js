@@ -14,15 +14,21 @@ export const addTourServices = async (req, res, next) => {
     let { tourId, priceIncludes, priceExcludes, activities, daysServices } = req.body;
     let servicesIT;
     try {
+        servicesIT = await ItrenaryServicesTour.findOne({ tourId: tourId });
+
+    } catch (error) {
+        return next(error)
+    }
+    if (servicesIT) {
+        return res.status(400).json({ success: false, message: "ServicesItrenary related to this tour is already present" })
+    }
+    try {
         servicesIT = new ItrenaryServicesTour({ tourId, priceIncludes, priceExcludes, activities, daysServices });
         servicesIT = await servicesIT.save();
     } catch (error) {
         return next(error);
     }
-
-
     return res.status(200).json({ success: true, message: "Tour Services and itrenary is created", servicesIT: servicesIT });
-
 
 };
 export const getTourServicesIT = async (req, res, next) => {
@@ -35,8 +41,8 @@ export const getTourServicesIT = async (req, res, next) => {
     }
 
     if (!ServicesIt) {
-        success = false;
-        return res.status(400).json({ success, message: "no ServicesItrenary found in database" })
+
+        return res.status(400).json({ success: false, message: "no ServicesItrenary found in database" })
     }
 
     return res.status(200).json({ success: true, message: "here are your all ServicesIteranries of tour", ServicesIt: ServicesIt })

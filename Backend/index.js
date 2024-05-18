@@ -18,7 +18,7 @@ import HotelServicesRoutes from './Routes/HotelServices-Routes.js';
 import TransportServicesRoutes from './Routes/TransportServices-Routes .js';
 
 app.use(cors({
-    origin: 'http://localhost:3000', // Allow requests from this origin
+    origin: 'http://localhost:5173', // Allow requests from this origin
     credentials: true, // Allow cookies to be sent with the request
 }));
 app.use(json());

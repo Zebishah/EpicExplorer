@@ -1,11 +1,12 @@
 import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
 let BlogSchema = new Schema({
-    blogNo: {
-        type: Number,
+
+    name: {
+        type: String,
         required: true
     },
-    name: {
+    parentCategory: {
         type: String,
         required: true
     },

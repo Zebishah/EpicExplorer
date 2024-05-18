@@ -27,7 +27,7 @@ UserRoutes.post("/resetPassword", verifyToken, getUserById, resetPassword);
 
 UserRoutes.post('/create-payment-intent', verifyToken, confirmOrder);
 
-UserRoutes.post('/create-checkout-session', verifyToken, confirmOrders);
+UserRoutes.post('/create-checkout-session', verifyToken, getUserById, confirmOrders);
 
 UserRoutes.post('/requestBalance', verifyToken, getUserById, requestBalance);
 

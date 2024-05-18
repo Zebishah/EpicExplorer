@@ -44,8 +44,8 @@ export const getHotelServicesIT = async (req, res, next) => {
     }
 
     if (!ServicesIt) {
-        success = false;
-        return res.status(400).json({ success, message: "no ServicesItrenary found in database" })
+
+        return res.status(400).json({ success: false, message: "no ServicesItrenary found in database" })
     }
 
     return res.status(200).json({ success: true, message: "here are your all ServicesIteranries of Hotels", ServicesIt: ServicesIt })

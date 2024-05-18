@@ -5,7 +5,7 @@ const getAllAdmin = async (req, res, next) => {
     try {
         const admin = await Admin.find();
         if (!admin) {
-            return res.status(404).json({ success: false, message: 'admin not found' });
+            return res.status(404).json({ success: false, message: 'admins not found' });
         }
         req.admin = admin; // Attach the user object to the request object
         next();

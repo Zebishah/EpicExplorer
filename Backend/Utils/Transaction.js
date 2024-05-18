@@ -21,10 +21,8 @@ async function StellarTransaction(account, xlm, adminKeyPair, destinationAcc) {
 
         // Sign the transaction with the admin account's secret key
         transaction.sign(adminKeyPair);
-        console.log(transaction)
         // Submit the transaction to the Stellar network
         const response = await server.submitTransaction(transaction);
-        console.log(response);
         return response;
     } catch (error) {
         console.error('Error in StellarTransaction:', error.message);
