@@ -1,10 +1,10 @@
-import backgroundImage from "../images/marc-zimmer-a5QnUtau8lo-unsplash.jpg";
-import image from "../images/marc-zimmer-a5QnUtau8lo-unsplash.jpg";
-import Footer from "./Footer";
 import Navbar from "./Navbar";
-import RelatedTour from "./RelatedTour";
-import TourService from "./TourService";
-const BookTour = () => {
+import image from "../images//r-nolan-1ZhZpP91olQ-unsplash.jpg";
+import TransportService from "./TransportService";
+import Footer from "./Footer";
+import backgroundImage from "../images/r-nolan-1ZhZpP91olQ-unsplash.jpg";
+import RelatedTransport from "./RelatedTransport";
+const BookTransport = () => {
   return (
     <div className="bg-light-black">
       <Navbar />
@@ -108,11 +108,11 @@ const BookTour = () => {
           </form>
         </div>
       </div>
-      <TourService />
-      <RelatedTour />
+      <TransportService />
+      <RelatedTransport />
       <Footer />
     </div>
   );
 };
 
-export default BookTour;
+export default BookTransport;

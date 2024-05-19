@@ -25,11 +25,14 @@ const Navbar = () => {
             alt="Store Logo"
           />
         </div>
-        <div className="hidden md:flex items-center lg:space-x-8 sm:space-x-4">
-          <Link className="flex lg:text-[14px] md:text-[12px] text-yellows hover:text-yellows cursor-pointer transition-colors duration-300 ">
+        <div className="hidden md:flex items-center lg:space-x-12 sm:space-x-4">
+          <Link
+            to={"/"}
+            className="flex lg:text-[14px] md:text-[12px] text-yellows hover:text-yellows cursor-pointer transition-colors duration-300 "
+          >
             Home
           </Link>
-          <div className="relative">
+          <div className="relative ">
             <Link
               className="flex items-center cursor-pointer transition-colors duration-300 text-yellows hover:text-yellows lg:text-[14px] md:text-[12px]"
               onClick={() => setIsPackagesOpen(!isPackagesOpen)}
@@ -38,24 +41,27 @@ const Navbar = () => {
               <FontAwesomeIcon icon={faCaretDown} className="ml-1 mt-1" />
             </Link>
             {isPackagesOpen && (
-              <div className="flex flex-col items-center absolute mt-2 w-28 bg-fade-black rounded-md shadow-lg shadow-black z-10 -ml-6">
+              <div className="flex flex-col items-center absolute mt-2 w-40 bg-fade-black rounded-md shadow-lg shadow-black z-10 -ml-14 ">
                 <Link
+                  to={"/FamilyTour"}
                   href="#"
                   className="block px-2 py-2 text-sm text-yellows hover:text-black hover:bg-yellows rounded-md lg:text-[14px] md:text-[12px] "
                 >
-                  Package 1{" "}
+                  Family Packages{" "}
                 </Link>
                 <Link
+                  to={"/FamilyTour"}
                   href="#"
                   className="block px-2 py-2 text-sm text-yellows hover:text-black hover:bg-yellows rounded-md lg:text-[14px] md:text-[12px]"
                 >
-                  Package 2{" "}
+                  Honeymoon Packages{" "}
                 </Link>
                 <Link
+                  to={"/FamilyTour"}
                   href="#"
                   className="block px-2 py-2 text-sm text-yellows hover:text-black hover:bg-yellows rounded-md lg:text-[14px] md:text-[12px]"
                 >
-                  Package 3{" "}
+                  Personal Packages{" "}
                 </Link>
               </div>
             )}
@@ -69,35 +75,47 @@ const Navbar = () => {
               <FontAwesomeIcon icon={faCaretDown} className="ml-1 mt-1" />
             </Link>
             {isBookingsOpen && (
-              <div className="flex flex-col items-center absolute mt-2 w-28 bg-fade-black rounded-md shadow-lg shadow-black z-10 -ml-6">
+              <div className="flex flex-col items-center absolute mt-2 w-40 bg-fade-black rounded-md shadow-lg shadow-black z-10 -ml-6">
                 <Link
+                  to={"/AllTours"}
                   href="#"
                   className="block px-2 py-2 text-sm text-yellows hover:text-black hover:bg-yellows rounded-md lg:text-[14px] md:text-[12px]"
                 >
-                  booking 1{" "}
+                  Tour Booking{" "}
                 </Link>
                 <Link
+                  to={"/AllHotels"}
                   href="#"
                   className="block px-2 py-2 text-sm text-yellows hover:text-black hover:bg-yellows rounded-md lg:text-[14px] md:text-[12px]"
                 >
-                  booking 2{" "}
+                  Hotel booking{" "}
                 </Link>
                 <Link
+                  to={"/AllTransport"}
                   href="#"
                   className="block px-2 py-2 text-sm text-yellows hover:text-black hover:bg-yellows rounded-md lg:text-[14px] md:text-[12px]"
                 >
-                  booking 3{" "}
+                  Transport booking{" "}
                 </Link>
               </div>
             )}
           </div>
-          <Link className="flex text-yellows hover:text-yellows cursor-pointer transition-colors duration-300 lg:text-[14px] md:text-[12px]">
+          <Link
+            to={"/DiscountedTour"}
+            className="flex text-yellows hover:text-yellows cursor-pointer transition-colors duration-300 lg:text-[14px] md:text-[12px]"
+          >
             Discounts{" "}
           </Link>
-          <Link className="flex text-yellows hover:text-yellows cursor-pointer transition-colors duration-300 lg:text-[14px] md:text-[12px]">
+          <Link
+            to={"/Blogs"}
+            className="flex text-yellows hover:text-yellows cursor-pointer transition-colors duration-300 lg:text-[14px] md:text-[12px]"
+          >
             Blog{" "}
           </Link>
-          <Link className="flex text-yellows hover:text-yellows cursor-pointer transition-colors duration-300 lg:text-[14px] md:text-[12px]">
+          <Link
+            to={"/ContactUs"}
+            className="flex text-yellows hover:text-yellows cursor-pointer transition-colors duration-300 lg:text-[14px] md:text-[12px]"
+          >
             Contact Us{" "}
           </Link>
         </div>

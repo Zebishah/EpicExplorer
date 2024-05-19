@@ -1,10 +1,10 @@
-import backgroundImage from "../images/marc-zimmer-a5QnUtau8lo-unsplash.jpg";
-import image from "../images/marc-zimmer-a5QnUtau8lo-unsplash.jpg";
+import image from "../images/full-shot-man-carrying-baggage.jpg";
+import backgroundImage from "../images/full-shot-man-carrying-baggage.jpg";
 import Footer from "./Footer";
+import HotelServices from "./HotelServices";
 import Navbar from "./Navbar";
-import RelatedTour from "./RelatedTour";
-import TourService from "./TourService";
-const BookTour = () => {
+import RelatedHotels from "./RelatedHotels";
+const HotelBooking = () => {
   return (
     <div className="bg-light-black">
       <Navbar />
@@ -108,11 +108,11 @@ const BookTour = () => {
           </form>
         </div>
       </div>
-      <TourService />
-      <RelatedTour />
+      <HotelServices />
+      <RelatedHotels />
       <Footer />
     </div>
   );
 };
 
-export default BookTour;
+export default HotelBooking;

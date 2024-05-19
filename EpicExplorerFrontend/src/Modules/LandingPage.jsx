@@ -24,7 +24,7 @@ const LandingPage = () => {
               Lets create travel memories together
             </p>
             <div className="hero-buttons">
-              <Link to={"/BookTour"}>
+              <Link to={"/AllTours"}>
                 <button className="book-tours-btn bg-yellows text-black px-6 py-3 rounded-full mr-4 font-semibold text-lg md:text-xl">
                   Book Tours
                 </button>

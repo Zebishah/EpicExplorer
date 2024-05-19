@@ -10,7 +10,7 @@ export const theme = {
       'ssm': '500px',
       'smd': '700px',
       'md': '960px',
-      'lg': '1024px',
+      'lg': '1078px',
       'xl': '1180px',
       '2xl': '1240px', // Add a custom 2xl breakpoint
       // Add a custom 3xl breakpoint
