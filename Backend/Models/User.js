@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 import bcrypt from 'bcrypt'
 const Schema = mongoose.Schema;
 let userSchema = new Schema({
-    name: {
+    userName: {
         type: String,
         required: true
     },
@@ -15,10 +15,11 @@ let userSchema = new Schema({
         type: String,
         required: true
     },
-    phone: {
-        type: Number,
-        required: true
-    },
+
+    // city: {
+    //     type: String,
+    //     required: true
+    // },
     AccountId: {
         type: String,
         required: true

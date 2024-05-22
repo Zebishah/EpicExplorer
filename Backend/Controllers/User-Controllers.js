@@ -4,7 +4,6 @@ import fetch from 'node-fetch';
 import StellarSdk from 'stellar-sdk';
 import { Server } from 'stellar-sdk/lib/horizon/server.js';
 const server = new Server("https://horizon-testnet.stellar.org/");
-import User from '../Models/User.js';
 import Admin from '../Models/Admin.js';
 import Token from '../Models/Token.js';
 import stripePackage from 'stripe';
@@ -24,6 +23,8 @@ import StellarTransaction from '../Utils/Transaction.js';
 import UserStellarTransaction from '../Utils/UserTransaction.js';
 import NotificationsAdmin from '../Models/NotificationsAdmin.js';
 import NotificationsUser from '../Models/NotificationsUser.js';
+import User from '../Models/User.js';
+import UserOTP from '../Models/UserOTP.js';
 const app = express();
 dotenv.config();
 const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
@@ -33,14 +34,13 @@ let success = null;
 export const createUser = async (req, res, next) => {
     let user = await req.user;
 
-    const { name, email, phone, password, confirmPassword, wishList, bookedTour, bookedHotels, bookedTransport } = req.body;
+    const { userName, email, password, confirmPassword, wishList, bookedTour, bookedHotels, bookedTransport } = req.body;
     //checks for data
-    if (name.trim() === "" || email.trim() === "" || phone === "" || password.trim() === "") {
-        return res.status(400).json({ success: false, message: "Enter your credentials first" });
-    }
-    if (confirmPassword !== password) {
-        return res.status(400).json({ success: false, message: "Passwords do not match" });
-    }
+    // let phone = ""
+    // let address = ""
+    // let city = ""
+    let OTP = "";
+    let expiresAt = Date.now();
     if (user) {
         return res.status(400).json({ success: false, message: "User already exists" });
     }
@@ -77,10 +77,11 @@ export const createUser = async (req, res, next) => {
             }
         });
         const newUser = new User({
-            name,
+            userName,
             email,
-            phone,
             password: hashedPassword,
+
+            // city,
             wishList,
             AccountId: userPublicKey,
             SecretSeed: userPrivateKey,
@@ -95,7 +96,7 @@ export const createUser = async (req, res, next) => {
         await newUser.save();
 
         let date = new Date();
-        let notificationAdmin = new NotificationsAdmin({ accommodationName: name, Category: "user", message: `One user ${name} is added to our site`, date: date });
+        let notificationAdmin = new NotificationsAdmin({ accommodationName: userName, Category: "user", message: `One user ${userName} is added to our site`, date: date });
         await notificationAdmin.save();
 
         const options = { email: email, AccountId: userPublicKey, SecretSeed: userPrivateKey, message: `Your account has been created successfully Here are your stellar account attributes and ur data AccountId${userPublicKey} and SecretSeed${userPrivateKey} ` };
@@ -112,9 +113,6 @@ export const userLogin = async (req, res, next) => {
     //getting user input from request Body  
     let { email, password } = req.body;
 
-    if (email.trim() === "" || password.trim() === "") {
-        return res.status(400).json({ success: false, message: "enter ur credentials first", statusCode: 400 });
-    }
     let user = req.user;//getting User from middleware
 
     const isCorrectPassword = bcrypt.compareSync(password, user.password)
@@ -122,12 +120,46 @@ export const userLogin = async (req, res, next) => {
     if (!isCorrectPassword) {
         return res.status(400).json({ success: false, message: "wrong password", statusCode: 400 })
     }
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { //signing a JWT token 
-        expiresIn: "7d"
-    });
 
-    return res.status(200).json({ success: true, message: "User signed in successfully", token: token, id: user._id, user: user, statusCode: 200 })
+
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    let otpExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
+    let otpUser = new UserOTP({ email, otp, expiresAt: otpExpires })
+    await otpUser.save();
+
+    const options = { email: email, message: `Here is Your otp for login use it completely to be Logged in website . Your OTP is :${otp}  ` };
+    await sendEmail(options);
+    return res.status(200).json({ success: true, message: "User signed in successfully", otp, statusCode: 200 })
 }
+
+
+export const verifyOTP = async (req, res, next) => {
+    const { email, otp } = req.body;
+    let realUser;
+    try {
+        realUser = await User.findOne({ email: email })
+
+    } catch (error) {
+        return res.status(400).json({ error: error.message });
+    }
+
+
+    try {
+        const user = await UserOTP.findOne({ email, otp });
+
+        if (!user) {
+            return res.status(400).json({ message: 'Invalid or expired OTP' });
+        }
+
+        const token = jwt.sign({ id: realUser.id }, process.env.JWT_SECRET, {
+            expiresIn: '7d'
+        });
+        await UserOTP.findOneAndDelete({ email: email, otp: otp })
+        return res.status(200).json({ success: true, message: 'User signed in successfully', token: token });
+    } catch (error) {
+        return res.status(400).json({ error: error.message });
+    }
+};
 
 //get all userss
 export const getUsers = async (req, res, next) => {
@@ -174,7 +206,39 @@ export const deleteUser = async (req, res, next) => {
     await notificationAdmin.save();
     return res.status(200).json({ success: true, message: "User deleted successfully", deletedUser: deletedUser, statusCode: 200 })
 }
+export const updateUser = async (req, res, next) => {
+    let id = req.params.id;
+    const { name, price, startDate, endDate, description, newImage, available, image, departureTime, Departure_ReturnLocation, type } = req.body;
 
+    let user;
+    try {
+        user = await User.findById(id);
+    } catch (error) {
+        return next(error);
+    }
+
+    if (!user) {
+        return res.status(400).json({ success: false, message: "user not existed" });
+    }
+
+    // Update user information
+    user.userName = userName || user.userName;
+    user.email = email || user.email;
+    user.phone = phone || user.phone;
+    user.address = address || user.address;
+    user.city = city || user.city;
+
+
+    await user.save();
+    let date = new Date();
+    let notificationAdmin = new NotificationsAdmin({ accommodationName: user.name, Category: "user is updated", message: `one user ${user.name} information is updated in our site`, date: date })
+    await notificationAdmin.save();
+    let notificationUser = new NotificationsUser({ accommodationName: user.name, Category: "user is updated", message: `one user ${user.name} information is updated in our site`, date: date })
+    await notificationUser.save();
+    return res.status(200).json({ success: true, message: 'user updated successfully', user: user });
+
+
+}
 export const updatePassword = async (req, res, next) => {
     let { oldPassword, newPassword, confirmPassword } = req.body;
     let user = req.user; //getting User from middleware
@@ -271,7 +335,7 @@ export const confirmOrders = async (req, res, next) => {
     console.log("a getUserById")
     let user = await req.user;//getting User from middleware
     let amount = 2000;
-    console.log(user.email)
+
     try {
         // stripe payment session
         const session = await stripe.checkout.sessions.create({
@@ -329,9 +393,9 @@ export const requestBalance = async (req, res, next) => {
             user.Balance = Number(user.Balance) + xlmAmount;
             await user.save();
             let date = new Date();
-            let notificationAdmin = new NotificationsAdmin({ accommodationName: user.name, Category: "requested Balance", message: `one user ${user.name} is requested ${amount} balance from our site `, date: date })
+            let notificationAdmin = new NotificationsAdmin({ accommodationName: user.userName, Category: "requested Balance", message: `one user ${user.name} is requested ${amount} balance from our site `, date: date })
             await notificationAdmin.save();
-            let notificationUser = new NotificationsUser({ accommodationName: user.name, Category: "requested Balance", message: `${user.name} You requested ${amount} balance from our site `, date: date })
+            let notificationUser = new NotificationsUser({ accommodationName: user.userName, Category: "requested Balance", message: `${user.name} You requested ${amount} balance from our site `, date: date })
             await notificationUser.save();
             return res.status(200).json({ success: true, message: "Payment Successful", response, statusCode: 200 });
 
@@ -455,9 +519,9 @@ export const stellarPayment = async (req, res, next) => {
                 await user.save();
 
                 let date = new Date();
-                let notificationAdmin = new NotificationsAdmin({ accommodationName: user.name, Category: "payment of tour", message: `one user ${user.name} is did ${amount} xlm payment from our site `, date: date })
+                let notificationAdmin = new NotificationsAdmin({ accommodationName: tourBooking.bookerName, Category: "payment of tour", message: `one user ${tourBooking.bookerName} is did ${amount} xlm payment from our site `, date: date })
                 await notificationAdmin.save();
-                let notificationUser = new NotificationsUser({ accommodationName: user.name, Category: "payment of tour", message: `${user.name} You did ${amount} xlm payment to our site `, date: date })
+                let notificationUser = new NotificationsUser({ accommodationName: tourBooking.bookerName, Category: "payment of tour", message: `${tourBooking.bookerName} You did ${amount} xlm payment to our site `, date: date })
                 await notificationUser.save();
 
             } catch (error) {
@@ -472,7 +536,7 @@ export const stellarPayment = async (req, res, next) => {
             try {
 
                 //saving bill information and updating database data 
-                bill = new Bill({ booking: tourBooked.id, bookerId: user.id, senderAccountId: user.AccountId, ReceiverAccountId: process.env.ADMIN_ACCOUNT_ID, booker: user.name, deliveryCharges: deliveryCharges, totalPrice: tour.price, tourName: tour.name, date });
+                bill = new Bill({ booking: tourBooked.id, bookerId: user.id, senderAccountId: user.AccountId, ReceiverAccountId: process.env.ADMIN_ACCOUNT_ID, booker: tourBooking.bookerName, deliveryCharges: deliveryCharges, totalPrice: tour.price, tourName: tour.name, date });
                 bill = await bill.save();
                 await BookingTour.findOneAndDelete({ tourId: tourBooking.tourId, bookerId: user.id });
                 await makingTourBill.findOneAndDelete({ bookerId: user.id, booking: tourBooking.id })

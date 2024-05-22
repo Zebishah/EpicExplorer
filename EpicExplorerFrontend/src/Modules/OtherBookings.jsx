@@ -1,5 +1,6 @@
 import backgroundImage from "../images/traffic-vehicle-urban-reflections-city.jpg";
 import backgroundImage2 from "../images/full-shot-man-carrying-baggage.jpg";
+import { Link } from "react-router-dom";
 const OtherBookings = () => {
   return (
     <div className="flex flex-col w-full h-screen mt-16 bg-light-black">
@@ -22,9 +23,12 @@ const OtherBookings = () => {
                 You can book all the hotels from here. We have a variety of
                 hotels available. Book now to enjoy your stay!
               </h1>
-              <button className="bg-yellows hover:bg-blue-700 text-black font-bold py-2 px-4 rounded cursor-pointer">
-                Book Now
-              </button>
+              <Link to={"/AllTransport"}>
+                {" "}
+                <button className="bg-yellows hover:bg-blue-700 text-black font-bold py-2 px-4 rounded cursor-pointer">
+                  Book Now
+                </button>
+              </Link>
             </div>
           </div>
         </div>
@@ -44,9 +48,11 @@ const OtherBookings = () => {
                 You can book all the hotels from here. We have a variety of
                 hotels available. Book now to enjoy your stay!
               </h1>
-              <button className="bg-yellows hover:bg-blue-700 text-black font-bold py-2 px-4 rounded cursor-pointer">
-                Book Now
-              </button>
+              <Link to={"/AllHotels"}>
+                <button className="bg-yellows hover:bg-blue-700 text-black font-bold py-2 px-4 rounded cursor-pointer">
+                  Book Now
+                </button>
+              </Link>
             </div>
           </div>
         </div>

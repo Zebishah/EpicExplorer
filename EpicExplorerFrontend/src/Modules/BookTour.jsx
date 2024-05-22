@@ -1,10 +1,16 @@
+import { useNavigate } from "react-router";
 import backgroundImage from "../images/marc-zimmer-a5QnUtau8lo-unsplash.jpg";
 import image from "../images/marc-zimmer-a5QnUtau8lo-unsplash.jpg";
 import Footer from "./Footer";
 import Navbar from "./Navbar";
 import RelatedTour from "./RelatedTour";
 import TourService from "./TourService";
+
 const BookTour = () => {
+  let Navigate = useNavigate();
+  let ProceedPayment = () => {
+    Navigate("/requestBalance");
+  };
   return (
     <div className="bg-light-black">
       <Navbar />
@@ -102,7 +108,10 @@ const BookTour = () => {
               placeholder="Pickup Location"
               className="p-4 bg-fade-black shadow-lg text-yellows placeholder-yellows rounded-xl"
             />
-            <button className="bg-yellows text-black font-radios font-bold py-4 rounded-xl hover:bg-yellow-600">
+            <button
+              className="bg-yellows text-black font-radios font-bold py-4 rounded-xl hover:bg-yellow-600"
+              onClick={ProceedPayment}
+            >
               Submit
             </button>
           </form>

@@ -1,10 +1,7 @@
 import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
 let TransportSchema = new Schema({
-    transportNo: {
-        type: Number,
-        required: true
-    },
+
     carName: {
         type: String,
         required: true

@@ -20,7 +20,7 @@ const Navbar = () => {
       <nav className="flex justify-between py-4 px-4 bg-light-black backdrop-blur-md shadow-sm shadow-black w-full fixed top-0 left-0 right-0 z-10">
         <div className="flex items-center">
           <img
-            className="h-12 w-32 object-cover" // Adjust these values as needed
+            className="h-6 w-10 smd:h-12 smd:w-32 object-cover" // Adjust these values as needed
             src={image2}
             alt="Store Logo"
           />
@@ -138,8 +138,11 @@ const Navbar = () => {
             Register
           </Link>
           <div>
-            {localStorage.getItem("token") ? (
-              <Link className="flex cursor-pointer transition-colors duration-300 font-semibold text-yellows sssm:text-sm lg:text-[14px] md:text-[12px]">
+            {localStorage.getItem("jwtToken") ? (
+              <Link
+                to={"/userProfile"}
+                className="flex cursor-pointer transition-colors duration-300 font-semibold text-yellows sssm:text-sm lg:text-[14px] md:text-[12px]"
+              >
                 {" "}
                 <FontAwesomeIcon icon={faUser} />
               </Link>
@@ -163,11 +166,17 @@ const Navbar = () => {
               </Link>
             )}
           </div>
-          <Link className="hidden smd:flex text-yellows text-sm ssm:text-base md:text-lg">
+          <Link
+            to={"/Bookings"}
+            className="hidden smd:flex text-yellows text-sm ssm:text-base md:text-lg"
+          >
             <FontAwesomeIcon icon={faCartShopping} />
           </Link>
 
-          <Link className="hidden smd:flex text-yellows text-lg ssm:text-base md:text-lg">
+          <Link
+            to={"/Favorites"}
+            className="hidden smd:flex text-yellows text-lg ssm:text-base md:text-lg"
+          >
             <FontAwesomeIcon icon={faHeart} />
           </Link>
           <button

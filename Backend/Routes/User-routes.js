@@ -1,6 +1,6 @@
 import express from 'express';
 
-import { checkUserBalance, confirmOrder, confirmOrders, createUser, deleteUser, forgetPassword, getUserInfo, getUsers, requestBalance, resetPassword, searchUserStellarAcc, stellarLedger, stellarPayment, updatePassword, userHotelBookings, userLogin, userTourBookings, userTransportBookings } from '../Controllers/User-Controllers.js';
+import { checkUserBalance, confirmOrder, confirmOrders, createUser, deleteUser, forgetPassword, getUserInfo, getUsers, requestBalance, resetPassword, searchUserStellarAcc, stellarLedger, stellarPayment, updatePassword, updateUser, userHotelBookings, userLogin, userTourBookings, userTransportBookings, verifyOTP } from '../Controllers/User-Controllers.js';
 import verifyToken from '../middleware/IdFromToken.js';
 import UserFromEmail from '../middleware/UserFromEmail.js';
 import getallUser from '../middleware/AllUser.js';
@@ -11,6 +11,8 @@ const UserRoutes = express.Router();
 
 UserRoutes.post('/createUser', UserFromEmail, createUser);
 
+UserRoutes.post('/verifyOTP', verifyOTP);
+
 UserRoutes.post('/userLogin', UserFromEmail, userLogin);
 
 UserRoutes.get('/getUsers', getallUser, getUsers);
@@ -18,6 +20,8 @@ UserRoutes.get('/getUsers', getallUser, getUsers);
 UserRoutes.get('/checkUserBalance', verifyToken, getUserById, checkUserBalance);
 
 UserRoutes.post('/deleteUser/:id', verifyToken, deleteUser);
+
+UserRoutes.post('/updateUser/:id', verifyToken, updateUser);
 
 UserRoutes.post('/updatePassword', verifyToken, getUserById, updatePassword);
 

@@ -18,14 +18,14 @@ const sendEmail = async (options) => {
             to: options.email,
             subject: "Account creation",
             html: options.message,
-            AccountId: options.AccountId,
-            SecretSeed: options.SecretSeed
+
         };
 
         await transporter.sendMail(mailOptions);
         console.log("Email sent successfully.");
     } catch (error) {
         console.error("Error sending email:", error);
+
         throw new Error("Failed to send email.");
     }
 };

@@ -20,12 +20,30 @@ import ContactUs from "./Modules/ContactUs";
 import DiscountedTours from "./Modules/DiscountedTours";
 import Blogs from "./Modules/Blogs";
 import FamilyTour from "./Modules/FamilyTour";
+import Bookings from "./Modules/Bookings";
+import Favorites from "./Modules/Favorites";
+import UserProfile from "./Modules/UserProfile";
+import Dashboard from "./Modules/Dashboard";
+import UserBookingsRecord from "./Modules/UserBookingsRecord";
+import ChangePassword from "./Modules/ChangePassword";
+import Notifications from "./Modules/Notifications";
+import CheckoutForm from "./Modules/CheckoutForm";
+import RequestBalance from "./Modules/RequestBalance";
+import Confirmation from "./Modules/Confirmation";
+import Ticket from "./Modules/Ticket";
 function App() {
   return (
     <>
       <Router>
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/Notifications" element={<Notifications />} />
+          <Route path="/changePassword" element={<ChangePassword />} />
+          <Route path="/UserBooking" element={<UserBookingsRecord />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/userProfile" element={<UserProfile />} />
+          <Route path="/Bookings" element={<Bookings />} />
+          <Route path="/Favorites" element={<Favorites />} />
           <Route path="/FamilyTour" element={<FamilyTour />} />
           <Route path="/Blogs" element={<Blogs />} />
           <Route path="/DiscountedTour" element={<DiscountedTours />} />
@@ -43,6 +61,10 @@ function App() {
           <Route path="/SignIn" element={<SignInForm />} />
           <Route path="/LandingPage" element={<LandingPage />} />
           <Route path="/StripeForm" element={<StripeMainForm />} />
+          <Route path="/requestBalance" element={<RequestBalance />} />
+          <Route path="/CheckoutForm" element={<CheckoutForm />} />
+          <Route path="/Confirmation" element={<Confirmation />} />
+          <Route path="/Ticket" element={<Ticket />} />
         </Routes>
       </Router>
     </>

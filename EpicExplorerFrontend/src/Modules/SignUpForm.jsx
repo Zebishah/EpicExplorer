@@ -1,10 +1,16 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
+import { useDispatch, useSelector } from "react-redux";
+
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { resetLoginState, signUp } from "../Redux/Slices/LoginSlice";
 const SignUpForm = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { error, data } = useSelector((state) => state.login);
   const [email, setEmail] = useState("");
+  const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const handleEmailChange = (e) => {
@@ -18,18 +24,35 @@ const SignUpForm = () => {
   const handleConfirmPasswordChange = (e) => {
     setConfirmPassword(e.target.value);
   };
+  const handleUserNameChange = (e) => {
+    setUserName(e.target.value);
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Email:", email);
-    console.log("Password:", password);
-    if (email == "zebihaider123@gmail.com") {
-      toast.success("Welcome Back");
+    if (password !== confirmPassword) {
+      toast.error("Passwords do not match");
+      return;
     }
-    setTimeout(() => {
-      navigate("/SignIn");
-    }, 5000);
+    dispatch(signUp({ userName, email, password, confirmPassword }));
   };
+  useEffect(() => {
+    if (error) {
+      toast.error("Invalid credentials");
+    }
+    if (data) {
+      toast.success("signUp successful!");
+      setTimeout(() => {
+        navigate("/SignIn");
+        dispatch(resetLoginState());
+      }, 5000);
+    }
+  }, [data, error, navigate, dispatch]);
+  useEffect(() => {
+    return () => {
+      dispatch(resetLoginState());
+    };
+  }, [dispatch]);
   return (
     <div className="h-screen flex ">
       <ToastContainer />
@@ -76,10 +99,38 @@ const SignUpForm = () => {
             <input
               className="pl-2 outline-none border-none"
               type="text"
+              name="userName"
+              placeholder="userName"
+              value={userName}
+              onChange={handleUserNameChange}
+              required
+            />
+          </div>
+
+          <div className="flex items-center border-2 py-2 px-3 rounded-2xl mb-4">
+            {/* Email input */}
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5 text-gray-400"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"
+              />
+            </svg>
+            <input
+              className="pl-2 outline-none border-none"
+              type="text"
               name="email"
               placeholder="Email Address"
               value={email}
               onChange={handleEmailChange}
+              required
             />
           </div>
           <div className="flex items-center border-2 py-2 px-3 rounded-2xl">
@@ -103,6 +154,7 @@ const SignUpForm = () => {
               placeholder="Password"
               value={password}
               onChange={handlePasswordChange}
+              required
             />
           </div>
           <div className="flex items-center border-2 py-2 px-3 mt-4 rounded-2xl">
@@ -126,12 +178,14 @@ const SignUpForm = () => {
               placeholder="Confirm Password"
               value={confirmPassword}
               onChange={handleConfirmPasswordChange}
+              required
             />
           </div>
           {/* Submit button */}
           <button
             type="submit"
             className="block w-full bg-yellows mt-4 py-2 rounded-2xl text-black font-semibold mb-2"
+            onSubmit={handleSubmit}
           >
             SignUp
           </button>

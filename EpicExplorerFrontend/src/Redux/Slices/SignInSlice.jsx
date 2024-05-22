@@ -1,27 +1,27 @@
 import { createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 
-const loginSlice = createSlice({
-  name: "login",
+const SignInSlice = createSlice({
+  name: "SignIn",
   initialState: {
     data: null,
     loading: false,
     error: null,
   },
   reducers: {
-    signUpRequest: (state) => {
+    SignInRequest: (state) => {
       state.loading = true;
       state.error = null;
     },
-    signUpSuccess: (state, action) => {
+    SignInSuccess: (state, action) => {
       state.loading = false;
       state.data = action.payload;
     },
-    signUpFailure: (state, action) => {
+    SignInFailure: (state, action) => {
       state.loading = false;
       state.error = action.payload;
     },
-    resetLoginState: (state) => {
+    resetSignInState: (state) => {
       state.data = null;
       state.error = null;
       state.loading = false;
@@ -30,34 +30,31 @@ const loginSlice = createSlice({
 });
 
 export const {
-  signUpRequest,
-  signUpSuccess,
-  signUpFailure,
-  resetLoginState,
-} = loginSlice.actions;
+  SignInRequest,
+  SignInSuccess,
+  SignInFailure,
+  resetSignInState,
+} = SignInSlice.actions;
 
-export const signUp = ({
-  userName,
-  email,
-  password,
-  confirmPassword,
-}) => async (dispatch) => {
-  dispatch(signUpRequest());
+export const SignIn = ({ email, password }) => async (dispatch) => {
+  dispatch(SignInRequest());
   try {
     const response = await axios.post(
-      `http://localhost:5000/User/createUser`,
-      { userName, email, password, confirmPassword },
+      `http://localhost:5000/User/userLogin`,
+      { email, password },
       {
         headers: {
           "Content-Type": "application/json",
         },
       }
     );
-    dispatch(signUpSuccess(response.data));
-    console.log("Successful signUp");
+    const { token, ...userData } = response.data;
+    localStorage.setItem("jwtToken", token);
+    dispatch(SignInSuccess(userData));
+    console.log("Successful SignIn");
   } catch (error) {
     dispatch(
-      signUpFailure(error.response ? error.response.data : error.message)
+      SignInFailure(error.response ? error.response.data : error.message)
     );
     console.error(
       "Error:",
@@ -66,4 +63,4 @@ export const signUp = ({
   }
 };
 
-export default loginSlice.reducer;
+export default SignInSlice.reducer;

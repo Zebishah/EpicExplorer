@@ -1,10 +1,17 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ToastContainer, toast } from "react-toastify";
+import { useDispatch, useSelector } from "react-redux";
 import "react-toastify/dist/ReactToastify.css";
+
+import { useNavigate } from "react-router";
+import { SignIn, resetSignInState } from "../Redux/Slices/SignInSlice";
+
 const SignInForm = () => {
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
+  const dispatch = useDispatch();
+  const { error, data } = useSelector((state) => state.SignIn);
   const handleEmailChange = (e) => {
     setEmail(e.target.value);
   };
@@ -12,17 +19,32 @@ const SignInForm = () => {
   const handlePasswordChange = (e) => {
     setPassword(e.target.value);
   };
-
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Use email and password state variables for your logic
-    console.log("Email:", email);
-    console.log("Password:", password);
-
-    if (email == "zebihaider123@gmail.com") {
-      toast.success("Welcome Back");
-    }
+    console.log("hey");
+    dispatch(SignIn({ email, password }));
   };
+  useEffect(() => {
+    console.log("hey", data);
+    if (error) {
+      toast.error("Invalid credentials");
+    }
+    console.log(data);
+    if (data) {
+      console.log(data);
+      toast.success("signIn successful!");
+      setTimeout(() => {
+        navigate("/");
+        dispatch(resetSignInState());
+      }, 5000);
+    }
+  }, [data, error, navigate, dispatch]);
+
+  useEffect(() => {
+    return () => {
+      dispatch(resetSignInState());
+    };
+  }, [dispatch]);
   return (
     <div className="h-screen flex">
       <ToastContainer />

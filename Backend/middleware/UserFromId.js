@@ -5,9 +5,7 @@ const getUserById = async (req, res, next) => {
     let user;// Assuming you have already extracted the userId from the token
     try {
         user = await User.findById(userId);
-        if (!user) {
-            return res.status(404).json({ success: false, message: 'User not found' });
-        }
+
         req.user = user; // Attach the user object to the request object
         next();
         return;

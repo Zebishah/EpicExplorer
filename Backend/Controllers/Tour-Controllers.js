@@ -43,10 +43,9 @@ export const addTour = async (req, res, next) => {
     } catch (error) {
         return next(error);
     }
-    if(!category)
-        {
-        return res.status(400).json({ success: false, message: "category not found", statusCode:400});
-        }
+    if (!category) {
+        return res.status(400).json({ success: false, message: "category not found", statusCode: 400 });
+    }
     let date = new Date();
     let notificationAdmin = new NotificationsAdmin({ accommodationName: name, Category: "new tour added", message: `one tour ${name} is added in our site`, date: date })
     await notificationAdmin.save();
@@ -314,7 +313,7 @@ export const getFormData = async (req, res, next) => {
 
     try {
 
-        bill = new makingTourBill({ booking: tourBooking.id, bookerId: user.id, booker: user.name, deliveryCharges: deliveryCharges, totalPrice: tour.price, tourName: tour.name, date });
+        bill = new makingTourBill({ booking: tourBooking.id, bookerId: user.id, booker: bookerName, deliveryCharges: deliveryCharges, totalPrice: tour.price, tourName: tour.name, date });
         bill = await bill.save();
 
     } catch (error) {

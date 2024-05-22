@@ -3,7 +3,7 @@ import { faEnvelope, faPhone } from "@fortawesome/free-solid-svg-icons";
 import logo from "../images/Epic_Explorer__1_-removebg-preview.png";
 const Footer = () => {
   return (
-    <footer className="bg-fade-black shadow-lg">
+    <footer className="bg-light-black shadow-lg w-full">
       <div className="max-w-screen-xl px-4 py-16 mx-auto sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 gap-20 lg:grid-cols-3">
           <div>
