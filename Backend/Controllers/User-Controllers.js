@@ -31,22 +31,21 @@ const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
 const stripe = new stripePackage(stripeSecretKey);
 let success = null;
 
-export const createUser = async (req, res, next) => {
-    let user = await req.user;
+import validator from 'validator';
 
+export const createUser = async (req, res, next) => {
     const { userName, email, password, confirmPassword, wishList, bookedTour, bookedHotels, bookedTransport } = req.body;
-    //checks for data
-    // let phone = ""
-    // let address = ""
-    // let city = ""
-    let OTP = "";
-    let expiresAt = Date.now();
+
+    if (!validator.isEmail(email)) {
+        return res.status(400).json({ success: false, message: "Invalid email address" });
+    }
+
+    let user = await User.findOne({ email });
     if (user) {
         return res.status(400).json({ success: false, message: "User already exists" });
     }
 
     try {
-
         const hashedPassword = await bcrypt.hash(password, 10);
         const userKeypair = StellarSdk.Keypair.random();
         let userPublicKey = userKeypair.publicKey();
@@ -56,58 +55,61 @@ export const createUser = async (req, res, next) => {
             account = await server.loadAccount(userPublicKey);
         } catch (error) {
             if (error instanceof StellarSdk.NotFoundError) {
-                // Account not found, create it using Friendbot
                 try {
                     await fetch(`https://friendbot.stellar.org/?addr=${userPublicKey}`);
-                    // Retry loading the account
                     account = await server.loadAccount(userPublicKey);
                 } catch (friendbotError) {
                     return res.status(400).json({ success: false, message: "Failed to create account using Friendbot" });
                 }
             } else {
-                // Other error, handle as needed
-                return res.status(400).json({ success: false, message: "Failed to load account", statusCode: 400 });
+                return res.status(400).json({ success: false, message: "Failed to load account" });
             }
         }
+
         let Balance = 0;
-        //check for the account balance of admin
         account.balances.forEach(function (balance) {
             if (balance.asset_type === 'native') {
                 Balance = balance.balance;
             }
         });
+
         const newUser = new User({
             userName,
             email,
             password: hashedPassword,
-
-            // city,
+            OTP: "",
+            expiresAt: Date.now(),
             wishList,
             AccountId: userPublicKey,
             SecretSeed: userPrivateKey,
-            Balance: Balance,
+            Balance,
             bookedTour,
             bookedTransport,
             bookedHotels
         });
-        if (!newUser) {
-            return res.status(400).json({ success: false, message: "new user not created", statusCode: 400 });
-        }
+
         await newUser.save();
 
+        const otp = Math.floor(100000 + Math.random() * 900000).toString();
+        let otpExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
+        let otpUser = new UserOTP({ email, otp, expiresAt: otpExpires })
+        await otpUser.save();
         let date = new Date();
-        let notificationAdmin = new NotificationsAdmin({ accommodationName: userName, Category: "user", message: `One user ${userName} is added to our site`, date: date });
+        let notificationAdmin = new NotificationsAdmin({ accommodationName: userName, Category: "user", message: `One user ${userName} is added to our site`, date });
         await notificationAdmin.save();
 
-        const options = { email: email, AccountId: userPublicKey, SecretSeed: userPrivateKey, message: `Your account has been created successfully Here are your stellar account attributes and ur data AccountId${userPublicKey} and SecretSeed${userPrivateKey} ` };
+
+        const options = {
+            email: email, AccountId: userPublicKey, SecretSeed: userPrivateKey, message: `Your account has been created successfully. Here are your Stellar account attributes: AccountId ${userPublicKey} and SecretSeed ${userPrivateKey} 
+        And OTP for authentication is ${otp}`
+        };
         await sendEmail(options);
-        return res.status(200).json({ success: true, message: "User signed up successfully", newUser: newUser, statusCode: 200 });
+
+        return res.status(200).json({ success: true, message: "Please enter OTP for user Authentication", newUser });
     } catch (error) {
-
-        return res.status(500).json({ success: false, message: "Error occurred while making account", error: error.message, statusCode: 400 });
+        return res.status(500).json({ success: false, message: "Error occurred while creating account", error: error.message });
     }
-
-}
+};
 
 export const userLogin = async (req, res, next) => {
     //getting user input from request Body  
@@ -116,20 +118,15 @@ export const userLogin = async (req, res, next) => {
     let user = req.user;//getting User from middleware
 
     const isCorrectPassword = bcrypt.compareSync(password, user.password)
-
+    if (!validator.isEmail(email)) {
+        return res.status(400).json({ success: false, message: "Invalid email address" });
+    }
     if (!isCorrectPassword) {
         return res.status(400).json({ success: false, message: "wrong password", statusCode: 400 })
     }
 
 
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    let otpExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
-    let otpUser = new UserOTP({ email, otp, expiresAt: otpExpires })
-    await otpUser.save();
-
-    const options = { email: email, message: `Here is Your otp for login use it completely to be Logged in website . Your OTP is :${otp}  ` };
-    await sendEmail(options);
-    return res.status(200).json({ success: true, message: "User signed in successfully", otp, statusCode: 200 })
+    return res.status(200).json({ success: true, message: "User signed in successfully", user, statusCode: 200 })
 }
 
 

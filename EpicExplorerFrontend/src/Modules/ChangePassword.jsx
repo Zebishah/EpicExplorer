@@ -1,9 +1,11 @@
 import Footer from "./Footer";
+import Navbar from "./Navbar";
 import SideBar from "./SideBar";
 
 const ChangePassword = () => {
   return (
     <>
+      <Navbar />
       <div className="flex flex-row gap-x-6 h-full bg-light-black w-full overflow-hidden">
         <SideBar />
         <div className="flex flex-col gap-y-10 flex-grow lg:p-6 items-center ">

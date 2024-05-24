@@ -1,4 +1,5 @@
 import Footer from "./Footer";
+import Navbar from "./Navbar";
 import Notification from "./Notification";
 import SideBar from "./SideBar";
 
@@ -21,8 +22,9 @@ const Notifications = () => {
     },
   ];
   return (
-    <div>
-      <div className="flex flex-row gap-x-6 h-full bg-light-black w-full overflow-hidden ">
+    <>
+      <Navbar />
+      <div className="flex flex-row gap-x-6 h-full bg-light-black w-full overflow-hidden">
         <SideBar />
         <div className="flex flex-col gap-y-9 items-center justify-center smd:w-[70%] w-[95%] mt-6">
           <h1 className="text-yellows text-xl text-radios">
@@ -39,8 +41,9 @@ const Notifications = () => {
           </div>
         </div>
       </div>
+
       <Footer />
-    </div>
+    </>
   );
 };
 

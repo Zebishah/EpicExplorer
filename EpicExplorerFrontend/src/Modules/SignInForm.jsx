@@ -5,6 +5,7 @@ import "react-toastify/dist/ReactToastify.css";
 
 import { useNavigate } from "react-router";
 import { SignIn, resetSignInState } from "../Redux/Slices/SignInSlice";
+import AboveNavbar from "./AboveNavbar";
 
 const SignInForm = () => {
   const navigate = useNavigate();
@@ -12,6 +13,10 @@ const SignInForm = () => {
   const [password, setPassword] = useState("");
   const dispatch = useDispatch();
   const { error, data } = useSelector((state) => state.SignIn);
+  const ReadMore = () => {
+    console.log("Read More");
+  };
+
   const handleEmailChange = (e) => {
     setEmail(e.target.value);
   };
@@ -48,71 +53,82 @@ const SignInForm = () => {
   return (
     <div className="h-screen flex">
       <ToastContainer />
-      <div className="flex smd:w-1/2 justify-center items-center bg-white sssm:w-full">
-        <form className="bg-white" onSubmit={handleSubmit}>
-          <h1 className="text-gray-800 font-joining text-2xl mb-1">
-            Hello Again!
-          </h1>
-          <p className="text-sm font-normal text-gray-600 mb-7 ">
-            Welcome Back
-          </p>
-          <div className="flex items-center border-2 py-2 px-3 rounded-2xl mb-4">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5 text-gray-400"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"
-              />
-            </svg>
-            <input
-              className="pl-2 outline-none border-none"
-              type="text"
-              name="email"
-              id="email"
-              placeholder="Email Address"
-              value={email}
-              onChange={handleEmailChange}
-            />
+      <AboveNavbar />
+      <div className="flex smd:w-1/2 justify-center items-center bg-fade-black sssm:w-full">
+        <form className=" flex flex-col gap-y-4" onSubmit={handleSubmit}>
+          <div>
+            <h1 className="text-yellows font-joining font-bold text-2xl mb-1">
+              Hello Again!
+            </h1>
+            <p className="text-yellows font-joining font-bold text-2xl mb-1 ">
+              Welcome Back
+            </p>{" "}
           </div>
-          <div className="flex items-center border-2 py-2 px-3 rounded-2xl">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5 text-gray-400"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-            >
-              <path
-                fillRule="evenodd"
-                d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
-                clipRule="evenodd"
+          <div className="flex flex-col gap-y-3">
+            <div className="flex items-center border-2 border-yellows shadow-lg shadow-yellows py-3 px-3 mt-4 rounded-2xl">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-5 w-5 text-yellows"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"
+                />
+              </svg>
+              <input
+                className="pl-2 text-white outline-none bg-transparent bg-light-black placeholder:text-white"
+                type="text"
+                name="email"
+                id="email"
+                placeholder="Email Address"
+                value={email}
+                onChange={handleEmailChange}
               />
-            </svg>
-            <input
-              className="pl-2 outline-none border-none"
-              type="password"
-              name="password"
-              id="password"
-              placeholder="Password"
-              value={password}
-              onChange={handlePasswordChange}
-            />
+            </div>
+            <div className="flex items-center border-2 border-yellows shadow-lg shadow-yellows py-3 px-3 mt-4 rounded-2xl">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-5 w-5 text-yellows"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
+                  clipRule="evenodd"
+                />
+              </svg>
+              <input
+                className="pl-2 text-white outline-none bg-transparent bg-light-black placeholder:text-white"
+                type="password"
+                name="password"
+                id="password"
+                placeholder="Password"
+                value={password}
+                onChange={handlePasswordChange}
+              />
+            </div>
+            <button
+              type="submit"
+              onSubmit={handleSubmit}
+              className=" mt-4 w-full hover:before:bg-red rounded-xl relative h-[50px] overflow-hidden border border-yellows bg-light-black px-3 text-yellows shadow-lg transition-all before:absolute before:bottom-0 before:left-0 before:top-0 before:z-0 before:h-full before:w-0 before:bg-yellows before:transition-all before:duration-500 hover:text-black hover:shadow-yellow-400 hover:before:left-0 hover:before:w-full"
+            >
+              <span className="relative z-10 text-radios text-lg">Login</span>
+            </button>
+            <div className="flex-flex-row gap-x-4">
+              <span className="text-sm ml-2 text-yellows font-radios cursor-pointer">
+                Forgot Password ?
+              </span>
+              <span className="text-sm ml-2 text-white font-radios cursor-pointer hover:text-yellows">
+                Register Account
+              </span>
+            </div>
           </div>
-          <button
-            type="submit"
-            className="block w-full bg-yellows mt-4 py-2 rounded-2xl text-black font-semibold mb-2"
-          >
-            Login
-          </button>
-          <span className="text-sm ml-2 hover:to-yellows cursor-pointer">
-            Forgot Password ?
-          </span>
         </form>
       </div>
       <div className="hidden smd:flex w-1/2 bg-yellows i justify-around items-center">
@@ -123,9 +139,10 @@ const SignInForm = () => {
           </p>
           <button
             type="submit"
-            className="block w-28 bg-white text-fade-black mt-4 py-2 rounded-2xl font-bold mb-2"
+            onSubmit={ReadMore}
+            className=" mt-4 w-auto hover:before:bg-red rounded-xl relative h-[50px] overflow-hidden border border-yellows bg-light-black px-3 text-yellows shadow-lg transition-all before:absolute before:bottom-0 before:left-0 before:top-0 before:z-0 before:h-full before:w-0 before:bg-white before:transition-all before:duration-500 hover:text-black hover:shadow-yellow-400 hover:before:left-0 hover:before:w-full"
           >
-            Read More
+            <span className="relative z-10 text-radios text-lg">Read More</span>
           </button>
         </div>
       </div>

@@ -1,12 +1,22 @@
-import { faMap } from "@fortawesome/free-solid-svg-icons";
+import image1 from "../images/v1016-b-09.jpg";
+import {
+  faBriefcase,
+  faEdit,
+  faMap,
+  faMapLocationDot,
+  faUserGroup,
+  faVanShuttle,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const WhyEpicExplorer = () => {
   return (
-    <div className="landing-page h-screen flex flex-col justify-center items-center w-full bg-light-black md:mt-0 sssm:mt-72">
-      <h1 className="text-yellows text-5xl font-joining ">Why Epic Explorer</h1>
-      <section className="benefits-container grid grid-cols-1 md:grid-cols-3 gap-4 px-4 py-16 w-[80%]">
-        <div className="benefit-card bg-fade-black rounded-md shadow-lg p-4 flex flex-col items-center gap-y-3">
+    <div className="landing-page h-auto flex flex-col justify-center items-center w-full bg-light-black md:mt-0 ">
+      <h1 className="text-yellows text-lg smd:text-5xl font-joining ">
+        Why Epic Explorer
+      </h1>
+      <section className="benefits-container grid grid-cols-1 md:grid-cols-3 gap-8 px-4 py-16 w-[80%]">
+        <div className="benefit-card bg-fade-black rounded-md shadow-lg shadow-yellows p-4 flex flex-col items-center gap-y-3">
           <FontAwesomeIcon
             icon={faMap}
             className="text-yellows text-4xl items-center"
@@ -21,9 +31,9 @@ const WhyEpicExplorer = () => {
             </p>
           </div>
         </div>
-        <div className="benefit-card bg-fade-black rounded-md shadow-lg p-4 flex flex-col items-center gap-y-3">
+        <div className="benefit-card bg-fade-black rounded-md shadow-lg shadow-yellows p-4 flex flex-col items-center gap-y-3">
           <FontAwesomeIcon
-            icon={faMap}
+            icon={faVanShuttle}
             className="text-yellows text-4xl items-center"
           ></FontAwesomeIcon>
           <div className="flex flex-col gap-y-0 justify-center items-center">
@@ -36,9 +46,9 @@ const WhyEpicExplorer = () => {
             </p>
           </div>
         </div>
-        <div className="benefit-card bg-fade-black rounded-md shadow-lg p-4 flex flex-col items-center gap-y-3">
+        <div className="benefit-card bg-fade-black rounded-md shadow-lg shadow-yellows p-4 flex flex-col items-center gap-y-3">
           <FontAwesomeIcon
-            icon={faMap}
+            icon={faMapLocationDot}
             className="text-yellows text-4xl items-center"
           ></FontAwesomeIcon>
           <div className="flex flex-col gap-y-0 justify-center items-center">
@@ -51,9 +61,9 @@ const WhyEpicExplorer = () => {
             </p>
           </div>
         </div>
-        <div className="benefit-card bg-fade-black rounded-md shadow-lg p-4 flex flex-col items-center gap-y-3">
+        <div className="benefit-card bg-fade-black rounded-md shadow-lg shadow-yellows p-4 flex flex-col items-center gap-y-3">
           <FontAwesomeIcon
-            icon={faMap}
+            icon={faEdit}
             className="text-yellows text-4xl items-center"
           ></FontAwesomeIcon>
           <div className="flex flex-col gap-y-0 justify-center items-center">
@@ -66,9 +76,9 @@ const WhyEpicExplorer = () => {
             </p>
           </div>
         </div>
-        <div className="benefit-card bg-fade-black rounded-md shadow-lg p-4 flex flex-col items-center gap-y-3">
+        <div className="benefit-card bg-fade-black rounded-md shadow-lg shadow-yellows p-4 flex flex-col items-center gap-y-3">
           <FontAwesomeIcon
-            icon={faMap}
+            icon={faUserGroup}
             className="text-yellows text-4xl items-center"
           ></FontAwesomeIcon>
           <div className="flex flex-col gap-y-0 justify-center items-center">
@@ -81,9 +91,9 @@ const WhyEpicExplorer = () => {
             </p>
           </div>
         </div>
-        <div className="benefit-card bg-fade-black rounded-md shadow-lg p-4 flex flex-col items-center gap-y-3">
+        <div className="benefit-card bg-fade-black rounded-md shadow-lg shadow-yellows p-4 flex flex-col items-center gap-y-3">
           <FontAwesomeIcon
-            icon={faMap}
+            icon={faBriefcase}
             className="text-yellows text-4xl items-center"
           ></FontAwesomeIcon>
           <div className="flex flex-col gap-y-0 justify-center items-center">

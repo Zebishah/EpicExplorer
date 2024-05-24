@@ -1,59 +1,72 @@
 import backgroundImage from "../images/traffic-vehicle-urban-reflections-city.jpg";
-import backgroundImage2 from "../images/full-shot-man-carrying-baggage.jpg";
-import { Link } from "react-router-dom";
+import backgroundImage2 from "../images/pexels-pixabay-261102.jpg";
+
 const OtherBookings = () => {
+  const BookTransport = (e) => {
+    e.preventDefault();
+    console.log(e.target);
+  };
+  const BookHotel = (e) => {
+    e.preventDefault();
+    console.log(e.target);
+  };
   return (
-    <div className="flex flex-col w-full h-screen mt-16 bg-light-black">
+    <div className="flex flex-col w-full h-autp mt-16 bg-light-black">
       <h1 className="text-yellows text-5xl font-joining text-center mt-8">
         Other Bookings
       </h1>
-      <div className="flex md:flex-row flex-wrap flex-col md:space-x-6 items-center justify-center h-screen p-8">
-        <div className="flex flex-col items-center justify-center md:h-screen flex-grow md:w-[40%] sssm:w-[70%] ">
-          <div className="relative w-full h-[50%]">
-            <div className="absolute inset-0 z-0 rounded-2xl">
-              <img
-                src={backgroundImage}
-                alt="Background"
-                className="w-full h-full object-cover rounded-2xl border-yellows border-4"
-              />
-            </div>
-            <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-black bg-opacity-50 p-4">
-              <h1 className="text-white text-2xl ">Book Transport</h1>
-              <h1 className="text-white text-lg text-center mb-4 w-[60%]">
-                You can book all the hotels from here. We have a variety of
-                hotels available. Book now to enjoy your stay!
-              </h1>
-              <Link to={"/AllTransport"}>
-                {" "}
-                <button className="bg-yellows hover:bg-blue-700 text-black font-bold py-2 px-4 rounded cursor-pointer">
-                  Book Now
-                </button>
-              </Link>
-            </div>
+      <div className="flex flex-col space-y-6 items-center justify-center h-screen p-8">
+        <div className="relative border-2 border-yellows bg-gradient-to-r from-purple-600 to-blue-600 h-screen text-white overflow-hidden w-[80%] rounded-xl shadow-lg shadow-yellows">
+          <div className="absolute inset-0 ">
+            <img
+              src={backgroundImage}
+              className="w-full h-full object-cover bg-center"
+            />
+            <div className="absolute inset-0 bg-black opacity-50" />
+          </div>
+          <div className="relative z-10 flex flex-col justify-center items-center h-full text-center">
+            <h1 className="text-5xl font-bold leading-tight mb-4">
+              Welcome to Our Awesome Website
+            </h1>
+            <p className="text-lg text-gray-300 mb-8">
+              Discover amazing Transport and services that await you.
+            </p>
+            <button
+              type="submit"
+              onClick={BookTransport}
+              className=" mt-4 w-[20%] hover:before:bg-red rounded-xl relative h-[50px] overflow-hidden border border-yellows bg-[#00000065] px-3 text-yellows shadow-lg transition-all before:absolute before:bottom-0 before:left-0 before:top-0 before:z-0 before:h-full before:w-0 before:bg-yellows before:transition-all before:duration-500 hover:text-black hover:shadow-yellow-400 hover:before:left-0 hover:before:w-full"
+            >
+              <span className="relative z-10 text-radios text-lg">
+                Book Transport
+              </span>
+            </button>
           </div>
         </div>
 
-        <div className="flex flex-col items-center justify-center md:h-screen flex-grow md:w-[40%] sssm:w-[70%] md:-mt-0 sssm:-mt-32">
-          <div className="relative w-full h-[50%]">
-            <div className="absolute inset-0 z-0 rounded-2xl">
-              <img
-                src={backgroundImage2}
-                alt="Background"
-                className="w-full h-full object-cover rounded-2xl border-yellows border-4"
-              />
-            </div>
-            <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-black bg-opacity-50 p-4 ">
-              <h1 className="text-white text-2xl ">Book Hotels</h1>
-              <h1 className="text-white text-lg text-center mb-4 w-[60%]">
-                You can book all the hotels from here. We have a variety of
-                hotels available. Book now to enjoy your stay!
-              </h1>
-              <Link to={"/AllHotels"}>
-                <button className="bg-yellows hover:bg-blue-700 text-black font-bold py-2 px-4 rounded cursor-pointer">
-                  Book Now
-                </button>
-              </Link>
-            </div>
+        <div className="relative border-2 border-yellows bg-gradient-to-r from-purple-600 to-blue-600 h-screen text-white overflow-hidden w-[80%] rounded-xl shadow-lg shadow-yellows">
+          <div className="absolute inset-0">
+            <img
+              src={backgroundImage2}
+              className="w-full h-full object-cover bg-center"
+            />
+            <div className="absolute inset-0 bg-black opacity-50" />
+          </div>
+          <div className="relative z-10 flex flex-col justify-center items-center h-full text-center">
+            <h1 className="text-5xl font-bold leading-tight mb-4">
+              Welcome to Our Awesome Website
+            </h1>
+            <p className="text-lg text-gray-300 mb-8">
+              Discover amazing Hotels and services that await you.
+            </p>
+            <button
+              type="submit"
+              onClick={BookHotel}
+              className=" mt-4 w-[20%] hover:before:bg-red rounded-xl relative h-[50px] overflow-hidden border border-yellows bg-[#00000065] px-3 text-yellows shadow-lg transition-all before:absolute before:bottom-0 before:left-0 before:top-0 before:z-0 before:h-full before:w-0 before:bg-yellows before:transition-all before:duration-500 hover:text-black hover:shadow-yellow-400 hover:before:left-0 hover:before:w-full"
+            >
+              <span className="relative z-10 text-radios text-lg">
+                Book Hotels
+              </span>
+            </button>
           </div>
         </div>
       </div>

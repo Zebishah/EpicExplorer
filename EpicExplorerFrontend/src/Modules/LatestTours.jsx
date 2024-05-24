@@ -1,6 +1,10 @@
 import image1 from "../images/marc-zimmer-a5QnUtau8lo-unsplash.jpg";
 import newIcon from "../images/new-product (2).png";
 const LatestTours = () => {
+  const BookTour = (e) => {
+    e.preventDefault();
+    console.log(e.target);
+  };
   return (
     <div className="flex flex-col space-y-14 flex-wrap justify-center items-center p-8">
       <h1 className="text-yellows text-5xl font-joining  ">Latest Tours</h1>
@@ -26,10 +30,13 @@ const LatestTours = () => {
             </p>
             <div className="flex justify-center mt-6">
               <button
-                type="button"
-                className="px-6 py-2.5 rounded text-[14px]  tracking-wider border-none outline-none bg-yellows text-black"
+                type="submit"
+                onSubmit={BookTour}
+                className="w-[40%] hover:before:bg-red rounded-xl relative h-[50px] overflow-hidden border border-yellows bg-yellows px-3 text-black shadow-lg transition-all ease-in-out before:absolute before:bottom-0 before:left-0 before:top-0 before:z-0 before:h-full before:w-0 before:bg-light-black before:transition-all before:duration-500 hover:text-yellows hover:shadow-yellow-400 hover:before:left-0 hover:before:w-full"
               >
-                Book Now
+                <span className="relative z-10 text-radios text-lg">
+                  Book Tour
+                </span>
               </button>
             </div>
           </div>
@@ -55,10 +62,13 @@ const LatestTours = () => {
             </p>
             <div className="flex justify-center mt-6">
               <button
-                type="button"
-                className="px-6 py-2.5 rounded text-[14px] tracking-wider border-none outline-none bg-yellows text-black"
+                type="submit"
+                onSubmit={BookTour}
+                className="w-[40%] hover:before:bg-red rounded-xl relative h-[50px] overflow-hidden border border-yellows bg-yellows px-3 text-black shadow-lg transition-all ease-in-out before:absolute before:bottom-0 before:left-0 before:top-0 before:z-0 before:h-full before:w-0 before:bg-light-black before:transition-all before:duration-500 hover:text-yellows hover:shadow-yellow-400 hover:before:left-0 hover:before:w-full"
               >
-                Book Now
+                <span className="relative z-10 text-radios text-lg">
+                  Book Tour
+                </span>
               </button>
             </div>
           </div>
@@ -84,10 +94,13 @@ const LatestTours = () => {
             </p>
             <div className="flex justify-center mt-6">
               <button
-                type="button"
-                className="px-6 py-2.5 rounded text-[14px] tracking-wider border-none outline-none bg-yellows text-black"
+                type="submit"
+                onSubmit={BookTour}
+                className="w-[40%] hover:before:bg-red rounded-xl relative h-[50px] overflow-hidden border border-yellows bg-yellows px-3 text-black shadow-lg transition-all ease-in-out before:absolute before:bottom-0 before:left-0 before:top-0 before:z-0 before:h-full before:w-0 before:bg-light-black before:transition-all before:duration-500 hover:text-yellows hover:shadow-yellow-400 hover:before:left-0 hover:before:w-full"
               >
-                Book Now
+                <span className="relative z-10 text-radios text-lg">
+                  Book Tour
+                </span>
               </button>
             </div>
           </div>
@@ -115,10 +128,13 @@ const LatestTours = () => {
             </p>
             <div className="flex justify-center mt-6">
               <button
-                type="button"
-                className="px-6 py-2.5 rounded text-[14px] tracking-wider border-none outline-none bg-yellows text-black"
+                type="submit"
+                onSubmit={BookTour}
+                className="w-[40%] hover:before:bg-red rounded-xl relative h-[50px] overflow-hidden border border-yellows bg-yellows px-3 text-black shadow-lg transition-all ease-in-out before:absolute before:bottom-0 before:left-0 before:top-0 before:z-0 before:h-full before:w-0 before:bg-light-black before:transition-all before:duration-500 hover:text-yellows hover:shadow-yellow-400 hover:before:left-0 hover:before:w-full"
               >
-                Book Now
+                <span className="relative z-10 text-radios text-lg">
+                  Book Tour
+                </span>
               </button>
             </div>
           </div>
@@ -144,10 +160,13 @@ const LatestTours = () => {
             </p>
             <div className="flex justify-center mt-6">
               <button
-                type="button"
-                className="px-6 py-2.5 rounded text-[14px] tracking-wider border-none outline-none bg-yellows text-black"
+                type="submit"
+                onSubmit={BookTour}
+                className="w-[40%] hover:before:bg-red rounded-xl relative h-[50px] overflow-hidden border border-yellows bg-yellows px-3 text-black shadow-lg transition-all ease-in-out before:absolute before:bottom-0 before:left-0 before:top-0 before:z-0 before:h-full before:w-0 before:bg-light-black before:transition-all before:duration-500 hover:text-yellows hover:shadow-yellow-400 hover:before:left-0 hover:before:w-full"
               >
-                Book Now
+                <span className="relative z-10 text-radios text-lg">
+                  Book Tour
+                </span>
               </button>
             </div>
           </div>
@@ -173,17 +192,24 @@ const LatestTours = () => {
             </p>
             <div className="flex justify-center mt-6">
               <button
-                type="button"
-                className="px-6 py-2.5 rounded text-[14px] tracking-wider border-none outline-none bg-yellows text-black"
+                type="submit"
+                onSubmit={BookTour}
+                className="w-[40%] hover:before:bg-red rounded-xl relative h-[50px] overflow-hidden border border-yellows bg-yellows px-3 text-black shadow-lg transition-all ease-in-out before:absolute before:bottom-0 before:left-0 before:top-0 before:z-0 before:h-full before:w-0 before:bg-light-black before:transition-all before:duration-500 hover:text-yellows hover:shadow-yellow-400 hover:before:left-0 hover:before:w-full"
               >
-                Book Now
+                <span className="relative z-10 text-radios text-lg">
+                  Book Tour
+                </span>
               </button>
             </div>
           </div>
         </div>
       </div>
-      <button type="button" className="bg-yellows text-black rounded-lg p-2">
-        See More
+      <button
+        type="submit"
+        onSubmit={BookTour}
+        className="w-[40%] hover:before:bg-red rounded-xl relative h-[50px] overflow-hidden border border-yellows bg-yellows px-3 text-black shadow-lg transition-all ease-in-out before:absolute before:bottom-0 before:left-0 before:top-0 before:z-0 before:h-full before:w-0 before:bg-light-black before:transition-all before:duration-500 hover:text-yellows hover:shadow-yellow-400 hover:before:left-0 hover:before:w-full"
+      >
+        <span className="relative z-10 text-radios text-lg">See More</span>
       </button>
     </div>
   );

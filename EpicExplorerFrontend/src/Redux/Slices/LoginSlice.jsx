@@ -5,6 +5,7 @@ const loginSlice = createSlice({
   name: "login",
   initialState: {
     data: null,
+    email: null,
     loading: false,
     error: null,
   },
@@ -16,6 +17,7 @@ const loginSlice = createSlice({
     signUpSuccess: (state, action) => {
       state.loading = false;
       state.data = action.payload;
+      state.email = action.payload.email;
     },
     signUpFailure: (state, action) => {
       state.loading = false;
@@ -23,8 +25,12 @@ const loginSlice = createSlice({
     },
     resetLoginState: (state) => {
       state.data = null;
+      state.email = null;
       state.error = null;
       state.loading = false;
+    },
+    setEmail: (state, action) => {
+      state.email = action.payload;
     },
   },
 });
@@ -34,6 +40,7 @@ export const {
   signUpSuccess,
   signUpFailure,
   resetLoginState,
+  setEmail,
 } = loginSlice.actions;
 
 export const signUp = ({
@@ -54,7 +61,10 @@ export const signUp = ({
       }
     );
     dispatch(signUpSuccess(response.data));
-    console.log("Successful signUp");
+    dispatch(setEmail(email));
+    console.log(
+      "Now authenticate your Account with OTP we sent it on ur email"
+    );
   } catch (error) {
     dispatch(
       signUpFailure(error.response ? error.response.data : error.message)

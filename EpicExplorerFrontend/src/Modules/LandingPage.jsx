@@ -6,11 +6,19 @@ import LatestTours from "./LatestTours";
 import OtherBookings from "./OtherBookings";
 import Reviews from "./Reviews";
 import TourPackages from "./TourPackages";
-import { Link } from "react-router-dom";
+
 import WhyEpicExplorer from "./WhyEpicExplorer";
 const LandingPage = () => {
+  const BookTour = (e) => {
+    e.preventDefault();
+    console.log("Book Tour");
+  };
+  const CustomizeTour = (e) => {
+    e.preventDefault();
+    console.log("Customize Tour");
+  };
   return (
-    <div className="flex flex-col bg-light-black">
+    <div className="flex flex-col bg-light-black gap-y-24">
       <div
         className="flex justify-center items-center h-screen bg-purple-700 text-white bg-cover bg-center bg-no-repeat"
         style={{ backgroundImage: `url(${image1})` }}
@@ -23,14 +31,24 @@ const LandingPage = () => {
             <p className="hero-text text-lg md:text-xl lg:text-2xl mb-6">
               Lets create travel memories together
             </p>
-            <div className="hero-buttons">
-              <Link to={"/AllTours"}>
-                <button className="book-tours-btn bg-yellows text-black px-6 py-3 rounded-full mr-4 font-semibold text-lg md:text-xl">
-                  Book Tours
-                </button>
-              </Link>
-              <button className="find-more-btn bg-yellows text-black px-6 py-3 rounded-full font-semibold text-lg md:text-xl">
-                Find More
+            <div className="hero-buttons flex flex-row gap-x-6 justify-center items-center">
+              <button
+                type="submit"
+                onClick={BookTour}
+                className=" mt-4 w-[20%] hover:before:bg-red rounded-xl relative h-[50px] overflow-hidden border border-yellows bg-[#00000065] px-3 text-yellows shadow-lg transition-all before:absolute before:bottom-0 before:left-0 before:top-0 before:z-0 before:h-full before:w-0 before:bg-yellows before:transition-all before:duration-500 hover:text-black hover:shadow-yellow-400 hover:before:left-0 hover:before:w-full"
+              >
+                <span className="relative z-10 text-radios text-lg">
+                  Book Tour
+                </span>
+              </button>
+              <button
+                type="submit"
+                onSubmit={CustomizeTour}
+                className=" mt-4 w-[20%] hover:before:bg-red rounded-xl relative h-[50px] overflow-hidden border border-yellows bg-[#00000065] px-3 text-yellows shadow-lg transition-all before:absolute before:bottom-0 before:left-0 before:top-0 before:z-0 before:h-full before:w-0 before:bg-yellows before:transition-all before:duration-500 hover:text-black hover:shadow-yellow-400 hover:before:left-0 hover:before:w-full"
+              >
+                <span className="relative z-10 text-radios text-lg">
+                  Customize Tour
+                </span>
               </button>
             </div>
           </div>

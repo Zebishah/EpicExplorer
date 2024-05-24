@@ -1,178 +1,217 @@
 const ContactForm = () => {
+  const BookTour = () => {
+    console.log("asd");
+  };
   return (
-    <div className="flex flex-col space-y-14 flex-wrap justify-center items-center p-8">
+    <div className="flex flex-col space-y-14 flex-wrap justify-center items-center p-8 ">
       <h1 className="text-yellows text-5xl font-joining ">Contact Us</h1>
-      <div className="my-6 h-screen">
-        <div className="max-w-6xl mx-auto bg-fade-black shadow-lg rounded-lg">
-          <div className="grid md:grid-cols-2 items-center gap-16 sm:p-10 p-4 font-[sans-serif]">
-            <div>
-              <h1 className="text-4xl font-extrabold text-yellows ">
-                Get in Touch
-              </h1>
-              <p className="text-sm text-white mt-3">
-                Have some big idea or brand to develop and need help? Then reach
-                out we love to hear about your project and provide help.
-              </p>
-              <ul className="mt-12 space-y-8">
-                <li className="flex items-center">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="16px"
-                    height="16px"
-                    fill="#fce803"
-                    viewBox="0 0 479.058 479.058"
-                  >
-                    <path
-                      d="M434.146 59.882H44.912C20.146 59.882 0 80.028 0 104.794v269.47c0 24.766 20.146 44.912 44.912 44.912h389.234c24.766 0 44.912-20.146 44.912-44.912v-269.47c0-24.766-20.146-44.912-44.912-44.912zm0 29.941c2.034 0 3.969.422 5.738 1.159L239.529 264.631 39.173 90.982a14.902 14.902 0 0 1 5.738-1.159zm0 299.411H44.912c-8.26 0-14.971-6.71-14.971-14.971V122.615l199.778 173.141c2.822 2.441 6.316 3.655 9.81 3.655s6.988-1.213 9.81-3.655l199.778-173.141v251.649c-.001 8.26-6.711 14.97-14.971 14.97z"
-                      data-original="#000000"
-                    />
-                  </svg>
-                  <a
-                    href="javascript:void(0)"
-                    className="text-white text-sm ml-3"
-                  >
-                    <strong>info@example.com</strong>
-                  </a>
-                </li>
-                <li className="flex items-center">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="16px"
-                    height="16px"
-                    fill="#fce803"
-                    viewBox="0 0 482.6 482.6"
-                  >
-                    <path
-                      d="M98.339 320.8c47.6 56.9 104.9 101.7 170.3 133.4 24.9 11.8 58.2 25.8 95.3 28.2 2.3.1 4.5.2 6.8.2 24.9 0 44.9-8.6 61.2-26.3.1-.1.3-.3.4-.5 5.8-7 12.4-13.3 19.3-20 4.7-4.5 9.5-9.2 14.1-14 21.3-22.2 21.3-50.4-.2-71.9l-60.1-60.1c-10.2-10.6-22.4-16.2-35.2-16.2-12.8 0-25.1 5.6-35.6 16.1l-35.8 35.8c-3.3-1.9-6.7-3.6-9.9-5.2-4-2-7.7-3.9-11-6-32.6-20.7-62.2-47.7-90.5-82.4-14.3-18.1-23.9-33.3-30.6-48.8 9.4-8.5 18.2-17.4 26.7-26.1 3-3.1 6.1-6.2 9.2-9.3 10.8-10.8 16.6-23.3 16.6-36s-5.7-25.2-16.6-36l-29.8-29.8c-3.5-3.5-6.8-6.9-10.2-10.4-6.6-6.8-13.5-13.8-20.3-20.1-10.3-10.1-22.4-15.4-35.2-15.4-12.7 0-24.9 5.3-35.6 15.5l-37.4 37.4c-13.6 13.6-21.3 30.1-22.9 49.2-1.9 23.9 2.5 49.3 13.9 80 17.5 47.5 43.9 91.6 83.1 138.7zm-72.6-216.6c1.2-13.3 6.3-24.4 15.9-34l37.2-37.2c5.8-5.6 12.2-8.5 18.4-8.5 6.1 0 12.3 2.9 18 8.7 6.7 6.2 13 12.7 19.8 19.6 3.4 3.5 6.9 7 10.4 10.6l29.8 29.8c6.2 6.2 9.4 12.5 9.4 18.7s-3.2 12.5-9.4 18.7c-3.1 3.1-6.2 6.3-9.3 9.4-9.3 9.4-18 18.3-27.6 26.8l-.5.5c-8.3 8.3-7 16.2-5 22.2.1.3.2.5.3.8 7.7 18.5 18.4 36.1 35.1 57.1 30 37 61.6 65.7 96.4 87.8 4.3 2.8 8.9 5 13.2 7.2 4 2 7.7 3.9 11 6 .4.2.7.4 1.1.6 3.3 1.7 6.5 2.5 9.7 2.5 8 0 13.2-5.1 14.9-6.8l37.4-37.4c5.8-5.8 12.1-8.9 18.3-8.9 7.6 0 13.8 4.7 17.7 8.9l60.3 60.2c12 12 11.9 25-.3 37.7-4.2 4.5-8.6 8.8-13.3 13.3-7 6.8-14.3 13.8-20.9 21.7-11.5 12.4-25.2 18.2-42.9 18.2-1.7 0-3.5-.1-5.2-.2-32.8-2.1-63.3-14.9-86.2-25.8-62.2-30.1-116.8-72.8-162.1-127-37.3-44.9-62.4-86.7-79-131.5-10.3-27.5-14.2-49.6-12.6-69.7z"
-                      data-original="#000000"
-                    />
-                  </svg>
-                  <a
-                    href="javascript:void(0)"
-                    className="text-white text-sm ml-3"
-                  >
-                    <strong>+158 996 888</strong>
-                  </a>
-                </li>
-                <li className="flex items-center">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="16px"
-                    height="16px"
-                    fill="#fce803"
-                    viewBox="0 0 368.16 368.16"
-                  >
-                    <path
-                      d="M184.08 0c-74.992 0-136 61.008-136 136 0 24.688 11.072 51.24 11.536 52.36 3.576 8.488 10.632 21.672 15.72 29.4l93.248 141.288c3.816 5.792 9.464 9.112 15.496 9.112s11.68-3.32 15.496-9.104l93.256-141.296c5.096-7.728 12.144-20.912 15.72-29.4.464-1.112 11.528-27.664 11.528-52.36 0-74.992-61.008-136-136-136zM293.8 182.152c-3.192 7.608-9.76 19.872-14.328 26.8l-93.256 141.296c-1.84 2.792-2.424 2.792-4.264 0L88.696 208.952c-4.568-6.928-11.136-19.2-14.328-26.808-.136-.328-10.288-24.768-10.288-46.144 0-66.168 53.832-120 120-120s120 53.832 120 120c0 21.408-10.176 45.912-10.28 46.152z"
-                      data-original="#000000"
-                    />
-                    <path
-                      d="M184.08 64.008c-39.704 0-72 32.304-72 72s32.296 72 72 72 72-32.304 72-72-32.296-72-72-72zm0 128c-30.872 0-56-25.12-56-56s25.128-56 56-56 56 25.12 56 56-25.128 56-56 56z"
-                      data-original="#000000"
-                    />
-                  </svg>
-                  <a
-                    href="javascript:void(0)"
-                    className="text-white text-sm ml-3"
-                  >
-                    <strong>123 Street 256 House</strong>
-                  </a>
-                </li>
-              </ul>
-              <ul className="flex mt-12 space-x-4">
-                <li className="bg-yellows hover:bg-[#a91079e2] h-10 w-10 rounded-full flex items-center justify-center shrink-0">
-                  <a href="javascript:void(0)">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="18px"
-                      height="18px"
-                      fill="#000000"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        d="M6.812 13.937H9.33v9.312c0 .414.335.75.75.75l4.007.001a.75.75 0 0 0 .75-.75v-9.312h2.387a.75.75 0 0 0 .744-.657l.498-4a.75.75 0 0 0-.744-.843h-2.885c.113-2.471-.435-3.202 1.172-3.202 1.088-.13 2.804.421 2.804-.75V.909a.75.75 0 0 0-.648-.743A26.926 26.926 0 0 0 15.071 0c-7.01 0-5.567 7.772-5.74 8.437H6.812a.75.75 0 0 0-.75.75v4c0 .414.336.75.75.75zm.75-3.999h2.518a.75.75 0 0 0 .75-.75V6.037c0-2.883 1.545-4.536 4.24-4.536.878 0 1.686.043 2.242.087v2.149c-.402.205-3.976-.884-3.976 2.697v2.755c0 .414.336.75.75.75h2.786l-.312 2.5h-2.474a.75.75 0 0 0-.75.75V22.5h-2.505v-9.312a.75.75 0 0 0-.75-.75H7.562z"
-                        data-original="#000000"
-                      />
-                    </svg>
-                  </a>
-                </li>
-                <li className="bg-yellows hover:bg-[#a91079e2] h-10 w-10 rounded-full flex items-center justify-center shrink-0">
-                  <a href="javascript:void(0)">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="18px"
-                      height="18px"
-                      fill="#000000"
-                      viewBox="0 0 511 512"
-                    >
-                      <path
-                        d="M111.898 160.664H15.5c-8.285 0-15 6.719-15 15V497c0 8.285 6.715 15 15 15h96.398c8.286 0 15-6.715 15-15V175.664c0-8.281-6.714-15-15-15zM96.898 482H30.5V190.664h66.398zM63.703 0C28.852 0 .5 28.352.5 63.195c0 34.852 28.352 63.2 63.203 63.2 34.848 0 63.195-28.352 63.195-63.2C126.898 28.352 98.551 0 63.703 0zm0 96.395c-18.308 0-33.203-14.891-33.203-33.2C30.5 44.891 45.395 30 63.703 30c18.305 0 33.195 14.89 33.195 33.195 0 18.309-14.89 33.2-33.195 33.2zm289.207 62.148c-22.8 0-45.273 5.496-65.398 15.777-.684-7.652-7.11-13.656-14.942-13.656h-96.406c-8.281 0-15 6.719-15 15V497c0 8.285 6.719 15 15 15h96.406c8.285 0 15-6.715 15-15V320.266c0-22.735 18.5-41.23 41.235-41.23 22.734 0 41.226 18.495 41.226 41.23V497c0 8.285 6.719 15 15 15h96.403c8.285 0 15-6.715 15-15V302.066c0-79.14-64.383-143.523-143.524-143.523zM466.434 482h-66.399V320.266c0-39.278-31.953-71.23-71.226-71.23-39.282 0-71.239 31.952-71.239 71.23V482h-66.402V190.664h66.402v11.082c0 5.77 3.309 11.027 8.512 13.524a15.01 15.01 0 0 0 15.875-1.82c20.313-16.294 44.852-24.907 70.953-24.907 62.598 0 113.524 50.926 113.524 113.523zm0 0"
-                        data-original="#000000"
-                      />
-                    </svg>
-                  </a>
-                </li>
-                <li className="bg-yellows hover:bg-[#a91079e2] h-10 w-10 rounded-full flex items-center justify-center shrink-0">
-                  <a href="javascript:void(0)">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg "
-                      width="18px"
-                      height="18px"
-                      fill="#000000"
-                      viewBox="0 0 24 24"
-                    >
-                      <path d="M12 9.3a2.7 2.7 0 1 0 0 5.4 2.7 2.7 0 0 0 0-5.4Zm0-1.8a4.5 4.5 0 1 1 0 9 4.5 4.5 0 0 1 0-9Zm5.85-.225a1.125 1.125 0 1 1-2.25 0 1.125 1.125 0 0 1 2.25 0ZM12 4.8c-2.227 0-2.59.006-3.626.052-.706.034-1.18.128-1.618.299a2.59 2.59 0 0 0-.972.633 2.601 2.601 0 0 0-.634.972c-.17.44-.265.913-.298 1.618C4.805 9.367 4.8 9.714 4.8 12c0 2.227.006 2.59.052 3.626.034.705.128 1.18.298 1.617.153.392.333.674.632.972.303.303.585.484.972.633.445.172.918.267 1.62.3.993.047 1.34.052 3.626.052 2.227 0 2.59-.006 3.626-.052.704-.034 1.178-.128 1.617-.298.39-.152.674-.333.972-.632.304-.303.485-.585.634-.972.171-.444.266-.918.299-1.62.047-.993.052-1.34.052-3.626 0-2.227-.006-2.59-.052-3.626-.034-.704-.128-1.18-.299-1.618a2.619 2.619 0 0 0-.633-.972 2.595 2.595 0 0 0-.972-.634c-.44-.17-.914-.265-1.618-.298-.993-.047-1.34-.052-3.626-.052ZM12 3c2.445 0 2.75.009 3.71.054.958.045 1.61.195 2.185.419A4.388 4.388 0 0 1 19.49 4.51c.457.45.812.994 1.038 1.595.222.573.373 1.227.418 2.185.042.96.054 1.265.054 3.71 0 2.445-.009 2.75-.054 3.71-.045.958-.196 1.61-.419 2.185a4.395 4.395 0 0 1-1.037 1.595 4.44 4.44 0 0 1-1.595 1.038c-.573.222-1.227.373-2.185.418-.96.042-1.265.054-3.71.054-2.445 0-2.75-.009-3.71-.054-.958-.045-1.61-.196-2.185-.419A4.402 4.402 0 0 1 4.51 19.49a4.414 4.414 0 0 1-1.037-1.595c-.224-.573-.374-1.227-.419-2.185C3.012 14.75 3 14.445 3 12c0-2.445.009-2.75.054-3.71s.195-1.61.419-2.185A4.392 4.392 0 0 1 4.51 4.51c.45-.458.994-.812 1.595-1.037.574-.224 1.226-.374 2.185-.419C9.25 3.012 9.555 3 12 3Z"></path>
-                    </svg>
-                  </a>
-                </li>
-              </ul>
-            </div>
-
-            <form className="mt-8 space-y-4">
-              <input
-                type="text"
-                placeholder="Name"
-                className="w-full rounded-md py-3 px-4 text-sm outline-yellows"
-              />
-              <input
-                type="email"
-                placeholder="Email"
-                className="w-full rounded-md py-3 px-4 text-sm outline-yellows"
-              />
-              <input
-                type="text"
-                placeholder="Subject"
-                className="w-full rounded-md py-3 px-4 text-sm outline-yellows"
-              />
-              <textarea
-                placeholder="Message"
-                rows={6}
-                className="w-full rounded-md px-4 text-sm pt-3 outline-yellows"
-                defaultValue={""}
-              />
-              <button
-                type="button"
-                className="text-black bg-yellows hover:bg-[#a91079e2] font-semibold rounded-md text-sm px-4 py-3 flex items-center justify-center w-full"
+      <div className="max-w-screen-lg mx-auto p-5 shadow-lg shadow-yellows">
+        <div className="grid grid-cols-1 md:grid-cols-12 border-2 border-yellows">
+          <div className="bg-yellows md:col-span-4 p-10 text-fade-black">
+            <p className="mt-4 text-sm leading-7 font-bold uppercase font-radios">
+              Contact
+            </p>
+            <h3 className="text-3xl sm:text-4xl leading-normal font-joining font-extrabold tracking-tight">
+              Get In <span className="text-fade-black font-joining">Touch</span>
+            </h3>
+            <p className="mt-4 leading-7 text-fade-black font-radios">
+              Lorem Ipsum is simply dummy text of the printing and typesetting
+              industry. Lorem Ipsum has been the industry standard dummy text
+              ever since the 1500s.
+            </p>
+            <div className="flex items-center mt-5">
+              <svg
+                className="h-6 mr-2 text-fade-black font-bold"
+                fill="currentColor"
+                version="1.1"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 489.536 489.536"
+                xmlnsXlink="http://www.w3.org/1999/xlink"
+                enableBackground="new 0 0 489.536 489.536"
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="16px"
-                  height="16px"
-                  fill="#000000"
-                  className="mr-2"
-                  viewBox="0 0 548.244 548.244"
-                >
+                <g>
+                  <g>
+                    <path d="m488.554,476l-99-280.2c-1-4.2-5.2-7.3-9.4-7.3h-45.6c12.9-31.1 19.6-54.9 19.6-70.8 0-64.6-50-117.7-112.5-117.7-61.5,0-112.5,52.1-112.5,117.7 0,17.6 8.2,43.1 19.9,70.8h-39.7c-4.2,0-8.3,3.1-9.4,7.3l-99,280.2c-3.2,10.3 6.3,13.5 9.4,13.5h468.8c4.2,0.5 12.5-4.2 9.4-13.5zm-246.9-455.3c51,1.06581e-14 91.7,43.7 91.7,96.9 0,56.5-79.2,182.3-91.7,203.1-31.3-53.1-91.7-161.5-91.7-203.1 0-53.1 40.6-96.9 91.7-96.9zm-216.7,448l91.7-259.4h41.7c29.9,64.1 83.3,151 83.3,151s81.4-145.7 83.8-151h47.4l91.7,259.4h-439.6z"></path>
+                    <rect width="136.5" x="177.054" y="379.1" height="20.8" />
+                    <path d="m289.554,108.2c0-26-21.9-47.9-47.9-47.9s-47.9,21.9-47.9,47.9 20.8,47.9 47.9,47.9c27.1,0 47.9-21.8 47.9-47.9zm-75-1c0-14.6 11.5-27.1 27.1-27.1s27.1,12.5 27.1,27.1-11.5,27.1-27.1,27.1c-14.6,2.84217e-14-27.1-12.5-27.1-27.1z"></path>
+                  </g>
+                </g>
+              </svg>
+              <span className="text-sm text-fade-black font-bold ">
+                House #14, Street #12, Darulaman Road, Kabul, Afghanistan.
+              </span>
+            </div>
+            <div className="flex items-center mt-5">
+              <svg
+                className="h-6 mr-2 text-fade-black font-bold"
+                fill="currentColor"
+                version="1.1"
+                id="Capa_1"
+                xmlns="http://www.w3.org/2000/svg"
+                xmlnsXlink="http://www.w3.org/1999/xlink"
+                x="0px"
+                y="0px"
+                viewBox="0 0 60.002 60.002"
+                style={{ enableBackground: "new 0 0 60.002 60.002" }}
+                xmlSpace="preserve"
+              >
+                <g>
                   <path
-                    fillRule="evenodd"
-                    d="M392.19 156.054 211.268 281.667 22.032 218.58C8.823 214.168-.076 201.775 0 187.852c.077-13.923 9.078-26.24 22.338-30.498L506.15 1.549c11.5-3.697 24.123-.663 32.666 7.88 8.542 8.543 11.577 21.165 7.879 32.666L390.89 525.906c-4.258 13.26-16.575 22.261-30.498 22.338-13.923.076-26.316-8.823-30.728-22.032l-63.393-190.153z"
-                    clipRule="evenodd"
-                    data-original="#000000"
-                  />
-                </svg>
-                Send Message
-              </button>
-            </form>
+                    d="M59.002,37.992c-3.69,0-6.693-3.003-6.693-6.693c0-0.553-0.447-1-1-1s-1,0.447-1,1c0,4.794,3.899,8.693,8.693,8.693
+		c0.553,0,1-0.447,1-1S59.554,37.992,59.002,37.992z"
+                  ></path>
+                  <path
+                    d="M58.256,35.65c0.553,0,1-0.447,1-1s-0.447-1-1-1c-0.886,0-1.605-0.72-1.605-1.605c0-0.553-0.447-1-1-1s-1,0.447-1,1
+		C54.65,34.033,56.267,35.65,58.256,35.65z"
+                  ></path>
+                  <path
+                    d="M20.002,2.992c3.691,0,6.693,3.003,6.693,6.693c0,0.553,0.448,1,1,1s1-0.447,1-1c0-4.794-3.9-8.693-8.693-8.693
+		c-0.552,0-1,0.447-1,1S19.449,2.992,20.002,2.992z"
+                  ></path>
+                  <path
+                    d="M19.748,6.334c0,0.553,0.448,1,1,1c0.885,0,1.604,0.72,1.604,1.605c0,0.553,0.448,1,1,1s1-0.447,1-1
+		c0-1.988-1.617-3.605-3.604-3.605C20.196,5.334,19.748,5.781,19.748,6.334z"
+                  ></path>
+                  <path
+                    d="M44.076,37.889c-1.276-0.728-2.597-0.958-3.721-0.646c-0.844,0.234-1.532,0.768-1.996,1.546
+		c-1.02,1.22-2.286,2.646-2.592,2.867c-2.367,1.604-4.25,1.415-6.294-0.629L17.987,29.542c-2.045-2.045-2.233-3.928-0.631-6.291
+		c0.224-0.31,1.65-1.575,2.87-2.596c0.778-0.464,1.312-1.152,1.546-1.996c0.311-1.123,0.082-2.444-0.652-3.731
+		c-0.173-0.296-4.291-7.27-8.085-9.277c-1.926-1.019-4.255-0.669-5.796,0.872L4.7,9.059c-4.014,4.014-5.467,8.563-4.321,13.52
+		c0.956,4.132,3.742,8.529,8.282,13.068l14.705,14.706c5.762,5.762,11.258,8.656,16.298,8.656c3.701,0,7.157-1.562,10.291-4.695
+		l2.537-2.537c1.541-1.541,1.892-3.87,0.872-5.796C51.356,42.186,44.383,38.069,44.076,37.889z M51.078,50.363L48.541,52.9
+		c-6.569,6.567-14.563,5.235-23.76-3.961L10.075,34.233c-4.271-4.271-6.877-8.344-7.747-12.104
+		c-0.995-4.301,0.244-8.112,3.786-11.655l2.537-2.537c0.567-0.566,1.313-0.862,2.07-0.862c0.467,0,0.939,0.112,1.376,0.344
+		c3.293,1.743,7.256,8.454,7.29,8.511c0.449,0.787,0.62,1.608,0.457,2.196c-0.1,0.36-0.324,0.634-0.684,0.836l-0.15,0.104
+		c-0.853,0.712-2.883,2.434-3.308,3.061c-0.612,0.904-1.018,1.792-1.231,2.665c-0.711-1.418-1.286-3.06-1.475-4.881
+		c-0.057-0.548-0.549-0.935-1.098-0.892c-0.549,0.058-0.949,0.549-0.892,1.099c0.722,6.953,6.129,11.479,6.359,11.668
+		c0.025,0.02,0.054,0.028,0.08,0.045l10.613,10.613c0.045,0.045,0.092,0.085,0.137,0.129c0.035,0.051,0.058,0.108,0.104,0.154
+		c0.189,0.187,4.704,4.567,11.599,5.283c0.035,0.003,0.07,0.005,0.104,0.005c0.506,0,0.94-0.383,0.994-0.896
+		c0.057-0.55-0.342-1.041-0.892-1.099c-2.114-0.219-3.987-0.839-5.548-1.558c0.765-0.23,1.543-0.612,2.332-1.146
+		c0.628-0.426,2.35-2.455,3.061-3.308l0.104-0.151c0.202-0.359,0.476-0.583,0.836-0.684c0.588-0.159,1.409,0.008,2.186,0.45
+		c0.067,0.04,6.778,4.003,8.521,7.296C52.202,48.062,51.994,49.447,51.078,50.363z"
+                  ></path>
+                </g>
+              </svg>
+              <span className="text-sm text-fade-black font-bold">
+                +93 749 99 65 50
+              </span>
+            </div>
+            <div className="flex items-center mt-5">
+              <svg
+                className="h-6 mr-2 text-fade-black font-bold"
+                fill="currentColor"
+                version="1.1"
+                id="Capa_1"
+                xmlns="http://www.w3.org/2000/svg"
+                xmlnsXlink="http://www.w3.org/1999/xlink"
+                x="0px"
+                y="0px"
+                viewBox="0 0 300.988 300.988"
+                style={{ enableBackground: "new 0 0 300.988 300.988" }}
+                xmlSpace="preserve"
+              >
+                <g>
+                  <g>
+                    <path
+                      d="M150.494,0.001C67.511,0.001,0,67.512,0,150.495s67.511,150.493,150.494,150.493s150.494-67.511,150.494-150.493
+                S233.476,0.001,150.494,0.001z M150.494,285.987C75.782,285.987,15,225.206,15,150.495S75.782,15.001,150.494,15.001
+                s135.494,60.782,135.494,135.493S225.205,285.987,150.494,285.987z"
+                    ></path>
+                    <polygon points="142.994,142.995 83.148,142.995 83.148,157.995 157.994,157.995 157.994,43.883 142.994,43.883 		"></polygon>
+                  </g>
+                </g>
+              </svg>
+              <span className="text-sm text-fade-black font-bold">
+                zebihaider123@gmail.com
+              </span>
+            </div>
           </div>
+          <form
+            action="https://fabform.io/f/{form-id}"
+            method="post"
+            className="md:col-span-8 p-10"
+          >
+            <div className="flex flex-wrap -mx-3 mb-6 bg-light-black">
+              <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+                <label
+                  className="block uppercase tracking-wide text-yellows text-xs font-bold mb-2"
+                  htmlFor="grid-first-name"
+                >
+                  First Name
+                </label>
+                <input
+                  className="appearance-none block w-full bg-gray-200 text-gray-700 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
+                  id="grid-first-name"
+                  type="text"
+                  placeholder="Jane"
+                />
+              </div>
+              <div className="w-full md:w-1/2 px-3">
+                <label
+                  className="block uppercase tracking-wide text-yellows text-xs font-bold mb-2"
+                  htmlFor="grid-last-name"
+                >
+                  Last Name
+                </label>
+                <input
+                  className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                  id="grid-last-name"
+                  type="text"
+                  placeholder="Doe"
+                />
+              </div>
+            </div>
+            <div className="flex flex-wrap -mx-3 mb-6">
+              <div className="w-full px-3">
+                <label
+                  className="block uppercase tracking-wide text-yellows text-xs font-bold mb-2"
+                  htmlFor="grid-password"
+                >
+                  Email Address
+                </label>
+                <input
+                  className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                  id="grid-email"
+                  type="email"
+                  placeholder="********@*****.**"
+                />
+              </div>
+            </div>
+            <div className="flex flex-wrap -mx-3 mb-6">
+              <div className="w-full px-3">
+                <label
+                  className="block uppercase tracking-wide text-yellows text-xs font-bold mb-2"
+                  htmlFor="grid-password"
+                >
+                  Your Message
+                </label>
+                <textarea
+                  rows={10}
+                  className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                  defaultValue={""}
+                />
+              </div>
+              <div className="flex justify-between w-full px-3">
+                <div className="md:flex md:items-center">
+                  <label className="block text-gray-500 font-bold">
+                    <input className="mr-2 leading-tight" type="checkbox" />
+                    <span className="text-sm font-radios text-yellows">
+                      Send me your newsletter!
+                    </span>
+                  </label>
+                </div>
+                <button
+                  type="submit"
+                  onSubmit={BookTour}
+                  className="w-[40%] hover:before:bg-red rounded-xl relative h-[50px] overflow-hidden border border-yellows bg-fade-black px-3 text-yellows shadow-lg transition-all ease-in-out before:absolute before:bottom-0 before:left-0 before:top-0 before:z-0 before:h-full before:w-0 before:bg-yellows before:transition-all before:duration-500 hover:text-black hover:shadow-yellow-400 hover:before:left-0 hover:before:w-full"
+                >
+                  <span className="relative z-10 text-radios text-lg">
+                    Send Message
+                  </span>
+                </button>
+              </div>
+            </div>
+          </form>
         </div>
       </div>
     </div>

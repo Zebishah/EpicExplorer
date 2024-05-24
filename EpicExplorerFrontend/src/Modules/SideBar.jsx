@@ -9,10 +9,24 @@ import {
 import image from "../images/man-user-circle-icon.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link } from "react-router-dom";
-// import { useNavigate } from "react-router";
+// import Favorites from "./Favorites";
+import { useNavigate } from "react-router";
 
 const SideBar = () => {
-  //   const navigate = useNavigate();
+  const navigate = useNavigate();
+  let Bookings = () => {
+    navigate("/Bookings");
+  };
+  let Notifications = () => {
+    navigate("/Notifications");
+  };
+  let Password = () => {
+    navigate("/changePassword");
+  };
+
+  let Favoritess = () => {
+    navigate("/Favorites");
+  };
   return (
     <div className="flex flex-col items-center gap-y-14 bg-fade-black w-[18%] p-6 h-[100vh]">
       <h1 className="text-yellows lg:text-2xl smd:text-lg text-xs font-joining ">
@@ -56,25 +70,28 @@ const SideBar = () => {
             </span>
           </li>
         </Link>
-        <li className="flex flex-row gap-x-4 items-center">
+        <li className="flex flex-row gap-x-4 items-center" onClick={Bookings}>
           <FontAwesomeIcon icon={faCartPlus} className="text-yellows text-lg" />
           <span className="hidden smd:block text-yellows text-lg font-radios">
             Bookings
           </span>
         </li>
-        <li className="flex flex-row gap-x-4 items-center">
+        <li className="flex flex-row gap-x-4 items-center" onClick={Password}>
           <FontAwesomeIcon icon={faPen} className="text-yellows text-lg" />
           <span className="hidden smd:block text-yellows text-lg font-radios">
             Password
           </span>
         </li>
-        <li className="flex flex-row gap-x-4 items-center">
+        <li className="flex flex-row gap-x-4 items-center" onClick={Favoritess}>
           <FontAwesomeIcon icon={faHeart} className="text-yellows text-lg" />
           <span className="hidden smd:block text-yellows text-lg font-radios">
             Favorites
           </span>
         </li>
-        <li className="flex flex-row gap-x-4 items-center">
+        <li
+          className="flex flex-row gap-x-4 items-center"
+          onClick={Notifications}
+        >
           <FontAwesomeIcon icon={faBell} className="text-yellows text-lg" />
           <span className="hidden smd:block text-yellows text-lg font-radios">
             Notification

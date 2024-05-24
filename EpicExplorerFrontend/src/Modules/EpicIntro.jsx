@@ -1,11 +1,11 @@
-import image1 from "../images/marc-zimmer-a5QnUtau8lo-unsplash.jpg";
+import image1 from "../images/pexels-rachel-claire-7263334.jpg";
 const EpicIntro = () => {
   return (
-    <div className="flex flex-col justify-center space-x-2 items-center bg-light-black h-screen md:space-y-8 smd:space-y-28 sssm:space-y-2">
-      <h1 className="text-yellows rounded-lg p-2 shadow-lg text-5xl font-joining ">
+    <div className="flex flex-col justify-center space-x-2 items-center bg-light-black h-auto md:space-y-8 smd:space-y-28 sssm:space-y-2">
+      <h1 className="text-yellows rounded-lg p-2 shadow-lg text-lg smd:text-5xl font-joining ">
         Epic Explorer?
       </h1>
-      <div className="flex flex-col md:flex-row justify-center items-center md:space-y-0 sssm:space-y-4 w-[100%] smd:w-[90%] h-auto smd:h-[70%] md:-mt-8">
+      <div className=" flex flex-col md:flex-row justify-center items-center md:space-y-0 sssm:space-y-4 w-[100%] smd:w-[90%] h-auto smd:h-[70%] md:-mt-8">
         <div className="flex flex-col md:flex-row w-full h-auto md:h-[75%] mb-4 smd:mb-0 items-stretch">
           <div className="w-full md:w-[50%] sssm:w-[90%] flex-grow">
             <img
@@ -15,7 +15,7 @@ const EpicIntro = () => {
             />
           </div>
 
-          <div className="bg-fade-black w-full ml-4 lg:w-[60%] md:w-[70%] sssm:w-[90%] flex-grow p-8 shadow-lg rounded-lg flex items-start justify-start min-h-full overflow-hidden">
+          <div className="bg-fade-black shadow-yellows w-full ml-4 lg:w-[60%] md:w-[70%] sssm:w-[90%] flex-grow p-8 shadow-lg rounded-lg flex items-start justify-start min-h-full overflow-hidden">
             <p
               className="text-base lg:text-[20px] sssm:text-[18px] text-yellows leading-10 overflow-hidden -mt-1 "
               style={{

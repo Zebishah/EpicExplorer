@@ -2,25 +2,88 @@ import { faCartShopping } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState } from "react";
 import image2 from "../images/Epic_Explorer__1_-removebg-preview.png";
+import image from "../images/man-user-circle-icon.png";
 import {
   faCaretDown,
   faHeart,
   faTimes,
   faBars,
-  faUser,
 } from "@fortawesome/free-solid-svg-icons";
+import {
+  faEnvelope,
+  faGlobe,
+  faPhone,
+} from "@fortawesome/free-solid-svg-icons";
+import {
+  faInstagram,
+  faLinkedin,
+  faWhatsapp,
+} from "@fortawesome/free-brands-svg-icons";
 import { Link } from "react-router-dom";
+
+// import AboveNavbar from "./AboveNavbar";
 const Navbar = () => {
   const [isPackagesOpen, setIsPackagesOpen] = useState(false);
   const [isBookingsOpen, setIsBookingsOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
-    <div className="flex flex-col z-10">
-      <nav className="flex justify-between py-4 px-4 bg-light-black backdrop-blur-md shadow-sm shadow-black w-full fixed top-0 left-0 right-0 z-10">
+    <div className="flex flex-col gap-y-1 z-20 w-screen">
+      <nav className="hidden smd:flex flex-col smd:flex-row gap-y-4 justify-center lg:gap-x-44 smd:gap-x-10  py-4 px-4 bg-light-black backdrop-blur-md shadow-sm shadow-black w-full fixed top-0 left-0 right-0 z-10">
+        <Link to={"/"}>
+          <div className="flex justify-center items-center">
+            <img
+              className="h-10 w-28 smd:h-12 smd:w-32 object-cover" // Adjust these values as needed
+              src={image2}
+              alt="Store Logo"
+            />
+          </div>
+        </Link>
+        <div className="flex flex-row justify-center items-center gap-x-6">
+          <div className="flex flex-row justify-center items-center gap-x-2">
+            <FontAwesomeIcon
+              className=" text-yellows smd:text-sm text-[10px] rounded-full hover:bg-fade-black hover:text-yellows transition-all 0.5s ease-in-out "
+              icon={faEnvelope}
+            ></FontAwesomeIcon>
+            <p className="text-yellows font-radios smd:text-sm text-[10px]">
+              zebihaider123@gmail.com
+            </p>
+          </div>
+
+          <div className="flex flex-row justify-center items-center gap-x-2">
+            <FontAwesomeIcon
+              className="text-yellows smd:text-sm text-[10px] p-2 rounded-full hover:bg-fade-black hover:text-yellows transition-all 0.5s ease-in-out "
+              icon={faPhone}
+            ></FontAwesomeIcon>
+            <p className="text-yellows font-radios smd:text-sm text-[10px]">
+              0310-5904269
+            </p>
+          </div>
+        </div>
+
+        <div className=" flex flex-row justify-center items-center lg:space-x-6 sm:space-x-4">
+          <FontAwesomeIcon
+            className=" text-yellows cursor-pointer p-2 smd:text-2xl text-sm rounded-full transition-all ease-in-out hover:bg-yellows hover:text-black  "
+            icon={faInstagram}
+          ></FontAwesomeIcon>
+          <FontAwesomeIcon
+            className=" text-yellows cursor-pointer p-2 smd:text-2xl text-sm rounded-full transition-all ease-in-out hover:bg-yellows hover:text-black  "
+            icon={faWhatsapp}
+          ></FontAwesomeIcon>
+          <FontAwesomeIcon
+            className=" text-yellows cursor-pointer p-2 smd:text-2xl text-sm rounded-full transition-all ease-in-out hover:bg-yellows hover:text-black  "
+            icon={faLinkedin}
+          ></FontAwesomeIcon>
+          <FontAwesomeIcon
+            className=" text-yellows cursor-pointer p-2 smd:text-2xl text-sm rounded-full transition-all ease-in-out hover:bg-yellows hover:text-black  "
+            icon={faGlobe}
+          ></FontAwesomeIcon>
+        </div>
+      </nav>
+      <nav className="flex justify-between py-4 px-4 bg-light-black backdrop-blur-md shadow-sm shadow-black fixed w-full smd:mt-[4.69rem] left-0 right-0 z-10">
         <div className="flex items-center">
           <img
-            className="h-6 w-10 smd:h-12 smd:w-32 object-cover" // Adjust these values as needed
+            className="h-12 w-28 smd:h-12 smd:w-32 object-cover" // Adjust these values as needed
             src={image2}
             alt="Store Logo"
           />
@@ -28,38 +91,38 @@ const Navbar = () => {
         <div className="hidden md:flex items-center lg:space-x-12 sm:space-x-4">
           <Link
             to={"/"}
-            className="flex lg:text-[14px] md:text-[12px] text-yellows hover:text-yellows cursor-pointer transition-colors duration-300 "
+            className="font-radios p-2 rounded-xl hover:shadow-lg hover:shadow-yellows flex lg:text-[14px] md:text-[12px] text-yellows cursor-pointer duration-300 hover:bg-yellows hover:text-black transition-all ease-in-out  "
           >
             Home
           </Link>
           <div className="relative ">
             <Link
-              className="flex items-center cursor-pointer transition-colors duration-300 text-yellows hover:text-yellows lg:text-[14px] md:text-[12px]"
+              className="font-radios p-2 rounded-xl hover:shadow-lg hover:shadow-yellows flex items-center cursor-pointer duration-300 text-yellows lg:text-[14px] md:text-[12px] hover:bg-yellows hover:text-black transition-all ease-in-out"
               onClick={() => setIsPackagesOpen(!isPackagesOpen)}
             >
               Packages
               <FontAwesomeIcon icon={faCaretDown} className="ml-1 mt-1" />
             </Link>
             {isPackagesOpen && (
-              <div className="flex flex-col items-center absolute mt-2 w-40 bg-fade-black rounded-md shadow-lg shadow-black z-10 -ml-14 ">
+              <div className="p-2 rounded-xl hover:shadow-lg hover:shadow-yellows flex flex-col items-center absolute mt-2 w-40 bg-fade-black shadow-lg shadow-black z-10 -ml-14 ">
                 <Link
                   to={"/FamilyTour"}
                   href="#"
-                  className="block px-2 py-2 text-sm text-yellows hover:text-black hover:bg-yellows rounded-md lg:text-[14px] md:text-[12px] "
+                  className="font-radios block px-2 py-2 text-sm text-yellows hover:text-black hover:bg-yellows rounded-md lg:text-[14px] md:text-[12px] "
                 >
                   Family Packages{" "}
                 </Link>
                 <Link
                   to={"/FamilyTour"}
                   href="#"
-                  className="block px-2 py-2 text-sm text-yellows hover:text-black hover:bg-yellows rounded-md lg:text-[14px] md:text-[12px]"
+                  className="font-radios block px-2 py-2 text-sm text-yellows hover:text-black hover:bg-yellows rounded-md lg:text-[14px] md:text-[12px]"
                 >
                   Honeymoon Packages{" "}
                 </Link>
                 <Link
                   to={"/FamilyTour"}
                   href="#"
-                  className="block px-2 py-2 text-sm text-yellows hover:text-black hover:bg-yellows rounded-md lg:text-[14px] md:text-[12px]"
+                  className="font-radios block px-2 py-2 text-sm text-yellows hover:text-black hover:bg-yellows rounded-md lg:text-[14px] md:text-[12px]"
                 >
                   Personal Packages{" "}
                 </Link>
@@ -68,7 +131,7 @@ const Navbar = () => {
           </div>
           <div className="relative">
             <Link
-              className="flex items-center text-yellows hover:text-yellows cursor-pointer transition-colors duration-300 lg:text-[14px] md:text-[12px]"
+              className="font-radios p-2 rounded-xl hover:shadow-lg hover:shadow-yellows flex items-center text-yellows cursor-pointer duration-300 lg:text-[14px] md:text-[12px] hover:bg-yellows hover:text-black transition-all ease-in-out"
               onClick={() => setIsBookingsOpen(!isBookingsOpen)}
             >
               Bookings
@@ -79,21 +142,21 @@ const Navbar = () => {
                 <Link
                   to={"/AllTours"}
                   href="#"
-                  className="block px-2 py-2 text-sm text-yellows hover:text-black hover:bg-yellows rounded-md lg:text-[14px] md:text-[12px]"
+                  className="font-radios p-2 rounded-xl hover:shadow-lg hover:shadow-yellows block px-2 py-2 text-sm text-yellows hover:text-black hover:bg-yellows lg:text-[14px] md:text-[12px]"
                 >
                   Tour Booking{" "}
                 </Link>
                 <Link
                   to={"/AllHotels"}
                   href="#"
-                  className="block px-2 py-2 text-sm text-yellows hover:text-black hover:bg-yellows rounded-md lg:text-[14px] md:text-[12px]"
+                  className="font-radios p-2 rounded-xl hover:shadow-lg hover:shadow-yellows block px-2 py-2 text-sm text-yellows hover:text-black hover:bg-yellows lg:text-[14px] md:text-[12px]"
                 >
                   Hotel booking{" "}
                 </Link>
                 <Link
                   to={"/AllTransport"}
                   href="#"
-                  className="block px-2 py-2 text-sm text-yellows hover:text-black hover:bg-yellows rounded-md lg:text-[14px] md:text-[12px]"
+                  className="font-radios p-2 rounded-xl hover:shadow-lg hover:shadow-yellows block px-2 py-2 text-sm text-yellows hover:text-black hover:bg-yellows lg:text-[14px] md:text-[12px]"
                 >
                   Transport booking{" "}
                 </Link>
@@ -102,27 +165,27 @@ const Navbar = () => {
           </div>
           <Link
             to={"/DiscountedTour"}
-            className="flex text-yellows hover:text-yellows cursor-pointer transition-colors duration-300 lg:text-[14px] md:text-[12px]"
+            className="font-radios p-2 rounded-xl hover:shadow-lg hover:shadow-yellows flex text-yellows cursor-pointer duration-300 hover:bg-yellows hover:text-black transition-all ease-in-out lg:text-[14px] md:text-[12px]"
           >
             Discounts{" "}
           </Link>
           <Link
             to={"/Blogs"}
-            className="flex text-yellows hover:text-yellows cursor-pointer transition-colors duration-300 lg:text-[14px] md:text-[12px]"
+            className="font-radios p-2 rounded-xl hover:shadow-lg hover:shadow-yellows flex text-yellows cursor-pointer duration-300 hover:bg-yellows hover:text-black transition-all ease-in-out lg:text-[14px] md:text-[12px]"
           >
             Blog{" "}
           </Link>
           <Link
             to={"/ContactUs"}
-            className="flex text-yellows hover:text-yellows cursor-pointer transition-colors duration-300 lg:text-[14px] md:text-[12px]"
+            className=" font-radios p-2 rounded-xl hover:shadow-lg hover:shadow-yellows flex text-yellows cursor-pointer duration-300 hover:bg-yellows hover:text-black transition-all ease-in-out lg:text-[14px] md:text-[12px]"
           >
             Contact Us{" "}
           </Link>
         </div>
-        <div className="flex items-center smd:space-x-5 sssm:space-x-2">
+        <div className=" flex items-center smd:space-x-5 sssm:space-x-2">
           <Link
             to={"/signUp"}
-            className="flex text-yellows hover:text-yellows cursor-pointer transition-colors duration-300 sssm:text-sm lg:text-[14px] md:text-[12px]"
+            className="font-radios p-2 rounded-xl hover:shadow-lg hover:shadow-yellows flex text-yellows cursor-pointer duration-300 hover:bg-yellows hover:text-black transition-all ease-in-out sssm:text-sm lg:text-[14px] md:text-[12px]"
           >
             <svg
               className="fill-current h-5 w-5 mr-2 mt-0.5"
@@ -141,14 +204,16 @@ const Navbar = () => {
             {localStorage.getItem("jwtToken") ? (
               <Link
                 to={"/userProfile"}
-                className="flex cursor-pointer transition-colors duration-300 font-semibold text-yellows sssm:text-sm lg:text-[14px] md:text-[12px]"
+                className="font-radios p-2 rounded-xl hover:shadow-lg hover:shadow-yellows flex cursor-pointer duration-300 font-semibold text-yellows sssm:text-sm lg:text-[14px] md:text-[12px] hover:bg-yellows hover:text-black transition-all ease-in-out"
               >
                 {" "}
-                <FontAwesomeIcon icon={faUser} />
+                <div className="rounded-full overflow-hidden mr-4">
+                  <img src={image} alt="image" className="w-12 h-12" />
+                </div>
               </Link>
             ) : (
               <Link
-                className="flex cursor-pointer transition-colors duration-300 font-semibold text-yellows sssm:text-sm md:text-[12px]"
+                className="font-radios p-2 rounded-xl hover:shadow-lg hover:shadow-yellows flex cursor-pointer duration-300 font-semibold text-yellows sssm:text-sm md:text-[12px] hover:bg-yellows hover:text-black transition-all ease-in-out"
                 to={"/SignIn"}
               >
                 <svg
@@ -168,19 +233,19 @@ const Navbar = () => {
           </div>
           <Link
             to={"/Bookings"}
-            className="hidden smd:flex text-yellows text-sm ssm:text-base md:text-lg"
+            className="p-2 rounded-xl hover:shadow-lg hover:shadow-yellows hidden smd:flex text-yellows text-sm ssm:text-base md:text-lg hover:bg-yellows hover:text-black transition-all ease-in-out"
           >
             <FontAwesomeIcon icon={faCartShopping} />
           </Link>
 
           <Link
             to={"/Favorites"}
-            className="hidden smd:flex text-yellows text-lg ssm:text-base md:text-lg"
+            className="p-2 rounded-xl hover:shadow-lg hover:shadow-yellows hidden smd:flex text-yellows text-lg ssm:text-base md:text-lg hover:bg-yellows hover:text-black transition-all ease-in-out"
           >
             <FontAwesomeIcon icon={faHeart} />
           </Link>
           <button
-            className="lg:hidden text-yellows focus:outline-none ssm:text-base md:text-lg"
+            className="p-2 rounded-xl hover:shadow-lg hover:shadow-yellows lg:hidden text-yellows focus:outline-none ssm:text-base md:text-lg hover:bg-yellows hover:text-black transition-all ease-in-out"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
           >
             <FontAwesomeIcon icon={isMenuOpen ? faTimes : faBars} />
@@ -188,35 +253,35 @@ const Navbar = () => {
         </div>
       </nav>
       {isMenuOpen && (
-        <div className="lg:hidden flex flex-col items-center mt-16 space-y-2 bg-white shadow-md rounded-md p-4">
-          <Link className="flex sm:text-sm md:text-[12px] text-yellows hover:text-yellows cursor-pointer transition-colors duration-300 ">
+        <div className="lg:hidden flex flex-col items-center mt-16 space-y-2 bg-white shadow-md rounded-md">
+          <Link className="p-2 rounded-xl hover:shadow-lg hover:shadow-yellows flex sm:text-sm md:text-[12px] text-yellows hover:bg-yellows hover:text-black transition-all ease-in-out cursor-pointer duration-300 ">
             Home
           </Link>
           <div className="relative">
             <Link
-              className="flex items-center cursor-pointer transition-colors duration-300 text-yellows hover:text-yellows lg:text-[16px] md:text-[12px]"
+              className="p-2 rounded-xl hover:shadow-lg hover:shadow-yellows flex items-center cursor-pointer duration-300 text-yellows hover:bg-yellows hover:text-black transition-all ease-in-out lg:text-[16px] md:text-[12px]"
               onClick={() => setIsPackagesOpen(!isPackagesOpen)}
             >
               Packages
               <FontAwesomeIcon icon={faCaretDown} className="ml-1 mt-1" />
             </Link>
             {isPackagesOpen && (
-              <div className="flex flex-col items-center absolute mt-2 w-28 bg-white rounded-md shadow-lg shadow-black z-10 -ml-6">
+              <div className="flex flex-col items-center absolute mt-2 w-28 bg-fade-black rounded-md shadow-lg shadow-black z-10 -ml-6">
                 <Link
                   href="#"
-                  className="block px-2 py-2 text-sm text-yellows hover:text-yellows hover:bg-yellows rounded-md sm:text-sm lg:text-[16px] md:text-[12px] "
+                  className="p-2 rounded-xl hover:shadow-lg hover:shadow-yellows block px-2 py-2 text-sm text-yellows hover:bg-yellows hover:text-black transition-all ease-in-out sm:text-sm lg:text-[16px] md:text-[12px] "
                 >
                   Package 1{" "}
                 </Link>
                 <Link
                   href="#"
-                  className="block px-2 py-2 text-sm text-yellows hover:text-yellows hover:bg-yellows rounded-md sm:text-sm lg:text-[16px] md:text-[12px]"
+                  className="p-2 rounded-xl hover:shadow-lg hover:shadow-yellows block px-2 py-2 text-sm text-yellows hover:bg-yellows hover:text-black transition-all ease-in-out sm:text-sm lg:text-[16px] md:text-[12px]"
                 >
                   Package 2{" "}
                 </Link>
                 <Link
                   href="#"
-                  className="block px-2 py-2 text-sm text-yellows hover:text-yellows hover:bg-yellows rounded-md sm:text-sm lg:text-[16px] md:text-[12px]"
+                  className="p-2 rounded-xl hover:shadow-lg hover:shadow-yellows block px-2 py-2 text-sm text-yellows hover:bg-yellows hover:text-black transition-all ease-in-out sm:text-sm lg:text-[16px] md:text-[12px]"
                 >
                   Package 3{" "}
                 </Link>
@@ -225,48 +290,48 @@ const Navbar = () => {
           </div>
           <div className="relative">
             <Link
-              className="flex items-center text-yellows hover:text-yellows cursor-pointer transition-colors duration-300 lg:text-[16px] md:text-[12px]"
+              className="p-2 rounded-xl hover:shadow-lg hover:shadow-yellows flex items-center text-yellows hover:bg-yellows hover:text-black transition-all ease-in-out cursor-pointer duration-300 lg:text-[16px] md:text-[12px]"
               onClick={() => setIsBookingsOpen(!isBookingsOpen)}
             >
               Bookings
               <FontAwesomeIcon icon={faCaretDown} className="ml-1 mt-1" />
             </Link>
             {isBookingsOpen && (
-              <div className="flex flex-col items-center absolute mt-2 w-28 bg-white rounded-md shadow-lg shadow-black z-10 -ml-6">
+              <div className="flex flex-col items-center absolute mt-2 w-28 bg-light-black rounded-md shadow-lg shadow-black z-10 -ml-6">
                 <Link
                   href="#"
-                  className="block px-2 py-2 text-sm text-yellows hover:text-yellows hover:bg-yellows rounded-md sm:text-sm lg:text-[16px] md:text-[12px]"
+                  className="p-2 rounded-xl hover:shadow-lg hover:shadow-yellows block px-2 py-2 text-sm text-yellows hover:bg-yellows hover:text-black transition-all ease-in-out sm:text-sm lg:text-[16px] md:text-[12px]"
                 >
                   booking 1{" "}
                 </Link>
                 <Link
                   href="#"
-                  className="block px-2 py-2 text-sm text-yellows hover:text-yellows hover:bg-yellows rounded-md sm:text-sm lg:text-[16px] md:text-[12px]"
+                  className="p-2 rounded-xl hover:shadow-lg hover:shadow-yellows block px-2 py-2 text-sm text-yellows hover:bg-yellows hover:text-black transition-all ease-in-out sm:text-sm lg:text-[16px] md:text-[12px]"
                 >
                   booking 2{" "}
                 </Link>
                 <Link
                   href="#"
-                  className="block px-2 py-2 text-sm text-yellows hover:text-yellows hover:bg-yellows rounded-md sm:text-sm lg:text-[16px] md:text-[12px]"
+                  className="p-2 rounded-xl hover:shadow-lg hover:shadow-yellows block px-2 py-2 text-sm text-yellows hover:bg-yellows hover:text-black transition-all ease-in-out sm:text-sm lg:text-[16px] md:text-[12px]"
                 >
                   booking 3{" "}
                 </Link>
               </div>
             )}
           </div>
-          <Link className="flex text-yellows hover:text-yellows cursor-pointer transition-colors duration-300 sm:text-sm lg:text-[16px] md:text-[12px]">
+          <Link className="p-2 rounded-xl hover:shadow-lg hover:shadow-yellows flex text-yellows hover:bg-yellows hover:text-black transition-all ease-in-out cursor-pointer duration-300 sm:text-sm lg:text-[16px] md:text-[12px]">
             Discounts{" "}
           </Link>
-          <Link className="flex text-yellows hover:text-yellows cursor-pointer transition-colors duration-300 sm:text-sm lg:text-[16px] md:text-[12px]">
+          <Link className="p-2 rounded-xl hover:shadow-lg hover:shadow-yellows flex text-yellows hover:bg-yellows hover:text-black transition-all ease-in-out cursor-pointer duration-300 sm:text-sm lg:text-[16px] md:text-[12px]">
             Blog{" "}
           </Link>
-          <Link className="flex text-yellows hover:text-yellows cursor-pointer transition-colors duration-300 sm:text-sm lg:text-[16px] md:text-[12px]">
+          <Link className="p-2 rounded-xl hover:shadow-lg hover:shadow-yellows flex text-yellows hover:bg-yellows hover:text-black transition-all ease-in-out cursor-pointer duration-300 sm:text-sm lg:text-[16px] md:text-[12px]">
             Contact Us{" "}
           </Link>
-          <Link className="flex text-yellows hover:text-yellows cursor-pointer transition-colors duration-300">
+          <Link className="p-2 rounded-xl hover:shadow-lg hover:shadow-yellows flex text-yellows hover:bg-yellows hover:text-black transition-all ease-in-out cursor-pointer duration-300">
             Favorites
           </Link>
-          <Link className="flex text-yellows hover:text-yellows cursor-pointer transition-colors duration-300">
+          <Link className="p-2 rounded-xl hover:shadow-lg hover:shadow-yellows flex text-yellows hover:bg-yellows hover:text-black transition-all ease-in-out cursor-pointer duration-300">
             Discounts
           </Link>
         </div>

@@ -24,7 +24,7 @@ const RequestBalance = () => {
       const data = response.data;
       console.log(data);
       if (data.success == true) {
-        navigate("/Confirmation");
+        navigate("/paymentConfirmation");
       }
       console.log("Successful");
     } catch (error) {

@@ -31,12 +31,15 @@ import CheckoutForm from "./Modules/CheckoutForm";
 import RequestBalance from "./Modules/RequestBalance";
 import Confirmation from "./Modules/Confirmation";
 import Ticket from "./Modules/Ticket";
+import PaymentSuccess from "./Modules/PaymentSuccess";
+import OTP from "./Modules/OTP";
 function App() {
   return (
     <>
       <Router>
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/OTP" element={<OTP />} />
           <Route path="/Notifications" element={<Notifications />} />
           <Route path="/changePassword" element={<ChangePassword />} />
           <Route path="/UserBooking" element={<UserBookingsRecord />} />
@@ -65,6 +68,7 @@ function App() {
           <Route path="/CheckoutForm" element={<CheckoutForm />} />
           <Route path="/Confirmation" element={<Confirmation />} />
           <Route path="/Ticket" element={<Ticket />} />
+          <Route path="/paymentConfirmation" element={<PaymentSuccess />} />
         </Routes>
       </Router>
     </>
