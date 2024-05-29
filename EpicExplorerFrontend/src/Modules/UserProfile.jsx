@@ -1,22 +1,32 @@
 import SideBar from "./SideBar";
-
 import Footer from "./Footer";
 import Navbar from "./Navbar";
+import { useEffect } from "react";
+import image1 from "../images/6437523_3313427.jpg";
 const UserProfile = () => {
+  useEffect(() => {
+    console.log("userProfile");
+  }, []);
   return (
-    <>
+    <div
+      className="flex flex-col min-h-screen bg-center bg-cover"
+      style={{ backgroundImage: `url(${image1})` }}
+    >
       <Navbar />
-      <div className="flex flex-row gap-x-6 h-full bg-light-black w-full overflow-hidden">
+      <div className="flex flex-row gap-x-6 h-full w-full overflow-hidden bg-opacity-0 bg-light-black smd:mt-40 mt-20">
         <SideBar />
         <div className="flex flex-col flex-grow p-6 items-center justify-center">
-          <h1 className="text-yellows smd:text-4xl text-xs font-joining">
+          <h1 className="text-yellows smd:text-4xl text-xs font-joining bg-light-black bg-opacity-60 p-4 rounded-lg ">
             User Dashboard
           </h1>
-          <div className="container max-w-screen-lg mx-auto">
-            <h2 className="font-semibold smd:text-xl text-xs text-yellows">
+          <div className="container max-w-screen-lg mx-auto ">
+            <h2 className=" font-radios font-semibold smd:text-xl text-xs text-yellows bg-light-black bg-opacity-60 p-3 rounded-lg w-max">
               Update info
             </h2>
-            <p className="text-white mb-6">Update your personal info here.</p>
+            <p className="font-radios text-white mb-6 bg-light-black bg-opacity-60 p-3 rounded-lg w-max mt-1">
+              Update your personal info here.
+            </p>
+
             <div className="bg-fade-black rounded shadow-lg p-4 px-4 md:p-8 mb-6">
               <div className="grid gap-4 gap-y-2 text-sm grid-cols-1 lg:grid-cols-3">
                 <div className="text-yellows">
@@ -107,53 +117,23 @@ const UserProfile = () => {
                     </div>
                     <div className="md:col-span-2">
                       <label
-                        htmlFor="state"
+                        htmlFor="image"
                         className="text-yellows text-lg font-radios"
                       >
-                        State / Province
+                        image
                       </label>
                       <div className="h-10 bg-gray-50 flex border border-gray-200 rounded items-center mt-1">
                         <input
-                          name="state"
-                          id="state"
-                          placeholder="State"
+                          type="image"
+                          name="image"
+                          id="image"
+                          placeholder="image"
                           className="px-4 appearance-none outline-none text-gray-800 w-full bg-transparent"
                           defaultValue=""
                         />
                       </div>
                     </div>
-                    <div className="md:col-span-1">
-                      <label
-                        htmlFor="zipcode"
-                        className="text-yellows text-lg font-radios"
-                      >
-                        Zipcode
-                      </label>
-                      <input
-                        type="text"
-                        name="zipcode"
-                        id="zipcode"
-                        className="transition-all flex items-center h-10 border mt-1 rounded px-4 w-full bg-gray-50"
-                        placeholder=""
-                        defaultValue=""
-                      />
-                    </div>
-                    <div className="md:col-span-5">
-                      <div className="inline-flex items-center">
-                        <input
-                          type="checkbox"
-                          name="billing_same"
-                          id="billing_same"
-                          className="form-checkbox"
-                        />
-                        <label
-                          htmlFor="billing_same"
-                          className="ml-2 text-white"
-                        >
-                          My billing address is different than above.
-                        </label>
-                      </div>
-                    </div>
+
                     <div className="md:col-span-5 text-right">
                       <div className="inline-flex items-end">
                         <button className="bg-yellows hover:bg-blue-700 text-black font-bold py-2 px-4 rounded">
@@ -169,7 +149,7 @@ const UserProfile = () => {
         </div>
       </div>
       <Footer />
-    </>
+    </div>
   );
 };
 

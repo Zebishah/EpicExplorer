@@ -32,9 +32,15 @@ const stripe = new stripePackage(stripeSecretKey);
 let success = null;
 
 import validator from 'validator';
+import CreateUser from '../Models/CreateUser.js';
 
 export const createUser = async (req, res, next) => {
-    const { userName, email, password, confirmPassword, wishList, bookedTour, bookedHotels, bookedTransport } = req.body;
+
+    const { userName, email, password, confirmPassword, wishList, bookedTour, bookedHotels, bookedTransport, googleSign } = req.body;
+    let phone = " ";
+    let address = " ";
+    let city = " ";
+    let pic = " ";
 
     if (!validator.isEmail(email)) {
         return res.status(400).json({ success: false, message: "Invalid email address" });
@@ -44,68 +50,80 @@ export const createUser = async (req, res, next) => {
     if (user) {
         return res.status(400).json({ success: false, message: "User already exists" });
     }
+    let hashedPassword = password;
+    if (password) {
+        hashedPassword = await bcrypt.hash(password, 10);
+    }
 
+    const userKeypair = StellarSdk.Keypair.random();
+    let userPublicKey = userKeypair.publicKey();
+    let userPrivateKey = userKeypair.secret();
+    let account;
     try {
-        const hashedPassword = await bcrypt.hash(password, 10);
-        const userKeypair = StellarSdk.Keypair.random();
-        let userPublicKey = userKeypair.publicKey();
-        let userPrivateKey = userKeypair.secret();
-        let account;
-        try {
-            account = await server.loadAccount(userPublicKey);
-        } catch (error) {
-            if (error instanceof StellarSdk.NotFoundError) {
-                try {
-                    await fetch(`https://friendbot.stellar.org/?addr=${userPublicKey}`);
-                    account = await server.loadAccount(userPublicKey);
-                } catch (friendbotError) {
-                    return res.status(400).json({ success: false, message: "Failed to create account using Friendbot" });
-                }
-            } else {
-                return res.status(400).json({ success: false, message: "Failed to load account" });
+        account = await server.loadAccount(userPublicKey);
+    } catch (error) {
+        if (error instanceof StellarSdk.NotFoundError) {
+            try {
+                await fetch(`https://friendbot.stellar.org/?addr=${userPublicKey}`);
+                account = await server.loadAccount(userPublicKey);
+            } catch (friendbotError) {
+                return res.status(400).json({ success: false, message: "Failed to create account using Friendbot" });
             }
+        } else {
+            return res.status(400).json({ success: false, message: "Failed to load account" });
         }
+    }
 
-        let Balance = 0;
-        account.balances.forEach(function (balance) {
-            if (balance.asset_type === 'native') {
-                Balance = balance.balance;
-            }
-        });
+    let Balance = 0;
+    account.balances.forEach(function (balance) {
+        if (balance.asset_type === 'native') {
+            Balance = balance.balance;
+        }
+    });
+    let verifiedStatus = false;
+    try {
+
 
         const newUser = new User({
             userName,
             email,
             password: hashedPassword,
-            OTP: "",
-            expiresAt: Date.now(),
-            wishList,
+            phone,
+            address,
+            city,
+            pic,
             AccountId: userPublicKey,
             SecretSeed: userPrivateKey,
             Balance,
+            verifiedStatus,
             bookedTour,
             bookedTransport,
-            bookedHotels
+            bookedHotels,
+            wishList,
+            googleSign
         });
 
         await newUser.save();
-
-        const otp = Math.floor(100000 + Math.random() * 900000).toString();
-        let otpExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
-        let otpUser = new UserOTP({ email, otp, expiresAt: otpExpires })
-        await otpUser.save();
-        let date = new Date();
-        let notificationAdmin = new NotificationsAdmin({ accommodationName: userName, Category: "user", message: `One user ${userName} is added to our site`, date });
-        await notificationAdmin.save();
+        if (googleSign == "no") {
+            const otp = Math.floor(100000 + Math.random() * 900000).toString();
+            let otpExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
+            let otpUser = new UserOTP({ email, otp, expiresAt: otpExpires })
+            await otpUser.save();
 
 
-        const options = {
-            email: email, AccountId: userPublicKey, SecretSeed: userPrivateKey, message: `Your account has been created successfully. Here are your Stellar account attributes: AccountId ${userPublicKey} and SecretSeed ${userPrivateKey} 
-        And OTP for authentication is ${otp}`
-        };
-        await sendEmail(options);
 
-        return res.status(200).json({ success: true, message: "Please enter OTP for user Authentication", newUser });
+            const options = {
+                email: email, message: `Your account has been created successfully.And OTP for authentication is ${otp}`
+            };
+            await sendEmail(options);
+
+            return res.status(200).json({ success: true, message: "Otp is send to ur email account", newUser });
+        }
+        const token = jwt.sign({ id: newUser.id }, process.env.JWT_SECRET, {
+            expiresIn: '7d'
+        });
+
+        return res.status(200).json({ success: true, message: "Account created successfully", newUser, token });
     } catch (error) {
         return res.status(500).json({ success: false, message: "Error occurred while creating account", error: error.message });
     }
@@ -124,35 +142,77 @@ export const userLogin = async (req, res, next) => {
     if (!isCorrectPassword) {
         return res.status(400).json({ success: false, message: "wrong password", statusCode: 400 })
     }
+    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
+        expiresIn: '7d'
+    });
 
-
-    return res.status(200).json({ success: true, message: "User signed in successfully", user, statusCode: 200 })
+    return res.status(200).json({ success: true, message: "User signed in successfully", user, statusCode: 200, token: token })
 }
 
+export const resendOtp = async (req, res, next) => {
 
-export const verifyOTP = async (req, res, next) => {
-    const { email, otp } = req.body;
-    let realUser;
+    //getting user input from request Body  
+    let { email } = req.body;
+    console.log(email)
+
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    let otpExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
+    let user;
     try {
-        realUser = await User.findOne({ email: email })
+        user = await UserOTP.findOne({ email });
 
     } catch (error) {
         return res.status(400).json({ error: error.message });
     }
+    if (user) {
+        let user2 = UserOTP.findOneAndDelete({ email: email })
+        await user2.save();
+    }
+    try {
+        let otpUser = new UserOTP({ email, otp, expiresAt: otpExpires })
+        await otpUser.save();
+    } catch (error) {
+        return res.status(400).json({ error: error.message });
+    }
+    const options = {
+        email: email, message: `Your account sended again Success.And OTP for authentication is ${otp}`
+    };
+    await sendEmail(options);
+    return res.status(200).json({ success: true, message: "Otp resend successfully", email, statusCode: 200, otp: otp })
+}
 
+export const verifyOTP = async (req, res, next) => {
+    const { email, otp } = req.body;
+    console.log(email, otp)
+    let realUser;
+    try {
+        realUser = await User.findOne({ email: email });
 
+    } catch (error) {
+        return res.status(400).json({ error: error.message });
+    }
     try {
         const user = await UserOTP.findOne({ email, otp });
 
         if (!user) {
             return res.status(400).json({ message: 'Invalid or expired OTP' });
         }
-
-        const token = jwt.sign({ id: realUser.id }, process.env.JWT_SECRET, {
-            expiresIn: '7d'
-        });
         await UserOTP.findOneAndDelete({ email: email, otp: otp })
-        return res.status(200).json({ success: true, message: 'User signed in successfully', token: token });
+
+        let date = new Date();
+        let notificationAdmin = new NotificationsAdmin({ accommodationName: "userCreated", Category: "user", message: `One user ${realUser.userName} is added to our site`, date });
+        await notificationAdmin.save();
+        const options = {
+            email: realUser.email, AccountId: realUser.AccountId, SecretSeed: realUser.SecretSeed, message: `Your account has been verified and created successfully. Here are your Stellar account attributes: AccountId ${realUser.AccountId} and SecretSeed ${realUser.SecretSeed} `
+        };
+        try {
+            await sendEmail(options, res);
+        } catch (error) {
+            return res.status(400).json({ error: error.message });
+        }
+
+
+        return res.status(200).json({ success: true, message: 'User signed up successfully and verified' });
     } catch (error) {
         return res.status(400).json({ error: error.message });
     }
@@ -617,6 +677,39 @@ export const getUserInfo = async (req, res, next) => {
     }
     return res.status(200).json({ success: true, message: "here is your userInfo", userInfo: userInfo, statusCode: 200 })
 }
+export const getUserFrToken = async (req, res, next) => {
+    let user = await req.user;
+    //getting User from middleware
+    let userInfo;
+    try {  // fetching specific user info
+        userInfo = await User.findById(user.id);
+    } catch (error) {
+        return next(error);
+    }
+
+    if (!userInfo) {
+
+        return res.status(400).json({ success: false, message: "no userInfo are here", statusCode: 400 })
+    }
+    return res.status(200).json({ success: true, message: "here is your userInfo", userInfo: userInfo, statusCode: 200 })
+}
+export const getUserFrEmail = async (req, res, next) => {
+
+    let { email } = req.body;//getting User from middleware
+    let userInfo;
+    try {  // fetching specific user info
+        userInfo = await User.findOne({ email: email });
+    } catch (error) {
+        return next(error);
+    }
+
+    if (!userInfo) {
+
+        return res.status(400).json({ success: false, message: "no userInfo are here", statusCode: 400 })
+    }
+    return res.status(200).json({ success: true, message: "here is your userInfo", userInfo: userInfo, statusCode: 200 })
+}
+
 
 export const stellarLedger = async (req, res, next) => {
     server

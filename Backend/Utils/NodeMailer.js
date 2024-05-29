@@ -1,8 +1,8 @@
 import nodemailer from 'nodemailer';
 
-const sendEmail = async (options) => {
-
+const sendEmail = async (options, res) => {
     try {
+
         const transporter = nodemailer.createTransport({
             host: process.env.HOST,
             port: 587,
@@ -18,15 +18,19 @@ const sendEmail = async (options) => {
             to: options.email,
             subject: "Account creation",
             html: options.message,
-
         };
 
-        await transporter.sendMail(mailOptions);
-        console.log("Email sent successfully.");
+        // Using async/await for sendMail
+        transporter.sendMail(mailOptions, function (error, info) {
+            if (error) {
+                console.log(error);
+            } else {
+                console.log("Email sent successfully!");
+            }
+        });
     } catch (error) {
-        console.error("Error sending email:", error);
-
-        throw new Error("Failed to send email.");
+        console.error("Error in sending email:", error);
+        return res.status(500).json({ success: false, message: "Internal Server Error." });
     }
 };
 

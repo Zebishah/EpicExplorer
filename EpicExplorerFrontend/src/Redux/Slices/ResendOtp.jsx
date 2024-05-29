@@ -1,27 +1,29 @@
 import { createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
+import { selectOtpEmail } from "./emailSlice";
 
-const otpSlice = createSlice({
-  name: "OTP",
+const resendOtp = createSlice({
+  name: "ResendOTP",
   initialState: {
     otpData: null,
     loading: false,
     otpError: null,
   },
   reducers: {
-    OTPRequest: (state) => {
+    ResendOTPRequest: (state) => {
       state.loading = true;
       state.otpError = null;
     },
-    OTPSuccess: (state, action) => {
+    ResendOTPSuccess: (state, action) => {
       state.loading = false;
+
       state.otpData = action.payload;
     },
-    OTPFailure: (state, action) => {
+    ResendOTPFailure: (state, action) => {
       state.loading = false;
       state.otpError = action.payload;
     },
-    resetOTPState: (state) => {
+    ResendResetOTPState: (state) => {
       state.otpData = null;
       state.otpError = null;
       state.loading = false;
@@ -30,31 +32,33 @@ const otpSlice = createSlice({
 });
 
 export const {
-  OTPRequest,
-  OTPSuccess,
-  OTPFailure,
-  resetOTPState,
-} = otpSlice.actions;
+  ResendOTPRequest,
+  ResendOTPSuccess,
+  ResendOTPFailure,
+  ResendResetOTPState,
+} = resendOtp.actions;
 
-export const otpSender = (otp) => async (dispatch, getState) => {
-  dispatch(OTPRequest());
-  const state = getState();
-  const { email } = state.login;
+export const resendOTP = (otp) => async (dispatch, getState) => {
+  dispatch(ResendOTPRequest());
 
   try {
+    const email = await selectOtpEmail(getState());
+
     const response = await axios.post(
       `http://localhost:5000/User/verifyOTP`,
-      { otp, email },
+      { otp, email }, // Include email in the request payload
       {
         headers: {
           "Content-Type": "application/json",
         },
       }
     );
-    dispatch(OTPSuccess(response.data));
-    console.log("Successful signUp");
+    dispatch(ResendOTPSuccess, response.data);
+    console.log("Successful OTP verification");
   } catch (error) {
-    dispatch(OTPFailure(error.response ? error.response.data : error.message));
+    dispatch(
+      ResendOTPFailure(error.response ? error.response.data : error.message)
+    );
     console.error(
       "Error:",
       error.response ? error.response.data : error.message
@@ -62,4 +66,4 @@ export const otpSender = (otp) => async (dispatch, getState) => {
   }
 };
 
-export default otpSlice.reducer;
+export default resendOtp.reducer;

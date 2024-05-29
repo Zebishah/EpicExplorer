@@ -6,6 +6,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { useNavigate } from "react-router";
 import { SignIn, resetSignInState } from "../Redux/Slices/SignInSlice";
 import AboveNavbar from "./AboveNavbar";
+import { userSearchFrEmail } from "../Redux/Slices/SearchingUserSlice";
 
 const SignInForm = () => {
   const navigate = useNavigate();
@@ -26,24 +27,25 @@ const SignInForm = () => {
   };
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("hey");
+
     dispatch(SignIn({ email, password }));
   };
+
   useEffect(() => {
-    console.log("hey", data);
     if (error) {
       toast.error("Invalid credentials");
     }
-    console.log(data);
+
     if (data) {
-      console.log(data);
+      dispatch(userSearchFrEmail(email));
+
       toast.success("signIn successful!");
       setTimeout(() => {
         navigate("/");
         dispatch(resetSignInState());
       }, 5000);
     }
-  }, [data, error, navigate, dispatch]);
+  }, [data, error, dispatch, navigate, email]);
 
   useEffect(() => {
     return () => {

@@ -35,6 +35,9 @@ export const theme = {
       // box- shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
     }, backgroundImage: {
       'hero-image': "url('../EpicExplorerFrontend/src/images/marc-zimmer-a5QnUtau8lo-unsplash.jpg')", // Adjust the path to your image
+
+      'custom': "url('../EpicExplorerFrontend/src/images/Untitled (1).jpeg')",
+
     }
   },
   container: {

@@ -1,41 +1,53 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
-
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { resetOTPState } from "../Redux/Slices/OTPSlice";
-
-const OTP = () => {
+import { otpSender, resetOTPState } from "../Redux/Slices/OtpSlices";
+import { useLocation } from "react-router-dom";
+import { resendOtp } from "../Redux/Slices/ResendOtpSlice";
+const OtpPage = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { email } = useSelector((state) => state.login);
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const email = queryParams.get("email") || "";
+
   const { otpError, otpData } = useSelector((state) => state.OTP);
-  const [OTP, setOTP] = useState("");
+
+  const [otp, setOTP] = useState("");
 
   const handleOTPChange = (e) => {
     setOTP(e.target.value);
   };
+  const resend = () => {
+    dispatch(resendOtp(email));
+    toast.success("Otp sended to your mail again!");
+  };
   const sendOTP = (event) => {
     event.preventDefault();
-    if (OTP < 6) {
-      toast.error("invalidOTP");
+    console.log("hey");
+    if (otp.length < 6) {
+      toast.error("Invalid OTP");
       return;
     }
-    dispatch(OTP(OTP));
+
+    dispatch(otpSender(otp, email));
   };
+
   useEffect(() => {
     if (otpError) {
       toast.error("Invalid credentials");
     }
     if (otpData) {
-      toast.success("OTP Sended for authentication!");
+      toast.success("signed up successfully!");
       setTimeout(() => {
         navigate("/SignIn");
         dispatch(resetOTPState());
       }, 5000);
     }
   }, [otpData, otpError, navigate, dispatch]);
+
   useEffect(() => {
     return () => {
       dispatch(resetOTPState());
@@ -43,50 +55,49 @@ const OTP = () => {
   }, [dispatch]);
 
   return (
-    <div className="h-screen flex ">
+    <div className="h-screen flex justify-center items-center bg-light-black ">
       <ToastContainer />
-      <div className="relative flex min-h-screen flex-col justify-center overflow-hidden bg-gray-50 py-12">
-        <div className="relative bg-white px-6 pt-10 pb-9 shadow-xl mx-auto w-full max-w-lg rounded-2xl">
+      <div className="relative flex min-h-screen flex-col justify-center overflow-hidden bg-light-black py-12 w-[50%]">
+        <div className="relative bg-fade-black shadow-lg shadow-yellows px-6 pt-10 pb-9 mx-auto w-[60%] rounded-2xl">
           <div className="mx-auto flex w-full max-w-md flex-col space-y-16">
             <div className="flex flex-col items-center justify-center text-center space-y-2">
-              <div className="font-semibold text-3xl">
+              <div className="font-semibold text-3xl text-yellows">
                 <p>Email Verification</p>
               </div>
-              <div className="flex flex-row text-sm font-medium text-gray-400">
-                <p>We have sent a code to your email {email} </p>
+              <div className="flex flex-row text-sm font-medium text-white">
+                <p>We have sent a code to your email {email}</p>
               </div>
             </div>
             <div>
-              <form action method="post">
+              <form method="post" onSubmit={sendOTP}>
                 <div className="flex flex-col space-y-16">
                   <input
-                    className="pl-2 outline-none border-none"
+                    className="pl-2 p-4 rounded-lg outline-none border-none"
                     type="text"
-                    name="userName"
-                    placeholder="userName"
-                    value={OTP}
+                    name="otp"
+                    placeholder="Enter OTP"
+                    value={otp}
                     onChange={handleOTPChange}
                     required
                   />
                   <div className="flex flex-col space-y-5">
                     <div>
                       <button
-                        className="flex flex-row items-center justify-center text-center w-full border rounded-xl outline-none py-5 bg-blue-700 border-none text-white text-sm shadow-sm"
-                        onClick={sendOTP}
+                        className="flex flex-row items-center justify-center text-center w-full border rounded-xl outline-none py-5 bg-yellows border-none text-black text-sm shadow-sm"
+                        type="submit"
                       >
                         Verify Account
                       </button>
                     </div>
                     <div className="flex flex-row items-center justify-center text-center text-sm font-medium space-x-1 text-gray-500">
-                      <p>Didnt recieve code?</p>{" "}
-                      <a
-                        className="flex flex-row items-center text-blue-600"
-                        href="http://"
-                        target="_blank"
-                        rel="noopener noreferrer"
+                      <p>Did not receive the code?</p>
+                      <button
+                        className="flex flex-row items-center text-yellows"
+                        type="button"
+                        onClick={resend}
                       >
                         Resend
-                      </a>
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -99,4 +110,4 @@ const OTP = () => {
   );
 };
 
-export default OTP;
+export default OtpPage;

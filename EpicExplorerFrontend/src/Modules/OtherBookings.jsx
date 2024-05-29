@@ -25,16 +25,16 @@ const OtherBookings = () => {
             <div className="absolute inset-0 bg-black opacity-50" />
           </div>
           <div className="relative z-10 flex flex-col justify-center items-center h-full text-center">
-            <h1 className="text-5xl font-bold leading-tight mb-4">
+            <h1 className=" text-2xl md:text-5xl font-bold leading-tight mb-4">
               Welcome to Our Awesome Website
             </h1>
-            <p className="text-lg text-gray-300 mb-8">
+            <p className="text-lg text-gray-300 mb-8 w-[90%]">
               Discover amazing Transport and services that await you.
             </p>
             <button
               type="submit"
               onClick={BookTransport}
-              className=" mt-4 w-[20%] hover:before:bg-red rounded-xl relative h-[50px] overflow-hidden border border-yellows bg-[#00000065] px-3 text-yellows shadow-lg transition-all before:absolute before:bottom-0 before:left-0 before:top-0 before:z-0 before:h-full before:w-0 before:bg-yellows before:transition-all before:duration-500 hover:text-black hover:shadow-yellow-400 hover:before:left-0 hover:before:w-full"
+              className=" mt-4 w-[55%] md:w-[25%] hover:before:bg-red rounded-xl relative h-[50px] overflow-hidden border border-yellows bg-[#00000065] px-3 text-yellows shadow-lg transition-all before:absolute before:bottom-0 before:left-0 before:top-0 before:z-0 before:h-full before:w-0 before:bg-yellows before:transition-all before:duration-500 hover:text-black hover:shadow-yellow-400 hover:before:left-0 hover:before:w-full"
             >
               <span className="relative z-10 text-radios text-lg">
                 Book Transport
@@ -52,16 +52,16 @@ const OtherBookings = () => {
             <div className="absolute inset-0 bg-black opacity-50" />
           </div>
           <div className="relative z-10 flex flex-col justify-center items-center h-full text-center">
-            <h1 className="text-5xl font-bold leading-tight mb-4">
+            <h1 className="text-2xl md:text-5xl font-bold leading-tight mb-4">
               Welcome to Our Awesome Website
             </h1>
-            <p className="text-lg text-gray-300 mb-8">
+            <p className="text-lg text-gray-300 mb-8 ">
               Discover amazing Hotels and services that await you.
             </p>
             <button
               type="submit"
               onClick={BookHotel}
-              className=" mt-4 w-[20%] hover:before:bg-red rounded-xl relative h-[50px] overflow-hidden border border-yellows bg-[#00000065] px-3 text-yellows shadow-lg transition-all before:absolute before:bottom-0 before:left-0 before:top-0 before:z-0 before:h-full before:w-0 before:bg-yellows before:transition-all before:duration-500 hover:text-black hover:shadow-yellow-400 hover:before:left-0 hover:before:w-full"
+              className=" mt-4 w-[55%] md:w-[25%] hover:before:bg-red rounded-xl relative h-[50px] overflow-hidden border border-yellows bg-[#00000065] px-3 text-yellows shadow-lg transition-all before:absolute before:bottom-0 before:left-0 before:top-0 before:z-0 before:h-full before:w-0 before:bg-yellows before:transition-all before:duration-500 hover:text-black hover:shadow-yellow-400 hover:before:left-0 hover:before:w-full"
             >
               <span className="relative z-10 text-radios text-lg">
                 Book Hotels

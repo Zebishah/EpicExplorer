@@ -32,14 +32,17 @@ import RequestBalance from "./Modules/RequestBalance";
 import Confirmation from "./Modules/Confirmation";
 import Ticket from "./Modules/Ticket";
 import PaymentSuccess from "./Modules/PaymentSuccess";
-import OTP from "./Modules/OTP";
+import OtpPage from "./Modules/OtpPage";
+import SignInWithGoogle from "./Modules/SignInWithGoogle";
+
 function App() {
   return (
     <>
       <Router>
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/OTP" element={<OTP />} />
+          <Route path="/SignInWithGoogle" element={<SignInWithGoogle />} />
+          <Route path="/OTP" element={<OtpPage />} />
           <Route path="/Notifications" element={<Notifications />} />
           <Route path="/changePassword" element={<ChangePassword />} />
           <Route path="/UserBooking" element={<UserBookingsRecord />} />

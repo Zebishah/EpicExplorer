@@ -191,7 +191,7 @@ const ContactForm = () => {
                   defaultValue={""}
                 />
               </div>
-              <div className="flex justify-between w-full px-3">
+              <div className="flex flex-col gap-y-3 smd:flex-row justify-between w-full px-3 ">
                 <div className="md:flex md:items-center">
                   <label className="block text-gray-500 font-bold">
                     <input className="mr-2 leading-tight" type="checkbox" />
@@ -203,7 +203,7 @@ const ContactForm = () => {
                 <button
                   type="submit"
                   onSubmit={BookTour}
-                  className="w-[40%] hover:before:bg-red rounded-xl relative h-[50px] overflow-hidden border border-yellows bg-fade-black px-3 text-yellows shadow-lg transition-all ease-in-out before:absolute before:bottom-0 before:left-0 before:top-0 before:z-0 before:h-full before:w-0 before:bg-yellows before:transition-all before:duration-500 hover:text-black hover:shadow-yellow-400 hover:before:left-0 hover:before:w-full"
+                  className="w-[90%] p-2 smd:w-[40%] hover:before:bg-red rounded-xl relative h-auto overflow-hidden border border-yellows bg-fade-black px-3 text-yellows shadow-lg transition-all ease-in-out before:absolute before:bottom-0 before:left-0 before:top-0 before:z-0 before:h-full before:w-0 before:bg-yellows before:transition-all before:duration-500 hover:text-black hover:shadow-yellow-400 hover:before:left-0 hover:before:w-full"
                 >
                   <span className="relative z-10 text-radios text-lg">
                     Send Message

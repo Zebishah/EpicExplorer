@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import bcrypt from 'bcrypt'
 const Schema = mongoose.Schema;
-let userSchema = new Schema({
+let CreateUserSchema = new Schema({
     userName: {
         type: String,
         required: true
@@ -16,45 +16,34 @@ let userSchema = new Schema({
         required: true
     },
 
-    phone: {
-        type: String,
-        required: true
-    },
-
-    address: {
-        type: String,
-        required: true
-    },
-
     city: {
         type: String,
         required: true
     },
-
-    pic: {
+    address: {
         type: String,
         required: true
     },
-    googleSign: {
+    phone: {
         type: String,
         required: true
     },
-    verifiedStatus: {
+    phone: {
         type: String,
         required: true
     },
-    AccountId: {
-        type: String,
-        required: true
-    },
-    SecretSeed: {
-        type: String,
-        required: true
-    },
-    Balance: {
-        type: Number,
-        required: true
-    },
+    // AccountId: {
+    //     type: String,
+    //     required: true
+    // },
+    // SecretSeed: {
+    //     type: String,
+    //     required: true
+    // },
+    // Balance: {
+    //     type: Number,
+    //     required: true
+    // },
     bookedTour: [{
         type: mongoose.Types.ObjectId,
         ref: "Tour",
@@ -76,4 +65,4 @@ let userSchema = new Schema({
     }]
 })
 
-export default mongoose.model('User', userSchema);
+export default mongoose.model('createUser', CreateUserSchema);

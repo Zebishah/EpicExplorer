@@ -23,7 +23,7 @@ const LandingPage = () => {
         className="flex justify-center items-center h-screen bg-purple-700 text-white bg-cover bg-center bg-no-repeat"
         style={{ backgroundImage: `url(${image1})` }}
       >
-        <header className="hero text-center">
+        <header className="hero text-center p-2">
           <div className="hero-content">
             <h1 className="hero-title text-4xl md:text-5xl lg:text-6xl font-bold mb-4">
               WELCOME TO EPIC EXPLORER
@@ -35,7 +35,7 @@ const LandingPage = () => {
               <button
                 type="submit"
                 onClick={BookTour}
-                className=" mt-4 w-[20%] hover:before:bg-red rounded-xl relative h-[50px] overflow-hidden border border-yellows bg-[#00000065] px-3 text-yellows shadow-lg transition-all before:absolute before:bottom-0 before:left-0 before:top-0 before:z-0 before:h-full before:w-0 before:bg-yellows before:transition-all before:duration-500 hover:text-black hover:shadow-yellow-400 hover:before:left-0 hover:before:w-full"
+                className=" mt-4 w-[40%] smd:w-[20%] hover:before:bg-red rounded-xl relative h-[50px] overflow-hidden border border-yellows bg-[#00000065] px-3 text-yellows shadow-lg transition-all before:absolute before:bottom-0 before:left-0 before:top-0 before:z-0 before:h-full before:w-0 before:bg-yellows before:transition-all before:duration-500 hover:text-black hover:shadow-yellow-400 hover:before:left-0 hover:before:w-full"
               >
                 <span className="relative z-10 text-radios text-lg">
                   Book Tour
@@ -44,7 +44,7 @@ const LandingPage = () => {
               <button
                 type="submit"
                 onSubmit={CustomizeTour}
-                className=" mt-4 w-[20%] hover:before:bg-red rounded-xl relative h-[50px] overflow-hidden border border-yellows bg-[#00000065] px-3 text-yellows shadow-lg transition-all before:absolute before:bottom-0 before:left-0 before:top-0 before:z-0 before:h-full before:w-0 before:bg-yellows before:transition-all before:duration-500 hover:text-black hover:shadow-yellow-400 hover:before:left-0 hover:before:w-full"
+                className=" mt-4 w-[40%] smd:w-[20%] hover:before:bg-red rounded-xl relative h-[50px] overflow-hidden border border-yellows bg-[#00000065] px-3 text-yellows shadow-lg transition-all before:absolute before:bottom-0 before:left-0 before:top-0 before:z-0 before:h-full before:w-0 before:bg-yellows before:transition-all before:duration-500 hover:text-black hover:shadow-yellow-400 hover:before:left-0 hover:before:w-full"
               >
                 <span className="relative z-10 text-radios text-lg">
                   Customize Tour

@@ -1,11 +1,11 @@
 import { createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
+import { setEmail } from "./emailSlice";
 
 const loginSlice = createSlice({
   name: "login",
   initialState: {
     data: null,
-    email: null,
     loading: false,
     error: null,
   },
@@ -17,7 +17,6 @@ const loginSlice = createSlice({
     signUpSuccess: (state, action) => {
       state.loading = false;
       state.data = action.payload;
-      state.email = action.payload.email;
     },
     signUpFailure: (state, action) => {
       state.loading = false;
@@ -25,12 +24,8 @@ const loginSlice = createSlice({
     },
     resetLoginState: (state) => {
       state.data = null;
-      state.email = null;
       state.error = null;
       state.loading = false;
-    },
-    setEmail: (state, action) => {
-      state.email = action.payload;
     },
   },
 });
@@ -40,7 +35,6 @@ export const {
   signUpSuccess,
   signUpFailure,
   resetLoginState,
-  setEmail,
 } = loginSlice.actions;
 
 export const signUp = ({
@@ -48,23 +42,26 @@ export const signUp = ({
   email,
   password,
   confirmPassword,
+  googleSign,
 }) => async (dispatch) => {
   dispatch(signUpRequest());
   try {
     const response = await axios.post(
       `http://localhost:5000/User/createUser`,
-      { userName, email, password, confirmPassword },
+      { userName, email, password, confirmPassword, googleSign },
       {
         headers: {
           "Content-Type": "application/json",
         },
       }
     );
+    if (googleSign == "yes") {
+      const { token } = response.data;
+      localStorage.setItem("jwtToken", token);
+    }
+
     dispatch(signUpSuccess(response.data));
     dispatch(setEmail(email));
-    console.log(
-      "Now authenticate your Account with OTP we sent it on ur email"
-    );
   } catch (error) {
     dispatch(
       signUpFailure(error.response ? error.response.data : error.message)

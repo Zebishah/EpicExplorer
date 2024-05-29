@@ -36,15 +36,13 @@ export const {
   resetOTPState,
 } = otpSlice.actions;
 
-export const otpSender = (otp) => async (dispatch, getState) => {
+export const otpSender = (otp, email) => async (dispatch) => {
   dispatch(OTPRequest());
-  const state = getState();
-  const { email } = state.login;
 
   try {
     const response = await axios.post(
       `http://localhost:5000/User/verifyOTP`,
-      { otp, email },
+      { otp, email }, // Include email in the request payload
       {
         headers: {
           "Content-Type": "application/json",
@@ -52,7 +50,7 @@ export const otpSender = (otp) => async (dispatch, getState) => {
       }
     );
     dispatch(OTPSuccess(response.data));
-    console.log("Successful signUp");
+    console.log("Successful OTP verification");
   } catch (error) {
     dispatch(OTPFailure(error.response ? error.response.data : error.message));
     console.error(
