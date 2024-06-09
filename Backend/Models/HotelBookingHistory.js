@@ -29,7 +29,7 @@ let HotelBookingHistory_Schema = new Schema({
         type: String,
         required: true
     },
-    bookerId: {
+    bookerEmail: {
         type: String,
         required: true
     },

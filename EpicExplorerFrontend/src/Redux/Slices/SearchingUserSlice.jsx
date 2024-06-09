@@ -4,7 +4,9 @@ import axios from "axios";
 const searchingUserSlice = createSlice({
   name: "userSearch",
   initialState: {
-    dataSearch: null,
+    userFrTokenData: null,
+    userFrEmailData: null,
+
     loading: false,
     errorSearch: null,
   },
@@ -13,16 +15,20 @@ const searchingUserSlice = createSlice({
       state.loading = true;
       state.errorSearch = null;
     },
-    userSearchSuccess: (state, action) => {
+    userSearchFrEmailSuccess: (state, action) => {
       state.loading = false;
-      state.dataSearch = action.payload;
+      state.userFrEmailData = action.payload;
+    },
+    userSearchFrTokenSuccess: (state, action) => {
+      state.loading = false;
+      state.userFrTokenData = action.payload;
     },
     userSearchFailure: (state, action) => {
       state.loading = false;
       state.errorSearch = action.payload;
     },
     resetUserSearchState: (state) => {
-      state.dataSearch = null;
+      state.userFrTokenData = null;
       state.errorSearch = null;
       state.loading = false;
     },
@@ -31,7 +37,8 @@ const searchingUserSlice = createSlice({
 
 export const {
   userSearchRequest,
-  userSearchSuccess,
+  userSearchFrEmailSuccess,
+  userSearchFrTokenSuccess,
   userSearchFailure,
   resetUserSearchState,
 } = searchingUserSlice.actions;
@@ -49,19 +56,19 @@ export const userSearchFrEmail = (email) => async (dispatch) => {
       }
     );
 
-    dispatch(userSearchSuccess(response.data));
+    dispatch(userSearchFrEmailSuccess(response.data));
   } catch (errorSearch) {
     dispatch(
       userSearchFailure(
         errorSearch.response
-          ? errorSearch.response.dataSearch
+          ? errorSearch.response.userFrTokenData
           : errorSearch.message
       )
     );
     console.log(
       "errorSearch:",
       errorSearch.response
-        ? errorSearch.response.dataSearch
+        ? errorSearch.response.userFrTokenData
         : errorSearch.message
     );
   }
@@ -83,19 +90,19 @@ export const userSearchFrToken = () => async (dispatch) => {
       }
     );
 
-    dispatch(userSearchSuccess(response.data));
+    dispatch(userSearchFrTokenSuccess(response.data));
   } catch (errorSearch) {
     dispatch(
       userSearchFailure(
         errorSearch.response
-          ? errorSearch.response.dataSearch
+          ? errorSearch.response.userFrTokenData
           : errorSearch.message
       )
     );
     console.log(
       "errorSearch:",
       errorSearch.response
-        ? errorSearch.response.dataSearch
+        ? errorSearch.response.userFrTokenData
         : errorSearch.message
     );
   }

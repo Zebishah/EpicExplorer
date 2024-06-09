@@ -5,7 +5,7 @@ let UserFavrt = new Schema({
         type: String,
         required: true
     },
-    userName: {
+    description: {
         type: String,
         required: true
     },
@@ -13,15 +13,7 @@ let UserFavrt = new Schema({
         type: String,
         required: true
     },
-    name: {
-        type: String,
-        required: true
-    },
-    price: {
-        type: String,
-        required: true
-    },
-    description: {
+    prices: {
         type: String,
         required: true
     },
@@ -29,9 +21,11 @@ let UserFavrt = new Schema({
         type: String,
         required: true
     },
-    available: {
+    name: {
         type: String,
         required: true
-    }
+    },
+
+
 });
 export default mongoose.model('UserFavrt', UserFavrt);

@@ -146,14 +146,15 @@ export const openRoom = async (req, res, next) => {
     let id = req.params.id;
     let room;
     try {
-        room = await Room.findById(id);
+        room = await Room.findById("665c88c717040dedf2b58a49");
+
     } catch (error) {
         return next(error);
     }
 
     if (!room) {
         success = false;
-        return res.status(400).json({ success, message: "room not existed that u are trying to open" });
+        return res.status(400).json({ success, message: "room not" });
     }
 
     let roomServiceIt;
@@ -211,7 +212,7 @@ export const getFormData = async (req, res, next) => {
     }
     let bill, deliveryCharges = "free";
     try {
-        bill = new makingRoomBill({ booking: roomBooking.id, bookerId: user.id, booker: user.name, deliveryCharges: deliveryCharges, totalPrice: room.prices, roomName: room.name, date });
+        bill = new makingRoomBill({ booking: roomBooking.id, bookerId: user.id, booker: user.userName, deliveryCharges: deliveryCharges, totalPrice: room.prices, roomName: room.name, date });
         bill = await bill.save();
 
     } catch (error) {
@@ -334,7 +335,7 @@ export const roomPayment = async (req, res, next) => {
 
             try {
                 room = await Room.findById(roomBooking.roomId);
-                roomHistory = new HotelBookingHistory({ hotelId: roomBooking.hotelId, roomId: roomBooking.roomId, image: roomBooking.image, roomName: roomBooking.roomName, bookingDate: roomBooking.checkInDate, bookerName: roomBooking.bookerName, bookerId: roomBooking.bookerId, checkoutDate: checkoutDate })
+                roomHistory = new HotelBookingHistory({ hotelId: roomBooking.hotelId, roomId: roomBooking.roomId, image: roomBooking.image, roomName: roomBooking.roomName, bookingDate: roomBooking.checkInDate, bookerName: roomBooking.bookerName, bookerEmail: roomBooking.bookerEmail, checkoutDate: checkoutDate })
                 await roomHistory.save();
                 room.bookers.push(user.id);
                 room.bookings.push(roomBooking.checkInDate);//updating attributes information of collections in database
@@ -354,7 +355,7 @@ export const roomPayment = async (req, res, next) => {
 
             try {
                 //saving bill information and updating database data 
-                roomBill = new RoomBill({ booking: roomBooked.roomId, bookerId: user.id, senderAccountId: user.AccountId, ReceiverAccountId: process.env.ADMIN_ACCOUNT_ID, booker: user.name, deliveryCharges: deliveryCharges, totalPrice: room.prices, roomName: room.name, date });
+                roomBill = new RoomBill({ booking: roomBooked.roomId, bookerId: user.id, senderAccountId: user.AccountId, ReceiverAccountId: process.env.ADMIN_ACCOUNT_ID, booker: user.userName, deliveryCharges: deliveryCharges, totalPrice: room.prices, roomName: room.name, date });
                 roomBill = await roomBill.save();
                 await BookingHotel.findOneAndDelete({ roomId: roomBooking.roomId, bookerId: user.id });
                 await makingRoomBill.findOneAndDelete({ bookerId: user.id, booking: roomBooking.id })
@@ -362,6 +363,20 @@ export const roomPayment = async (req, res, next) => {
                 console.log(error)
                 return next(error);
             }
+            let delHotelBooking; //fetching the transport which is being in process for booking by user 
+            try {
+                delHotelBooking = await BookingHotel.findOneAndDelete({ roomId: roomId });
+            } catch (error) {
+                return next(error);
+            }
+
+            let delHotelBill; //fetching the transport which is being in process for booking by user 
+            try {
+                delHotelBill = await makingRoomBill.findOneAndDelete({ bookerId: user.id });
+            } catch (error) {
+                return next(error);
+            }
+
             return res.status(200).json({ success: true, message: "Payment Successful", response: response, roomBooked: roomBooked, roomBill: roomBill });
         } catch (error) {
 

@@ -16,6 +16,7 @@ import TransportRoutes from './Routes/Transport-Routes .js';
 import TourServiceRoutes from './Routes/TourServices-Routes.js';
 import HotelServicesRoutes from './Routes/HotelServices-Routes.js';
 import TransportServicesRoutes from './Routes/TransportServices-Routes .js';
+import UserFavoriteRoutes from './Routes/UserFavrt-Routes.js';
 
 app.use(cors({
     origin: 'http://localhost:5173', // Allow requests from this origin
@@ -29,6 +30,7 @@ let host = process.env.REACT_APP_API_HOST
 
 app.use('/Admin', AdminRoutes);
 app.use('/User', UserRoutes);
+app.use('/UserFavrt', UserFavoriteRoutes);
 app.use('/Tour', TourRoutes);
 app.use('/Hotel', HotelRoutes);
 app.use('/Room', RoomRoutes);

@@ -1,137 +1,79 @@
 import Footer from "./Footer";
 import Navbar from "./Navbar";
 import SideBar from "./SideBar";
+import image1 from "../images/6437523_3313427.jpg";
+import image2 from "../images/full-shot-man-carrying-baggage.jpg";
+import { Link } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { useEffect, useState } from "react";
+import { getUserFavorite } from "../Redux/Slices/ManageUserSlice";
 
 const Favorites = () => {
-  const bookingsData = [
-    {
-      id: "#012",
-      tour: "Swat Tour",
-      name: "Zohaib Haider",
-      email: "zebihaider123@gmail.com",
-      date: "01-22-2010",
-    },
-    {
-      id: "#012",
-      tour: "Swat Tour",
-      name: "Zohaib Haider",
-      email: "zebihaider123@gmail.com",
-      date: "01-22-2010",
-    },
-    {
-      id: "#012",
-      tour: "Swat Tour",
-      name: "Zohaib Haider",
-      email: "zebihaider123@gmail.com",
-      date: "01-22-2010",
-    },
-    {
-      id: "#012",
-      tour: "Swat Tour",
-      name: "Zohaib Haider",
-      email: "zebihaider123@gmail.com",
-      date: "01-22-2010",
-    },
-    {
-      id: "#012",
-      tour: "Swat Tour",
-      name: "Zohaib Haider",
-      email: "zebihaider123@gmail.com",
-      date: "01-22-2010",
-    },
-    {
-      id: "#012",
-      tour: "Swat Tour",
-      name: "Zohaib Haider",
-      email: "zebihaider123@gmail.com",
-      date: "01-22-2010",
-    },
-    {
-      id: "#012",
-      tour: "Swat Tour",
-      name: "Zohaib Haider",
-      email: "zebihaider123@gmail.com",
-      date: "01-22-2010",
-    },
-    {
-      id: "#012",
-      tour: "Swat Tour",
-      name: "Zohaib Haider",
-      email: "zebihaider123@gmail.com",
-      date: "01-22-2010",
-    },
+  const [favrt, setFavrt] = useState([]);
+  const dispatch = useDispatch();
+  const { userFavorite } = useSelector((state) => state.manageUser);
 
-    {
-      id: "#012",
-      tour: "Swat Tour",
-      name: "Zohaib Haider",
-      email: "zebihaider123@gmail.com",
-      date: "01-22-2010",
-    },
-    {
-      id: "#012",
-      tour: "Swat Tour",
-      name: "Zohaib Haider",
-      email: "zebihaider123@gmail.com",
-      date: "01-22-2010",
-    },
-    {
-      id: "#012",
-      tour: "Swat Tour",
-      name: "Zohaib Haider",
-      email: "zebihaider123@gmail.com",
-      date: "01-22-2010",
-    },
-    {
-      id: "#012",
-      tour: "Swat Tour",
-      name: "Zohaib Haider",
-      email: "zebihaider123@gmail.com",
-      date: "01-22-2010",
-    },
-    {
-      id: "#012",
-      tour: "Swat Tour",
-      name: "Zohaib Haider",
-      email: "zebihaider123@gmail.com",
-      date: "01-22-2010",
-    },
+  useEffect(() => {
+    dispatch(getUserFavorite());
+  }, [dispatch]);
 
-    // Add more bookings as needed
-  ];
+  useEffect(() => {
+    if (userFavorite && userFavorite.Favorites) {
+      setFavrt(userFavorite.Favorites);
+    }
+  }, [userFavorite]);
+
   return (
-    <>
+    <div
+      className="flex flex-col min-h-screen bg-center bg-cover"
+      style={{ backgroundImage: `url(${image1})` }}
+    >
       <Navbar />
-      <div className="flex flex-row gap-x-6 h-full bg-light-black w-full overflow-hidden">
+      <div className="flex flex-row gap-x-6 h-full w-full overflow-hidden bg-opacity-0 bg-light-black smd:mt-40 mt-20">
         <SideBar />
-        <div className="bg-light-black min-h-screen flex flex-col justify-center items-center w-[100%]">
-          <h1 className="text-yellows text-4xl font-bold my-10">Favorites</h1>
-          <div className="w-full space-y-4 flex flex-col justify-center items-center">
-            {bookingsData.map((booking, index) => (
+        <div className=" flex flex-col justify-center gap-y-10 p-6 items-center w-[80%]">
+          <h1 className="text-yellows text-4xl font-bold my-10 bg-fade-black p-4 rounded-xl">
+            User Favorites
+          </h1>
+          <div className="flex flex-wrap gap-8 justify-center">
+            {favrt.map((tour, index) => (
               <div
                 key={index}
-                className="bg-fade-black shadow-lg text-white p-4 rounded-lg flex justify-between items-center space-x-4 w-[70%]"
+                className="bg-fade-black shadow-[0_2px_18px_-6px_rgba(0,0,0,0.2)] w-full max-w-sm overflow-hidden font-[sans-serif] flex flex-col"
               >
-                <div className="flex-1 flex flex-col md:flex-row justify-between items-center md:space-x-4">
-                  <span className="font-bold text-yellows">{booking.id}</span>
-                  <span className="font-radios ">{booking.tour}</span>
-                  <span className="font-radios ">{booking.name}</span>
-                  <span className="font-radios ">{booking.email}</span>
-                  <span className="font-radios ">{booking.date}</span>
+                <div className="flex-shrink-0">
+                  <img src={image2} className="w-full" alt="Tour" />
                 </div>
-                <button className="bg-yellows text-gray-900 px-4 py-2 rounded-lg">
-                  Details
-                </button>
+                <div className="px-4 py-6 border-yellows border-2 border-t-0 flex-grow">
+                  <div className="flex flex-row justify-between">
+                    <h3 className="text-yellows text-xl font-radios">
+                      {tour.name}
+                    </h3>
+                    <h3 className="text-yellows text-xl font-radios">
+                      {tour.prices}$
+                    </h3>
+                  </div>
+                  <p className="mt-4 text-sm text-white font-radios">
+                    {tour.description}
+                  </p>
+                  <div className="flex justify-center mt-6">
+                    <Link to={"/BookTour"}>
+                      <button
+                        type="button"
+                        className="px-6 py-2.5 rounded text-sm tracking-wider font-radios border-none outline-none bg-yellows text-black"
+                      >
+                        Book Now
+                      </button>
+                    </Link>
+                  </div>
+                </div>
               </div>
             ))}
           </div>
-          <button className="mt-10 bg-yellows text-gray-900 px-6 py-2 rounded-lg">
-            See More
-          </button>
         </div>
       </div>
       <Footer />
-    </>
+    </div>
   );
 };
 

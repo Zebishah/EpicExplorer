@@ -1,12 +1,12 @@
-import Room from "../Models/Room";
-import Tour from "../Models/Tour";
-import Transport from "../Models/Transport";
-import UserFavrt from "../Models/UserFavrt";
+import Room from "../Models/Room.js";
+import Tour from "../Models/Tour.js";
+import Transport from "../Models/Transport.js";
+import UserFavrt from "../Models/UserFavrt.js";
 
 
 export const addUserFavorite = async (req, res, next) => {
     let user = req.user;
-    let id = req.params.id;
+    let id = req.body.id;
     let checkUserFavrt;
     try {
         checkUserFavrt = await UserFavrt.findOne({ userId: user.id, compId: id });
@@ -14,59 +14,45 @@ export const addUserFavorite = async (req, res, next) => {
         return next(error);
     }
 
-    if (checkUserFavrt) {
-        success = false;
-        return res.status(400).json({ success, message: "This User favorites already exists" })
-    }
 
-    let checkFavrt, Favrt;
-    try {
-        checkFavrt = await Tour.findOne({ id: id });
-    } catch (error) {
-        return next(error);
-    }
-
-    if (!checkFavrt) {
-        success = false;
-        return res.status(400).json({ success, message: "This item not exists in favorites" })
-    }
-    else {
-        Favrt = new UserFavrt({ compId: checkFavrt.id, name: checkFavrt.name, price: checkFavrt.price, description: checkFavrt.description, image: checkFavrt.image, available: checkFavrt.available, userName: user.name, userId: user.id })
+    let tourCheckFavrt, transportCheckFavrt, hotelCheckFavrt, Favrt;
+    tourCheckFavrt = await Tour.findOne({ _id: id });
+    if (tourCheckFavrt) {
+        Favrt = new UserFavrt({ compId: tourCheckFavrt.id, name: tourCheckFavrt.name, prices: tourCheckFavrt.price, description: tourCheckFavrt.description, image: tourCheckFavrt.image, userId: user.id })
         await Favrt.save();
+        user.wishList.push(id);
+        user.save();
+        return res.status(200).json({ success: true, message: "here are your Favrt", Favrt: Favrt })
     }
+
+
     //check for hotel
-    try {
-        checkFavrt = await Room.findOne({ id: id });
-    } catch (error) {
-        return next(error);
+
+    hotelCheckFavrt = await Room.findOne({ _id: id });
+
+    if (hotelCheckFavrt) {
+        Favrt = new UserFavrt({ compId: hotelCheckFavrt.id, name: hotelCheckFavrt.name, prices: hotelCheckFavrt.prices, description: hotelCheckFavrt.description, image: hotelCheckFavrt.image, userId: user.id })
+        await Favrt.save();
+        user.wishList.push(id);
+        user.save();
+        return res.status(200).json({ success: true, message: "here are your Favrt", Favrt: Favrt })
     }
 
-    if (!checkFavrt) {
-        success = false;
-        return res.status(400).json({ success, message: "This item not exists in favorites" })
-    }
-    else {
-        Favrt = new UserFavrt({ compId: checkFavrt.id, name: checkFavrt.name, price: checkFavrt.prices, description: checkFavrt.description, image: checkFavrt.image, available: checkFavrt.available, userName: user.name, userId: user.id })
-        await Favrt.save();
-    }
+
     //check for transport
-    try {
-        checkFavrt = await Transport.findOne({ id: id });
-    } catch (error) {
-        return next(error);
+    transportCheckFavrt = await Transport.findOne({ _id: id });
+    if (transportCheckFavrt) {
+        Favrt = new UserFavrt({ compId: transportCheckFavrt.id, name: transportCheckFavrt.name, prices: transportCheckFavrt.prices, description: transportCheckFavrt.description, image: transportCheckFavrt.image, userId: user.id })
+        await Favrt.save();
+        user.wishList.push(id);
+        user.save();
+        return res.status(200).json({ success: true, message: "here are your Favrt", Favrt: Favrt })
+    }
+    if (!Favrt) {
+        return res.status(400).json({ success: false, message: "that accommodation not found" })
     }
 
-    if (!checkFavrt) {
-        success = false;
-        return res.status(400).json({ success, message: "This item not exists in favorites" })
-    }
-    else {
-        Favrt = new UserFavrt({ compId: checkFavrt.id, name: checkFavrt.name, price: checkFavrt.prices, description: checkFavrt.description, image: checkFavrt.image, available: checkFavrt.available, userName: user.name, userId: user.id })
-        await Favrt.save();
-    }
-    user.wishList.push(compId);
-    user.save();
-    return res.status(200).json({ success: true, message: "here are your Favrt", Favrt: Favrt })
+
 }
 
 export const getUserFavorite = async (req, res, next) => {
@@ -79,12 +65,11 @@ export const getUserFavorite = async (req, res, next) => {
     }
 
     if (!Favorites) {
-        success = false;
-        return res.status(400).json({ success, message: "no Favorites are here" })
+
+        return res.status(400).json({ success: false, message: "no Favorites are here" })
     }
 
-    success = true;
-    return res.status(200).json({ message: "here are your all Favorites", Favorites: Favorites })
+    return res.status(200).json({ success: true, message: "here are your all Favorites", Favorites: Favorites })
 }
 
 export const deleteUserFavorite = async (req, res, next) => {
@@ -97,10 +82,10 @@ export const deleteUserFavorite = async (req, res, next) => {
     }
 
     if (!Favorites) {
-        success = false;
-        return res.status(400).json({ success, message: "no Favorites are here" })
+
+        return res.status(400).json({ success: false, message: "no Favorites are here" })
     }
-    user.wishList.pull(compId);
+    user.wishList.pull(id);
     user.save();
     return res.status(200).json({ success: true, message: "here are your deleted Favorite", Favorites: Favorites })
 }

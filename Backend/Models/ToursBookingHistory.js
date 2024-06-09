@@ -21,9 +21,9 @@ let TourBookingHistory_Schema = new Schema({
         type: String,
         required: true
     },
-    bookerId: {
-        type: mongoose.Types.ObjectId,
-        ref: "User",
+    bookerEmail: {
+        type: String,
+        required: true
     },
     checkOutDate: {
         type: String,

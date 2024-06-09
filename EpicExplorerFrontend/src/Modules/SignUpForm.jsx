@@ -32,7 +32,7 @@ const SignUpForm = () => {
   };
   const handleLoginSuccess = async (tokenResponse) => {
     setGoogleLogin(true);
-    let googleSign = "yes";
+    let googleSign = "true";
     try {
       const token = tokenResponse.access_token;
       const response = await axios.get(
@@ -75,7 +75,7 @@ const SignUpForm = () => {
   };
 
   const handleSubmit = (e) => {
-    let googleSign = "no";
+    let googleSign = "false";
     setGoogleLogin(false);
     e.preventDefault();
     if (!termsCheckbox.checked) {
@@ -115,7 +115,9 @@ const SignUpForm = () => {
     if (data) {
       setLoading(false);
       if (googleLogin == false) {
-        toast.success("OTP Sended for authentication!");
+        toast.success(
+          " User SignedUp successfully and OTP Sended for authentication!"
+        );
       } else {
         toast.success("user signed up successfully");
       }

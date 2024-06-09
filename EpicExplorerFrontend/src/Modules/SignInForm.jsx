@@ -7,6 +7,7 @@ import { useNavigate } from "react-router";
 import { SignIn, resetSignInState } from "../Redux/Slices/SignInSlice";
 import AboveNavbar from "./AboveNavbar";
 import { userSearchFrEmail } from "../Redux/Slices/SearchingUserSlice";
+import { Link } from "react-router-dom";
 
 const SignInForm = () => {
   const navigate = useNavigate();
@@ -123,12 +124,16 @@ const SignInForm = () => {
               <span className="relative z-10 text-radios text-lg">Login</span>
             </button>
             <div className="flex-flex-row gap-x-4">
-              <span className="text-sm ml-2 text-yellows font-radios cursor-pointer">
-                Forgot Password ?
-              </span>
-              <span className="text-sm ml-2 text-white font-radios cursor-pointer hover:text-yellows">
-                Register Account
-              </span>
+              <Link to={"/ResetPassword"}>
+                <span className="text-sm ml-2 text-yellows font-radios cursor-pointer">
+                  Forgot Password ?
+                </span>
+              </Link>
+              <Link to={"/signUp"}>
+                <span className="text-sm ml-2 text-white font-radios cursor-pointer hover:text-yellows">
+                  Register Account
+                </span>
+              </Link>
             </div>
           </div>
         </form>

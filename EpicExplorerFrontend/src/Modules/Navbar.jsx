@@ -1,7 +1,7 @@
 import { faCartShopping } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useState } from "react";
-import { ToastContainer, toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
 import image2 from "../images/Epic_Explorer__1_-removebg-preview.png";
 import image from "../images/man-user-circle-icon.png";
@@ -32,21 +32,20 @@ import {
 // import AboveNavbar from "./AboveNavbar";
 const Navbar = () => {
   const [isPackagesOpen, setIsPackagesOpen] = useState(false);
+  const [imageReal, setImage] = useState("");
   const [isBookingsOpen, setIsBookingsOpen] = useState(false);
   const [userName, setUserName] = useState("");
   const dispatch = useDispatch();
-  const { errorSearch, dataSearch } = useSelector((state) => state.userSearch);
+  const { userFrTokenData } = useSelector((state) => state.userSearch);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   useEffect(() => {
     dispatch(userSearchFrToken());
   }, [dispatch]);
 
   useEffect(() => {
-    if (errorSearch) {
-      toast.error("Token not found");
-    }
-    if (dataSearch) {
-      setUserName(dataSearch.userInfo.userName);
+    if (userFrTokenData) {
+      setUserName(userFrTokenData.userInfo.userName);
+      setImage(userFrTokenData.userInfo.pic);
       // Use a timeout to reset the state after 5 seconds
       const timer = setTimeout(() => {
         dispatch(resetUserSearchState());
@@ -54,7 +53,7 @@ const Navbar = () => {
       // Clear the timer on component unmount or if data/error changes
       return () => clearTimeout(timer);
     }
-  }, [dataSearch, errorSearch, dispatch]);
+  }, [userFrTokenData, dispatch]);
 
   return (
     <div className="flex flex-col gap-y-1 z-20 w-screen">
@@ -259,7 +258,11 @@ const Navbar = () => {
                 {" "}
                 <div className="flex flex-row gap-x-1 justify-center items-center ">
                   <div className="rounded-full overflow-hidden mr-4 ">
-                    <img src={image} alt="image" className="w-10 h-10" />
+                    <img
+                      src={imageReal ? imageReal : image}
+                      alt="image"
+                      className="w-10 h-10"
+                    />
                   </div>
                   <p className="text-yellows text-lg font-radios">{userName}</p>
                 </div>

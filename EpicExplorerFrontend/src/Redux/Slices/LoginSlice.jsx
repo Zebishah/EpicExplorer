@@ -55,7 +55,7 @@ export const signUp = ({
         },
       }
     );
-    if (googleSign == "yes") {
+    if (googleSign == "true") {
       const { token } = response.data;
       localStorage.setItem("jwtToken", token);
     }

@@ -1,4 +1,3 @@
-import image1 from "../images/v1016-b-09.jpg";
 import {
   faBriefcase,
   faEdit,

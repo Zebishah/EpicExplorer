@@ -6,9 +6,23 @@ import LatestTours from "./LatestTours";
 import OtherBookings from "./OtherBookings";
 import Reviews from "./Reviews";
 import TourPackages from "./TourPackages";
+import { useNavigate } from "react-router-dom";
 
 import WhyEpicExplorer from "./WhyEpicExplorer";
+import { useEffect } from "react";
+import isTokenExpired from "../../util/tokenExpiry";
 const LandingPage = () => {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = localStorage.getItem("jwtToken"); // Retrieve your token from localStorage or any other storage
+
+    if (isTokenExpired(token)) {
+      // Token is expired, log out the user
+      localStorage.removeItem("jwtToken"); // Remove the token from storage
+      navigate("/SignIn"); // Redirect to login page
+    }
+  }, [navigate]);
   const BookTour = (e) => {
     e.preventDefault();
     console.log("Book Tour");

@@ -1,6 +1,6 @@
 import express from 'express';
 
-import { checkUserBalance, confirmOrder, confirmOrders, createUser, deleteUser, forgetPassword, getUserFrEmail, getUserFrToken, getUserInfo, getUsers, requestBalance, resendOtp, resetPassword, searchUserStellarAcc, stellarLedger, stellarPayment, updatePassword, updateUser, userHotelBookings, userLogin, userTourBookings, userTransportBookings, verifyOTP } from '../Controllers/User-Controllers.js';
+import { checkUserBalance, confirmOrder, confirmOrders, countUserBookedRooms, countUserBookedTours, countUserBookedTransport, countUserTransactions, createUser, deleteUser, forgetPassword, getUserFrEmail, getUserFrToken, getUserInfo, getUsers, requestBalance, resendOtp, resetPassword, searchUserStellarAcc, stellarLedger, stellarPayment, updatePassword, updateUser, userHotelBookings, userLogin, userTourBookings, userTransportBookings, verifyOTP } from '../Controllers/User-Controllers.js';
 import verifyToken from '../middleware/IdFromToken.js';
 import UserFromEmail from '../middleware/UserFromEmail.js';
 import getallUser from '../middleware/AllUser.js';
@@ -23,13 +23,13 @@ UserRoutes.get('/checkUserBalance', verifyToken, getUserById, checkUserBalance);
 
 UserRoutes.post('/deleteUser/:id', verifyToken, deleteUser);
 
-UserRoutes.post('/updateUser/:id', verifyToken, updateUser);
+UserRoutes.post('/updateUser', verifyToken, getUserById, updateUser);
 
 UserRoutes.post('/updatePassword', verifyToken, getUserById, updatePassword);
 
 UserRoutes.post('/forgetPassword', UserFromEmail, forgetPassword);
 
-UserRoutes.post("/resetPassword", verifyToken, getUserById, resetPassword);
+UserRoutes.post("/resetPassword", UserFromEmail, resetPassword);
 
 UserRoutes.post('/create-payment-intent', verifyToken, confirmOrder);
 
@@ -39,15 +39,23 @@ UserRoutes.post('/requestBalance', verifyToken, getUserById, requestBalance);
 
 UserRoutes.post('/stellarPayment/:id', verifyToken, getUserById, stellarPayment);
 
-UserRoutes.post("/TourHistory/:id", verifyToken, getUserById, userTourBookings);
+UserRoutes.post("/TourHistory", verifyToken, getUserById, userTourBookings);
 
-UserRoutes.post("/TransportHistory/:id", verifyToken, getUserById, userTransportBookings);
+UserRoutes.post("/TransportHistory", verifyToken, getUserById, userTransportBookings);
 
-UserRoutes.post("/HotelHistory/:id", verifyToken, getUserById, userHotelBookings);
+UserRoutes.post("/HotelHistory", verifyToken, getUserById, userHotelBookings);
 
 UserRoutes.post("/userInfo/:id", verifyToken, getUserById, getUserInfo);
 
 UserRoutes.post("/userInfo", verifyToken, getUserById, getUserFrToken);
+
+UserRoutes.post("/toursBooked", verifyToken, getUserById, countUserBookedTours);
+
+UserRoutes.post("/userTotalTransactions", verifyToken, getUserById, countUserTransactions);
+
+UserRoutes.post("/transportBooked", verifyToken, getUserById, countUserBookedTransport);
+
+UserRoutes.post("/RoomsBooked", verifyToken, getUserById, countUserBookedRooms);
 
 UserRoutes.post("/userInfoFrEmail", getUserFrEmail);
 

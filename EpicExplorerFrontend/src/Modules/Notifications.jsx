@@ -2,7 +2,7 @@ import Footer from "./Footer";
 import Navbar from "./Navbar";
 import Notification from "./Notification";
 import SideBar from "./SideBar";
-
+import image1 from "../images/6437523_3313427.jpg";
 const Notifications = () => {
   const notifications = [
     {
@@ -22,12 +22,15 @@ const Notifications = () => {
     },
   ];
   return (
-    <>
+    <div
+      className="flex flex-col min-h-screen bg-center bg-cover"
+      style={{ backgroundImage: `url(${image1})` }}
+    >
       <Navbar />
-      <div className="flex flex-row gap-x-6 h-full bg-light-black w-full overflow-hidden">
+      <div className="flex flex-row gap-x-6 h-full w-full overflow-hidden bg-opacity-0 bg-light-black smd:mt-40 mt-20">
         <SideBar />
-        <div className="flex flex-col gap-y-9 items-center justify-center smd:w-[70%] w-[95%] mt-6">
-          <h1 className="text-yellows text-xl text-radios">
+        <div className="flex flex-col gap-y-10 p-6 items-center w-[80%] ">
+          <h1 className="text-yellows text-lg lg:text-4xl font-joining bg-light-black bg-opacity-60 p-4 rounded-lg">
             User Notifications
           </h1>
           <div className="flex flex-col gap-y-5 flex-grow flex-wrap items-center min-h-screen smd:w-[75%] w-[90%]">
@@ -43,7 +46,7 @@ const Notifications = () => {
       </div>
 
       <Footer />
-    </>
+    </div>
   );
 };
 

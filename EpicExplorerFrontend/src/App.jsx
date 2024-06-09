@@ -20,7 +20,6 @@ import ContactUs from "./Modules/ContactUs";
 import DiscountedTours from "./Modules/DiscountedTours";
 import Blogs from "./Modules/Blogs";
 import FamilyTour from "./Modules/FamilyTour";
-import Bookings from "./Modules/Bookings";
 import Favorites from "./Modules/Favorites";
 import UserProfile from "./Modules/UserProfile";
 import Dashboard from "./Modules/Dashboard";
@@ -34,6 +33,13 @@ import Ticket from "./Modules/Ticket";
 import PaymentSuccess from "./Modules/PaymentSuccess";
 import OtpPage from "./Modules/OtpPage";
 import SignInWithGoogle from "./Modules/SignInWithGoogle";
+import BookingOptions from "./Modules/BookingOptions";
+import TourBookings from "./Modules/TourBookings";
+import TransportBookings from "./Modules/TransportBookings";
+import HotelBookings from "./Modules/HotelBookings";
+import ForgetPassword from "./Modules/ForgetPassword";
+import UpdatePassword from "./Modules/UpdatePassword";
+import IndependentOTP from "./Modules/IndependentOTP";
 
 function App() {
   return (
@@ -41,6 +47,12 @@ function App() {
       <Router>
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/indOtp" element={<IndependentOTP />} />
+          <Route path="/UpdatePassword" element={<UpdatePassword />} />
+          <Route path="/ResetPassword" element={<ForgetPassword />} />
+          <Route path="/tourBooked" element={<TourBookings />} />
+          <Route path="/transportBooked" element={<TransportBookings />} />
+          <Route path="/hotelBooked" element={<HotelBookings />} />
           <Route path="/SignInWithGoogle" element={<SignInWithGoogle />} />
           <Route path="/OTP" element={<OtpPage />} />
           <Route path="/Notifications" element={<Notifications />} />
@@ -48,7 +60,7 @@ function App() {
           <Route path="/UserBooking" element={<UserBookingsRecord />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/userProfile" element={<UserProfile />} />
-          <Route path="/Bookings" element={<Bookings />} />
+          <Route path="/Bookings" element={<BookingOptions />} />
           <Route path="/Favorites" element={<Favorites />} />
           <Route path="/FamilyTour" element={<FamilyTour />} />
           <Route path="/Blogs" element={<Blogs />} />

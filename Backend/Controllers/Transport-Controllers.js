@@ -87,9 +87,9 @@ export const deleteTransport = async (req, res, next) => {
         return res.status(400).json({ success: true, message: "Transport not existed that u are trying to delete" });
     }
     let date = new Date();
-    let notificationAdmin = new NotificationsAdmin({ accommodationName: user.name, Category: "new transport deleted", message: `one transport ${carName} is deleted from our site `, date: date })
+    let notificationAdmin = new NotificationsAdmin({ accommodationName: user.userName, Category: "new transport deleted", message: `one transport ${carName} is deleted from our site `, date: date })
     await notificationAdmin.save();
-    let notificationUser = new NotificationsUser({ accommodationName: user.name, Category: "new transport deleted", message: `new transport ${carName} is deleted....`, date: date })
+    let notificationUser = new NotificationsUser({ accommodationName: user.userName, Category: "new transport deleted", message: `new transport ${carName} is deleted....`, date: date })
     await notificationUser.save();
     return res.status(200).json({ success: false, message: "Transport deleted successfully", deleteTransport: deleteTransport, admin: adminId })
 }
@@ -170,7 +170,7 @@ export const getFormData = async (req, res, next) => {
     let id = req.params.id;
     let { travelers, bookerName, bookerEmail, bookerPhone, bookerAddress, suggestion, members, days, seats } = req.body;
     let user = await req.user;
-    console.log(user)
+
     let transport;
     try {
         transport = await Transport.findById(id);
@@ -208,7 +208,7 @@ export const getFormData = async (req, res, next) => {
 
     try {
 
-        bill = new makingTransportBill({ booking: transportBooking.id, bookerId: user.id, booker: user.name, deliveryCharges: deliveryCharges, totalPrice: transport.prices, transportName: transport.carName, date });
+        bill = new makingTransportBill({ booking: transportBooking.id, bookerId: user.id, booker: user.userName, deliveryCharges: deliveryCharges, totalPrice: transport.prices, transportName: transport.carName, date });
         bill = await bill.save();
 
     } catch (error) {
@@ -315,7 +315,7 @@ export const transportPayment = async (req, res, next) => {
                 // Format the checkout date as YYYY-MM-DD
                 const checkoutDate = checkout.toISOString().split('T')[0];
 
-                transportHistory = new TransportBookingHistory({ transportId: transportBooking.transportId, image: transportBooking.image, carName: transportBooking.carName, checkOutDate: checkoutDate, bookingDate: transportBooking.checkInDate, bookersName: transportBooking.bookerName, bookersId: transportBooking.bookerId })
+                transportHistory = new TransportBookingHistory({ transportId: transportBooking.transportId, image: transportBooking.image, carName: transportBooking.carName, checkOutDate: checkoutDate, bookingDate: transportBooking.checkInDate, bookersName: transportBooking.bookerName, bookerEmail: transportBooking.bookerEmail })
                 await transportHistory.save();
                 transport.bookers.push(user.id);
                 transport.bookings.push(transportBooking.checkInDate); //updating attributes information of collections in database
@@ -335,17 +335,32 @@ export const transportPayment = async (req, res, next) => {
             try {
                 //saving bill information and updating database data
                 let date = new Date();
-                transportBill = new TransportBill({ booking: transportBooked.id, bookerId: user.id, senderAccountId: user.AccountId, ReceiverAccountId: process.env.ADMIN_ACCOUNT_ID, booker: user.name, deliveryCharges: deliveryCharges, totalPrice: transportBooking.prices, transportName: transportBooking.carName, date });
+                transportBill = new TransportBill({ booking: transportBooked.id, bookerId: user.id, senderAccountId: user.AccountId, ReceiverAccountId: process.env.ADMIN_ACCOUNT_ID, booker: user.userName, deliveryCharges: deliveryCharges, totalPrice: transportBooking.prices, transportName: transportBooking.carName, date });
                 transportBill = await transportBill.save();
-
-                let notificationAdmin = new NotificationsAdmin({ accommodationName: user.name, Category: "transport booking payment", message: `one transport ${transportBooking.carName} is booked just now and payment happened `, date: date })
+                let notificationAdmin = new NotificationsAdmin({ accommodationName: user.userName, Category: "transport booking payment", message: `one transport ${transportBooking.carName} is booked just now and payment happened `, date: date })
                 await notificationAdmin.save();
-                let notificationUser = new NotificationsUser({ accommodationName: user.name, Category: "transport booking payment", message: `${user.name} you did payment of this transport ${transportBooking.carName}....`, date: date })
+                let notificationUser = new NotificationsUser({ accommodationName: user.userName, Category: "transport booking payment", message: `${user.userName} you did payment of this transport ${transportBooking.carName}....`, date: date })
                 await notificationUser.save();
             } catch (error) {
                 console.log(error)
                 return next(error);
             }
+            let delTransportBooking; //fetching the transport which is being in process for booking by user 
+            try {
+                delTransportBooking = await BookingTransport.findOneAndDelete({ transportId: transportId });
+            } catch (error) {
+                return next(error);
+            }
+
+            let delTransportBill; //fetching the transport which is being in process for booking by user 
+            try {
+                delTransportBill = await makingTransportBill.findOneAndDelete({ bookerId: user.id });
+                console.log(delTransportBill)
+            } catch (error) {
+                console.log(error)
+                return next(error);
+            }
+
             return res.status(200).json({ success: true, message: "Payment Successful", response: response, transportBooked: transportBooked, transportBill: transportBill });
         } catch (error) {
 

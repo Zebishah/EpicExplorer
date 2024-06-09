@@ -21,7 +21,7 @@ let TransportBookingHistory_Schema = new Schema({
         type: String,
         required: true
     },
-    bookersId: {
+    bookerEmail: {
         type: String,
         required: true
     },

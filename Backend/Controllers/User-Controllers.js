@@ -80,7 +80,14 @@ export const createUser = async (req, res, next) => {
             Balance = balance.balance;
         }
     });
-    let verifiedStatus = false;
+    let verifiedStatus
+    if (googleSign == "false") {
+        verifiedStatus = "false";
+    }
+    else {
+        verifiedStatus = "true";
+    }
+
     try {
 
 
@@ -199,9 +206,7 @@ export const verifyOTP = async (req, res, next) => {
         }
         await UserOTP.findOneAndDelete({ email: email, otp: otp })
 
-        let date = new Date();
-        let notificationAdmin = new NotificationsAdmin({ accommodationName: "userCreated", Category: "user", message: `One user ${realUser.userName} is added to our site`, date });
-        await notificationAdmin.save();
+
         const options = {
             email: realUser.email, AccountId: realUser.AccountId, SecretSeed: realUser.SecretSeed, message: `Your account has been verified and created successfully. Here are your Stellar account attributes: AccountId ${realUser.AccountId} and SecretSeed ${realUser.SecretSeed} `
         };
@@ -210,8 +215,12 @@ export const verifyOTP = async (req, res, next) => {
         } catch (error) {
             return res.status(400).json({ error: error.message });
         }
+        let date = new Date();
+        let notificationAdmin = new NotificationsAdmin({ accommodationName: "userCreated", Category: "user", message: `One user ${realUser.userName} is added to our site`, date });
+        await notificationAdmin.save();
 
-
+        realUser.verifiedStatus = "true"
+        realUser.save();
         return res.status(200).json({ success: true, message: 'User signed up successfully and verified' });
     } catch (error) {
         return res.status(400).json({ error: error.message });
@@ -264,33 +273,26 @@ export const deleteUser = async (req, res, next) => {
     return res.status(200).json({ success: true, message: "User deleted successfully", deletedUser: deletedUser, statusCode: 200 })
 }
 export const updateUser = async (req, res, next) => {
-    let id = req.params.id;
-    const { name, price, startDate, endDate, description, newImage, available, image, departureTime, Departure_ReturnLocation, type } = req.body;
-
-    let user;
-    try {
-        user = await User.findById(id);
-    } catch (error) {
-        return next(error);
-    }
+    let user = req.user;
+    const { fullName, address, phoneNo, city, imageUrl } = req.body;
 
     if (!user) {
         return res.status(400).json({ success: false, message: "user not existed" });
     }
 
     // Update user information
-    user.userName = userName || user.userName;
-    user.email = email || user.email;
-    user.phone = phone || user.phone;
+    user.userName = fullName || user.userName;
+    user.phone = phoneNo || user.phone;
     user.address = address || user.address;
     user.city = city || user.city;
+    user.pic = imageUrl || user.pic;
 
 
     await user.save();
     let date = new Date();
-    let notificationAdmin = new NotificationsAdmin({ accommodationName: user.name, Category: "user is updated", message: `one user ${user.name} information is updated in our site`, date: date })
+    let notificationAdmin = new NotificationsAdmin({ accommodationName: user.userName, Category: "user is updated", message: `one user ${user.userName} information is updated in our site`, date: date })
     await notificationAdmin.save();
-    let notificationUser = new NotificationsUser({ accommodationName: user.name, Category: "user is updated", message: `one user ${user.name} information is updated in our site`, date: date })
+    let notificationUser = new NotificationsUser({ accommodationName: user.userName, Category: "user is updated", message: `one user ${user.userName} information is updated in our site`, date: date })
     await notificationUser.save();
     return res.status(200).json({ success: true, message: 'user updated successfully', user: user });
 
@@ -300,17 +302,12 @@ export const updatePassword = async (req, res, next) => {
     let { oldPassword, newPassword, confirmPassword } = req.body;
     let user = req.user; //getting User from middleware
 
-    if ((oldPassword.trim() === "" || newPassword.trim() === "" || confirmPassword.trim() === "")) {
-        return res.status(400).json({ success: false, message: "enter ur credentials first", statusCode: 400 });
-    }
-
     if (confirmPassword !== newPassword) {
         return res.status(400).json({ success: false, message: "passwords are not matching with each other", statusCode: 400 });
     }
     const isCorrectPassword = bcrypt.compareSync(oldPassword, user.password); //comparing Passwords 
-    if (!(isCorrectPassword)) {
+    if (!isCorrectPassword) {
         return res.status(400).json({ success: false, message: "wrong old password", statusCode: 400 });
-
     }
     const hashedNewPassword = bcrypt.hashSync(newPassword, 10); //hashing new Password
     user.password = hashedNewPassword;
@@ -323,8 +320,9 @@ export const forgetPassword = async (req, res, next) => {
     let hash = await tokenCreation(user);
 
     try {
+        console.log(user)
         //making reset URL
-        const resetUrl = `${process.env.BASE_URL}/User/resetPassword`;
+        const resetUrl = `http://localhost:5173/UpdatePassword/?email=${encodeURIComponent(user.email)}&hash=${encodeURIComponent(hash)}`;
 
         const message = `<p>Please click the following link to reset your password:</p>
               <p><a href="${resetUrl}">${resetUrl}</a></p>`;
@@ -349,10 +347,15 @@ export const forgetPassword = async (req, res, next) => {
 }
 export const resetPassword = async (req, res, next) => {
 
-    let user = await req.user; //getting User from middleware
-    const hash = req.header('hash');
-    let id = user.id;
+    let user = await req.user;
+    //getting User from middleware
+    const hash = req.body.hash;
+
+    if (!hash) {
+        return res.status(400).json({ success: false, message: "no hash found", statusCode: 400 });
+    }
     try {
+        console.log("hey")
         const token = await Token.findOne({ token: hash });
         if (!token) {
             return res.status(400).json({ success: false, message: "Invalid token found...", statusCode: 400 });
@@ -563,7 +566,7 @@ export const stellarPayment = async (req, res, next) => {
 
             try {
                 tour = await Tour.findById(tourBooking.tourId); //adding booked tour information in database
-                tourHistory = new ToursBookingHistory({ tourId: tourBooking.tourId, name: tourBooking.name, image: tourBooking.image, bookingDate: tourBooking.checkInDate, bookerName: tourBooking.bookerName, bookerId: tourBooking.bookerId, checkOutDate: tour.endDate })
+                tourHistory = new ToursBookingHistory({ tourId: tourBooking.tourId, name: tourBooking.name, image: tourBooking.image, bookingDate: tourBooking.checkInDate, bookerName: tourBooking.bookerName, bookerEmail: tourBooking.bookerEmail, checkOutDate: tour.endDate })
                 await tourHistory.save();
                 if (!tourHistory) {
                     return res.status(400).json({ success: false, message: "tour history you created is null", statusCode: 400 });
@@ -615,14 +618,14 @@ export const stellarPayment = async (req, res, next) => {
 };
 export const userTourBookings = async (req, res, next) => {
     let user = req.user;//getting User from middleware
-    let tourId = req.params.id;
+
     let TourBookings;
     try { // searching specific user tour bookings
-        TourBookings = await ToursBookingHistory.find({ bookerId: user.id, tourId: tourId });
+        TourBookings = await ToursBookingHistory.find({ bookerEmail: user.email });
     } catch (error) {
         return next(error);
     }
-    if (TourBookings == "") {
+    if (!TourBookings) {
         return res.status(400).json({ success: false, message: "no TourBookings are here", statusCode: 400 })
     }
 
@@ -630,10 +633,10 @@ export const userTourBookings = async (req, res, next) => {
 }
 export const userHotelBookings = async (req, res, next) => {
     let user = req.user;//getting User from middleware
-    let hotelId = req.params.id;
+
     let HotelBookings;
     try { // searching specific user Hotel bookings
-        HotelBookings = await HotelBookingHistory.find({ bookerId: user.id, hotelId: hotelId });
+        HotelBookings = await HotelBookingHistory.find({ bookerEmail: user.email });
     } catch (error) {
         return next(error);
     }
@@ -646,10 +649,10 @@ export const userHotelBookings = async (req, res, next) => {
 }
 export const userTransportBookings = async (req, res, next) => {
     let user = req.user;//getting User from middleware
-    let transportId = req.params.id;
+
     let TransportBookings;
     try {  // searching specific user Transport bookings
-        TransportBookings = await TransportBookingHistory.find({ bookerId: user.id, transportId: transportId });
+        TransportBookings = await TransportBookingHistory.find({ bookerEmail: user.email });
     } catch (error) {
         return next(error);
     }
@@ -662,7 +665,7 @@ export const userTransportBookings = async (req, res, next) => {
 }
 
 export const getUserInfo = async (req, res, next) => {
-    let user = req.user;
+    let user = await req.user;
     let id = req.params.id;//getting User from middleware
     let userInfo;
     try {  // fetching specific user info
@@ -736,4 +739,81 @@ export const searchUserStellarAcc = async (req, res, next) => {
     else {
         return res.status(400).json({ success: false, message: "no account are here", error, statusCode: 400 })
     }
+}
+
+export const countUserBookedTours = async (req, res, next) => {
+
+
+    let user = await req.user;
+    let toursCount;
+    try {
+
+        toursCount = await ToursBookingHistory.find({ bookerEmail: user.email }).estimatedDocumentCount();
+
+    } catch (error) {
+        return next(error);
+    }
+
+    success = true
+    res.status(200).json({ success, message: "user booked that much tours", toursCount: toursCount })
+}
+
+export const countUserTransactions = async (req, res, next) => {
+    let user = await req.user;
+    let toursCount;
+    try {
+
+        toursCount = await ToursBookingHistory.find({ bookerEmail: user.email }).estimatedDocumentCount();
+
+    } catch (error) {
+        return next(error);
+    }
+    let hotelsCount;
+    try {
+
+        hotelsCount = await HotelBookingHistory.find({ bookerEmail: user.email }).estimatedDocumentCount();
+
+    } catch (error) {
+        return next(error);
+    }
+    let transportCount
+    try {
+
+        transportCount = await TransportBookingHistory.find({ bookerEmail: user.email }).estimatedDocumentCount();
+
+    } catch (error) {
+        return next(error);
+    }
+    const totalTransactions = toursCount + hotelsCount + transportCount;
+    success = true
+    res.status(200).json({ success, message: "User transactions Count", totalTransactions: totalTransactions })
+}
+
+export const countUserBookedTransport = async (req, res, next) => {
+    let user = await req.user;
+    let transportCount;
+    try {
+
+        transportCount = await TransportBookingHistory.find({ bookerEmail: user.email }).estimatedDocumentCount();
+
+    } catch (error) {
+        return next(error);
+    }
+
+    success = true
+    res.status(200).json({ success, message: "user booked that much transport", transportCount: transportCount })
+}
+export const countUserBookedRooms = async (req, res, next) => {
+    let user = await req.user;
+    let hotelsCount;
+    try {
+
+        hotelsCount = await HotelBookingHistory.find({ bookerEmail: user.email }).estimatedDocumentCount();
+
+    } catch (error) {
+        return next(error);
+    }
+
+    success = true
+    res.status(200).json({ success, message: "user booked that much rooms", hotelsCount: hotelsCount })
 }
