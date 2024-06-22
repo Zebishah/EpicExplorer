@@ -8,7 +8,7 @@ const userInfoSlice = createSlice({
     transportsBooked: null,
     hotelsBooked: null,
     transactions: null,
-
+    notifications: [],
     loading: false,
     errorSearch: null,
   },
@@ -33,6 +33,10 @@ const userInfoSlice = createSlice({
       state.loading = false;
       state.transactions = action.payload;
     },
+    userNotificationSuccess: (state, action) => {
+      state.loading = false;
+      state.notifications = action.payload;
+    },
     userSearchFailure: (state, action) => {
       state.loading = false;
       state.errorSearch = action.payload;
@@ -54,6 +58,7 @@ export const {
   userTransportSuccess,
   userHotelsSuccess,
   userTransactionsSuccess,
+  userNotificationSuccess,
   userSearchFailure,
   resetUserSearchState,
 } = userInfoSlice.actions;
@@ -175,6 +180,33 @@ export const userTransactions = () => async (dispatch) => {
       "errorSearch:",
       errorSearch.response ? errorSearch.response.data : errorSearch.message
     );
+  }
+};
+
+export const userNotifications = () => async (dispatch) => {
+  dispatch(userSearchRequest());
+  const token = localStorage.getItem("jwtToken");
+
+  try {
+    const response = await axios.post(
+      `http://localhost:5000/Notification/getUserNotifications`,
+      {},
+      {
+        headers: {
+          "Content-Type": "application/json",
+          auth_token: token,
+        },
+      }
+    );
+
+    dispatch(userNotificationSuccess(response.data));
+  } catch (errorSearch) {
+    const errorMessage =
+      errorSearch.response && errorSearch.response.data
+        ? errorSearch.response.data.message
+        : errorSearch.message;
+    dispatch(userSearchFailure(errorMessage));
+    console.log("errorSearch:", errorMessage);
   }
 };
 

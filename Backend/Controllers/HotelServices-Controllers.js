@@ -1,5 +1,7 @@
 import dotenv from 'dotenv';
 import ItServicesHotel from '../Models/ItServicesHotel.js';
+import NotificationsAdmin from '../Models/NotificationsAdmin.js';
+import notifyUsers from '../Utils/NotifyUser.js';
 dotenv.config();
 
 let success = null;
@@ -30,6 +32,9 @@ export const addHotelServices = async (req, res, next) => {
     if (!servicesIT) {
         return res.status(400).json({ success: false, message: "Hotel Services and itrenary is not created" });
     }
+    let date = new Date();
+    let notificationAdmin = new NotificationsAdmin({ accommodationName: "Hotel Service added Successfully", Category: "Hotel-Service Added", message: `New Hotel Service is added to our website is added to our site`, date });
+    await notificationAdmin.save();
     return res.status(200).json({ success: true, message: "Hotel Services and itrenary is created", servicesIT: servicesIT });
 
 

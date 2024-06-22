@@ -4,24 +4,23 @@ import SideBar from "./SideBar";
 import image1 from "../images/6437523_3313427.jpg";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
-import { userTransportBooking } from "../Redux/Slices/UserBookingSlice";
+import { userHotelPayment } from "../Redux/Slices/UserBookingSlice";
 import { useNavigate } from "react-router";
-
-const TransportBookings = () => {
-  const [transport, setTransport] = useState([]);
-  const navigate = useNavigate();
+const HotelPayments = () => {
+  const [hotels, setHotels] = useState([]);
   const dispatch = useDispatch();
-  const { transportBooking } = useSelector((state) => state.userBookings);
-
+  const { hotelPayment } = useSelector((state) => state.userBookings);
+  const navigate = useNavigate();
   useEffect(() => {
-    dispatch(userTransportBooking());
+    dispatch(userHotelPayment());
   }, [dispatch]);
 
   useEffect(() => {
-    if (transportBooking && transportBooking.TransportBookings) {
-      setTransport(transportBooking.TransportBookings);
+    if (hotelPayment && hotelPayment.UserHotelBill) {
+      setHotels(hotelPayment.UserHotelBill);
     }
-  }, [transportBooking]);
+    console.log(hotelPayment);
+  }, [hotelPayment]);
   const formatDate = (dateString) => {
     const options = { day: "2-digit", month: "2-digit", year: "numeric" };
     return new Intl.DateTimeFormat("en-GB", options).format(
@@ -29,7 +28,8 @@ const TransportBookings = () => {
     );
   };
   let showDetails = (id) => {
-    navigate(`/TransportBookingDet?id=${encodeURIComponent(id)}`);
+    console.log(id);
+    navigate(`/HotelPaymentDet?id=${encodeURIComponent(id)}`);
   };
   return (
     <div
@@ -41,10 +41,10 @@ const TransportBookings = () => {
         <SideBar />
         <div className=" flex flex-col justify-center gap-y-10 p-6 items-center w-[80%]">
           <h1 className="text-yellows text-4xl font-bold my-10 bg-fade-black p-4 rounded-xl">
-            Transport Bookings
+            Hotel Payments
           </h1>
           <div className="w-full space-y-4 flex flex-col justify-center items-center">
-            {transport.map((transport, index) => (
+            {hotels.map((hotel, index) => (
               <div
                 key={index}
                 className="bg-fade-black shadow-lg text-white p-4 rounded-lg flex justify-between items-center space-x-4 w-[70%]"
@@ -53,26 +53,21 @@ const TransportBookings = () => {
                   <span className="font-bold text-yellows">
                     # {String(index + 1).padStart(2, "0")}
                   </span>
-                  <span className="font-radios ">{transport.carName}</span>
-                  <span className="font-radios ">{transport.bookersName}</span>
-                  <span className="font-radios ">{transport.bookerEmail}</span>
-                  <span className="font-radios ">
-                    {formatDate(transport.bookingDate)}
-                  </span>
+                  <span className="font-radios ">{hotel.roomName}</span>
+                  <span className="font-radios ">{hotel.booker}</span>
+                  <span className="font-radios ">{hotel.totalPrice}</span>
+                  <span className="font-radios ">{formatDate(hotel.date)}</span>
                 </div>
                 <button
                   className="bg-yellows text-gray-900 px-4 py-2 rounded-lg"
-                  onClick={() => showDetails(transport.transportId)}
+                  onClick={() => showDetails(hotel.booking)}
                 >
                   Details
                 </button>
               </div>
             ))}
           </div>
-          <button
-            type="button"
-            className="mt-10 bg-fade-black text-yellows px-6 py-2 rounded-lg"
-          >
+          <button className="mt-10 bg-fade-black text-yellows px-6 py-2 rounded-lg">
             See More
           </button>
         </div>
@@ -82,4 +77,4 @@ const TransportBookings = () => {
   );
 };
 
-export default TransportBookings;
+export default HotelPayments;

@@ -16,16 +16,16 @@ import { Server } from 'stellar-sdk/lib/horizon/server.js';
 import StellarTransaction from '../Utils/Transaction.js';
 import NotificationsAdmin from '../Models/NotificationsAdmin.js';
 import NotificationsUser from '../Models/NotificationsUser.js';
+import PublicNotifications from '../Models/PublicNotifications.js';
 const server = new Server("https://horizon-testnet.stellar.org/");
+import notifyUsers from '../Utils/NotifyUser.js';
 const app = express();
 dotenv.config();
 let success = null;
 export const addTransport = async (req, res, next) => {
     let transportNo = 0;
-
+    let date = new Date();
     let { carName, prices, seats, type, description, image, gallery, features, allowedGuests, reviews, available, bookers, bookings, bookedCount } = req.body;
-
-    let admin = req.admin;
 
     let existingTransport;
     try {
@@ -44,13 +44,24 @@ export const addTransport = async (req, res, next) => {
         transport = new Transport({ transportNo, carName, prices, seats, type, description, image, gallery, features, allowedGuests, reviews, available, bookers, bookings, bookedCount });
         transport = await transport.save();
         let date = new Date();
-        let notificationAdmin = new NotificationsAdmin({ accommodationName: carName, Category: "new transport added", message: `one transport ${carName} is added in our site `, date: date })
+        let notificationAdmin = new NotificationsAdmin({ accommodationName: "New Transport Added Successfully", Category: "Transport Added", message: `One Transport ${carName} is added to our site`, date });
         await notificationAdmin.save();
-        let notificationUser = new NotificationsUser({ accommodationName: carName, Category: "new transport added", message: `new transport ${carName} is added....`, date: date })
-        await notificationUser.save();
+
+
     } catch (error) {
         return next(error);
     }
+    let data = {
+        type: 'Transport Added',
+        message: `one new transport ${carName} is added `,
+        date: date,
+        title: "Transport Added Successfully"
+
+    };
+
+    notifyUsers(data);
+    let notificationUser = new NotificationsUser({ user: "no", broadCast: "yes", accommodationName: "Transport Added Successfully", Category: "Transport Added", message: `one new transport ${carName} is added` });
+    await notificationUser.save();
     return res.status(200).json({ success: true, message: "New Transport is created", transport: transport });
 };
 export const getTransport = async (req, res, next) => {
@@ -87,9 +98,18 @@ export const deleteTransport = async (req, res, next) => {
         return res.status(400).json({ success: true, message: "Transport not existed that u are trying to delete" });
     }
     let date = new Date();
-    let notificationAdmin = new NotificationsAdmin({ accommodationName: user.userName, Category: "new transport deleted", message: `one transport ${carName} is deleted from our site `, date: date })
+    let notificationAdmin = new NotificationsAdmin({ accommodationName: "New Transport deleted Successfully", Category: "Transport deleted", message: `One Transport ${carName} is deleted from our site`, date });
     await notificationAdmin.save();
-    let notificationUser = new NotificationsUser({ accommodationName: user.userName, Category: "new transport deleted", message: `new transport ${carName} is deleted....`, date: date })
+    let data = {
+        type: 'Transport Deleted',
+        message: `one new transport ${carName} is Deleted `,
+        date: date,
+        title: "Transport Deleted Successfully"
+
+    };
+
+    notifyUsers(data);
+    let notificationUser = new NotificationsUser({ user: "no", broadCast: "yes", accommodationName: "Transport Deleted Successfully", Category: "Transport Deleted", message: `one new transport ${carName} is Deleted` });
     await notificationUser.save();
     return res.status(200).json({ success: false, message: "Transport deleted successfully", deleteTransport: deleteTransport, admin: adminId })
 }
@@ -126,10 +146,9 @@ export const updateTransport = async (req, res, next) => {
 
     await transport.save();
     let date = new Date();
-    let notificationAdmin = new NotificationsAdmin({ accommodationName: user.name, Category: "new transport information updated", message: `one transport ${carName} is information updated from our site `, date: date })
+    let notificationAdmin = new NotificationsAdmin({ accommodationName: "New Transport information updated Successfully", Category: "Transport updated", message: `One Transport ${carName} is updated in our site`, date });
     await notificationAdmin.save();
-    let notificationUser = new NotificationsUser({ accommodationName: user.name, Category: "new transport information updated", message: `transport ${carName} information updated....`, date: date })
-    await notificationUser.save();
+
     return res.status(200).json({ success: true, message: 'transport updated successfully', transport: transport });
 
 
@@ -230,6 +249,7 @@ export const transportPayment = async (req, res, next) => {
     const userSecretKey = user.SecretSeed;
     const userKeyPair = StellarSdk.Keypair.fromSecret(userSecretKey);
 
+    let date = new Date();
     // Admin account's public key
     const userPublicKey = userKeyPair.publicKey();
 
@@ -253,7 +273,6 @@ export const transportPayment = async (req, res, next) => {
             user.Balance = Number(user.Balance) - xlmAmount;
             await user.save();
 
-            let date = new Date();
             let transportBooking; //fetching the transport which is being in process for booking by user 
             try {
                 transportBooking = await BookingTransport.findOne({ transportId: transportId });
@@ -334,13 +353,10 @@ export const transportPayment = async (req, res, next) => {
 
             try {
                 //saving bill information and updating database data
-                let date = new Date();
+
                 transportBill = new TransportBill({ booking: transportBooked.id, bookerId: user.id, senderAccountId: user.AccountId, ReceiverAccountId: process.env.ADMIN_ACCOUNT_ID, booker: user.userName, deliveryCharges: deliveryCharges, totalPrice: transportBooking.prices, transportName: transportBooking.carName, date });
                 transportBill = await transportBill.save();
-                let notificationAdmin = new NotificationsAdmin({ accommodationName: user.userName, Category: "transport booking payment", message: `one transport ${transportBooking.carName} is booked just now and payment happened `, date: date })
-                await notificationAdmin.save();
-                let notificationUser = new NotificationsUser({ accommodationName: user.userName, Category: "transport booking payment", message: `${user.userName} you did payment of this transport ${transportBooking.carName}....`, date: date })
-                await notificationUser.save();
+
             } catch (error) {
                 console.log(error)
                 return next(error);
@@ -361,6 +377,22 @@ export const transportPayment = async (req, res, next) => {
                 return next(error);
             }
 
+            let notificationAdmin = new NotificationsAdmin({ accommodationName: `One Transport ${transport.carName} booked Successfully`, Category: "Transport booked", message: `one user ${transportHistory.bookersName} booked ${transportHistory.carName} tour from our site and did Payment successfully`, date });
+            await notificationAdmin.save();
+
+
+
+            let data = {
+                type: 'Transport Booked',
+                message: `You Booked transport ${transportHistory.carName} Successfully`,
+                date: date,
+                title: "Transport Booked Successfully"
+
+            };
+
+            notifyUsers(data);
+            let notificationUser = new NotificationsUser({ user: user.name, broadCast: "no", accommodationName: "Transport Booked Successfully", Category: "Transport Booked", message: `You Booked transport ${transportHistory.carName} Successfully` });
+            await notificationUser.save();
             return res.status(200).json({ success: true, message: "Payment Successful", response: response, transportBooked: transportBooked, transportBill: transportBill });
         } catch (error) {
 
@@ -387,7 +419,7 @@ export const countTransports = async (req, res, next) => {
 
     res.status(200).json({ success: true, message: "here is your Transport count", TransportCounter: TransportCounter })
 }
-export const searchTransport = async (req, res, next) => {
+export const searchTransportByName = async (req, res, next) => {
     let { name } = req.body;
     let Transports;
     try {
@@ -400,13 +432,25 @@ export const searchTransport = async (req, res, next) => {
         success = false;
         return res.status(400).json({ success, message: "no Transports found in database" })
     }
-
-    const filteredTransports = Transports.filter((Transport) =>
-        Transport.name.toLowerCase().includes(name.toLowerCase())
-    );
-
-    return res.status(200).json({ success: true, message: "here are your all Transports", filteredTransports: filteredTransports })
+    return res.status(200).json({ success: true, message: "here are your all Transports", Transports: Transports })
 }
+
+export const searchTransportById = async (req, res, next) => {
+    let id = req.body.id;
+    let Transports;
+    try {
+        Transports = await BookTransport.find({ transportId: id });  //search transport through name
+    } catch (error) {
+        return next(error);
+    }
+
+    if (!Transports) {
+        success = false;
+        return res.status(400).json({ success, message: "no Transports found in database" })
+    }
+    return res.status(200).json({ success: true, message: "here are your all Transports", Transports: Transports })
+}
+
 // const catchAsync=fn=>{
 //     return(req,res,next)=>{
 //         fn(req,res,next).catch(next)

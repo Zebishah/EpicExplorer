@@ -1,7 +1,8 @@
 import SideBar from "./SideBar";
 import { useEffect, useState } from "react";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import image1 from "../images/6437523_3313427.jpg";
+import sub from "../images/man-user-circle-icon.png";
 import { useDispatch, useSelector } from "react-redux";
 import {
   resetUserSearchState,
@@ -15,7 +16,7 @@ import Footer from "./Footer";
 import Navbar from "./Navbar";
 import { useNavigate } from "react-router";
 import { resendOtp } from "../Redux/Slices/ResendOtpSlice";
-
+import isTokenExpired from "../../util/tokenExpiry";
 const Dashboard = () => {
   const [tourBooked, setToursBooked] = useState(0);
   const [transportBooked, setTransportBooked] = useState(0);
@@ -32,6 +33,17 @@ const Dashboard = () => {
   const [imageReal, setImage] = useState("");
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = localStorage.getItem("jwtToken"); // Retrieve your token from localStorage or any other storage
+
+    if (isTokenExpired(token)) {
+      // Token is expired, log out the user
+      toast.error("Your Login is expired");
+      localStorage.removeItem("jwtToken"); // Remove the token from storage
+      navigate("/SignIn"); // Redirect to login page
+    }
+  }, [navigate]);
   const {
     toursBooked,
     transportsBooked,
@@ -56,10 +68,6 @@ const Dashboard = () => {
   }, [dispatch]);
 
   useEffect(() => {
-    if (errorSearch) {
-      toast.error("Token not found");
-    }
-
     if (toursBooked !== null) {
       setToursBooked(toursBooked.toursCount);
     }
@@ -74,7 +82,6 @@ const Dashboard = () => {
       setTransactions(transactions.totalTransactions);
     }
     if (userFrTokenData !== null) {
-      console.log(userFrTokenData);
       setUserName(userFrTokenData.userInfo.userName);
       setUserEmail(userFrTokenData.userInfo.email);
       setUserPhone(userFrTokenData.userInfo.phone);
@@ -107,9 +114,10 @@ const Dashboard = () => {
       style={{ backgroundImage: `url(${image1})` }}
     >
       <Navbar />
-      <ToastContainer />
+
       <div className="flex flex-row gap-x-6 h-full w-full overflow-hidden bg-opacity-0 bg-light-black smd:mt-40 mt-20">
         <SideBar />
+
         <div className="flex flex-col gap-y-10 p-6 items-center w-[80%] ">
           {userFrTokenData &&
             userFrTokenData.userInfo.verifiedStatus === "false" && (
@@ -183,8 +191,8 @@ const Dashboard = () => {
                   </dt>
                   <dd className="mt-1 text-sm text-white sm:mt-0 sm:col-span-2 font-radios">
                     <img
-                      src={imageReal ? imageReal : image1}
-                      alt="profile"
+                      src={imageReal !== " " ? imageReal : sub}
+                      alt="User Profile"
                       className="h-8 w-8 md:h-14 md:w-14 rounded-full object-cover"
                     />
                   </dd>

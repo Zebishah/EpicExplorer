@@ -5,12 +5,13 @@ import image1 from "../images/6437523_3313427.jpg";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { userTourBookings } from "../Redux/Slices/UserBookingSlice";
+import { useNavigate } from "react-router";
 
 const TourBookings = () => {
   const [tours, setTours] = useState([]);
   const dispatch = useDispatch();
   const { tourBooking } = useSelector((state) => state.userBookings);
-
+  const navigate = useNavigate();
   useEffect(() => {
     dispatch(userTourBookings());
   }, [dispatch]);
@@ -26,6 +27,10 @@ const TourBookings = () => {
     return new Intl.DateTimeFormat("en-GB", options).format(
       new Date(dateString)
     );
+  };
+
+  let showDetails = (id) => {
+    navigate(`/TourBookingDet?id=${encodeURIComponent(id)}`);
   };
 
   return (
@@ -57,9 +62,13 @@ const TourBookings = () => {
                     {formatDate(tour.bookingDate)}
                   </span>
                 </div>
-                <button className="bg-yellows text-gray-900 px-4 py-2 rounded-lg">
+                <button
+                  type="button"
+                  className="bg-yellows text-gray-900 px-4 py-2 rounded-lg"
+                  onClick={() => showDetails(tour.tourId)}
+                >
                   Details
-                </button>
+                </button>{" "}
               </div>
             ))}
           </div>

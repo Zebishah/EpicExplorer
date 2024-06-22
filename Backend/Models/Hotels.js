@@ -47,6 +47,11 @@ let hotelSchema = new Schema({
     available: {
         type: String,
         required: true
+    },
+    ReviewsCount: {
+        type: String,
+        required: true
     }
+
 });
 export default mongoose.model('Hotels', hotelSchema);

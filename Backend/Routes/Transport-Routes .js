@@ -1,11 +1,11 @@
 import express from 'express';
-import { addTransport, countTransports, deleteTransport, getFormData, getTransport, openTransport, searchTransport, transportPayment, updateTransport } from '../Controllers/Transport-Controllers.js';
+import { addTransport, countTransports, deleteTransport, getFormData, getTransport, openTransport, searchTransportById, searchTransportByName, transportPayment, updateTransport } from '../Controllers/Transport-Controllers.js';
 import verifyToken from '../middleware/IdFromToken.js';
 import getUserById from '../middleware/UserFromId.js';
 import getAdminById from '../middleware/AdminFromId.js';
 const TransportRoutes = express.Router();
 
-TransportRoutes.post('/addTransport', verifyToken, getAdminById, addTransport);
+TransportRoutes.post('/addTransport', addTransport);
 
 TransportRoutes.get('/showTransport', getTransport);
 
@@ -21,6 +21,8 @@ TransportRoutes.post('/getTransportFormData/:id', verifyToken, getUserById, getF
 
 TransportRoutes.get('/TransportCounter', countTransports);
 
-TransportRoutes.post('/searchTransport', searchTransport);
+TransportRoutes.post('/searchTransportByName', searchTransportByName);
+
+TransportRoutes.post('/searchTransportById', searchTransportById);
 
 export default TransportRoutes;

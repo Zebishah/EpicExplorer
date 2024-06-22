@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
-import "react-toastify/dist/ReactToastify.css";
 
 import { useNavigate } from "react-router";
 import { SignIn, resetSignInState } from "../Redux/Slices/SignInSlice";
@@ -34,19 +33,16 @@ const SignInForm = () => {
 
   useEffect(() => {
     if (error) {
-      toast.error("Invalid credentials");
-    }
-
-    if (data) {
+      return toast.error("Invalid credentials");
+    } else if (data) {
+      toast.success("signIn successful!");
       dispatch(userSearchFrEmail(email));
 
-      toast.success("signIn successful!");
       setTimeout(() => {
         navigate("/");
-        dispatch(resetSignInState());
-      }, 5000);
+      }, 3000);
     }
-  }, [data, error, dispatch, navigate, email]);
+  }, [error, data, dispatch, email, navigate]);
 
   useEffect(() => {
     return () => {

@@ -68,6 +68,22 @@ let tourSchema = new Schema({
     bookedCount: {
         type: String,
         required: true
+    },
+    membersLimit: {
+        type: Number,
+        required: true
+    },
+    tourLocation: {
+        type: String,
+        required: true
+    },
+    Collection: {
+        type: String,
+        required: true
+    },
+    ReviewsGiven: {
+        type: Number,
+        required: true
     }
 });
 export default mongoose.model('Tour', tourSchema);

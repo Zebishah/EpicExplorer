@@ -41,12 +41,39 @@ import ForgetPassword from "./Modules/ForgetPassword";
 import UpdatePassword from "./Modules/UpdatePassword";
 import IndependentOTP from "./Modules/IndependentOTP";
 
+import "react-toastify/dist/ReactToastify.css";
+import PaymentOptions from "./Modules/PaymentOptions";
+import TourPayments from "./Modules/TourPayments";
+import HotelPayments from "./Modules/HotelPayments";
+import TransportPayments from "./Modules/TransportPayments";
+import TourBookingDet from "./Modules/TourBookingDet";
+import HotelBookingDet from "./Modules/HotelBookingDet";
+import TransportBookingDet from "./Modules/TransportBookingDet";
+import TourPaymentDet from "./Modules/TourPaymentDet";
+import HotelPaymentDet from "./Modules/HotelPaymentDet";
+import TransportPaymentDet from "./Modules/TransportPaymentDet";
 function App() {
   return (
     <>
       <Router>
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route
+            path="/TransportPaymentDet"
+            element={<TransportPaymentDet />}
+          />
+          <Route path="/HotelPaymentDet" element={<HotelPaymentDet />} />
+          <Route path="/TourPaymentDet" element={<TourPaymentDet />} />
+          <Route
+            path="/TransportBookingDet"
+            element={<TransportBookingDet />}
+          />
+          <Route path="/HotelBookingDet" element={<HotelBookingDet />} />
+          <Route path="/TourBookingDet" element={<TourBookingDet />} />
+          <Route path="/tourPayment" element={<TourPayments />} />
+          <Route path="/hotelPayment" element={<HotelPayments />} />
+          <Route path="/transportPayment" element={<TransportPayments />} />
+          <Route path="/PaymentOptions" element={<PaymentOptions />} />
           <Route path="/indOtp" element={<IndependentOTP />} />
           <Route path="/UpdatePassword" element={<UpdatePassword />} />
           <Route path="/ResetPassword" element={<ForgetPassword />} />

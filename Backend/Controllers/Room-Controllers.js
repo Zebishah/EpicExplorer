@@ -17,6 +17,7 @@ import { Server } from 'stellar-sdk/lib/horizon/server.js';
 import StellarTransaction from '../Utils/Transaction.js';
 import NotificationsAdmin from '../Models/NotificationsAdmin.js';
 import NotificationsUser from '../Models/NotificationsUser.js';
+import notifyUsers from '../Utils/NotifyUser.js';
 const server = new Server("https://horizon-testnet.stellar.org/");
 const app = express();
 dotenv.config();
@@ -62,9 +63,20 @@ export const addRoom = async (req, res, next) => {
     }
 
     let date = new Date();
-    let notificationAdmin = new NotificationsAdmin({ accommodationName: room.name, Category: "new room deleted", message: `one room ${room.name} is deleted in our site`, date: date })
+
+    let notificationAdmin = new NotificationsAdmin({ accommodationName: "Room Added Successfully", Category: "Room Added", message: `One Room ${name} is added to our site`, date });
     await notificationAdmin.save();
-    let notificationUser = new NotificationsUser({ accommodationName: name, Category: "one room is deleted", message: `new room ${room.name} is deleted `, date: date })
+
+    let data = {
+        type: 'Room Added',
+        message: `${name} Room is Added Successfully`,
+        date: date,
+        title: "Room Added Successfully"
+
+    };
+
+    notifyUsers(data);
+    let notificationUser = new NotificationsUser({ user: "no", broadCast: "yes", accommodationName: "Room Added Successfully", Category: "Room Added", message: `${name} Room is Added Successfully`, });
     await notificationUser.save();
 
     return res.status(200).json({ success: true, message: "New Room is created", Room: room });
@@ -102,6 +114,23 @@ export const deleteRoom = async (req, res, next) => {
     if (!deletedRoom) {
         return res.status(400).json({ success: false, message: "Room not existed that u are trying to delete" });
     }
+
+    let date = new Date();
+
+    let notificationAdmin = new NotificationsAdmin({ accommodationName: "Room deleted Successfully", Category: "Room deleted", message: `One Room ${deletedRoom.name} is deleted from our site`, date });
+    await notificationAdmin.save();
+
+    let data = {
+        type: 'Room Deleted',
+        message: `${deletedRoom.name} Room is deleted Successfully`,
+        date: date,
+        title: "Room Deleted Successfully"
+
+    };
+
+    notifyUsers(data);
+    let notificationUser = new NotificationsUser({ user: "no", broadCast: "yes", accommodationName: "Room Deleted Successfully", Category: "Room Deleted", message: `${deletedRoom.name} Room is deleted Successfully`, });
+    await notificationUser.save();
     return res.status(200).json({ success: true, message: "Room deleted successfully", deletedRoom: deletedRoom, admin: adminId })
 }
 
@@ -137,6 +166,9 @@ export const updateRoom = async (req, res, next) => {
         room.features.push(newFeature);
     }
     await room.save();
+    let date = new Date();
+    let notificationAdmin = new NotificationsAdmin({ accommodationName: "Room info Successfully", Category: "Room Updated", message: `${name} Room info updated successfully`, date });
+    await notificationAdmin.save();
     return res.status(200).json({ success: true, message: 'room updated successfully', room: room });
 
 
@@ -237,6 +269,7 @@ export const roomPayment = async (req, res, next) => {
     // Admin account's public key
     const userPublicKey = userKeyPair.publicKey();
 
+    let date = new Date();
 
     try {
 
@@ -376,7 +409,20 @@ export const roomPayment = async (req, res, next) => {
             } catch (error) {
                 return next(error);
             }
+            let notificationAdmin = new NotificationsAdmin({ accommodationName: "Room Payment  Successfully", Category: "Room Payment", message: `one user ${roomHistory.bookerName} booked ${roomHistory.name} room from our site and did Payment successfully `, date: date })
+            await notificationAdmin.save();
 
+            let data = {
+                type: 'Room Payment',
+                message: `${roomHistory.bookerName} You booked ${roomHistory.name} room successfully`,
+                date: date,
+                title: "Room Payment Successfully"
+
+            };
+
+            notifyUsers(data);
+            let notificationUser = new NotificationsUser({ user: user.userName, broadCast: "no", accommodationName: "Room Payment Successfully", Category: "Room Payment", message: `${roomHistory.bookerName} You booked ${roomHistory.name} room successfully` });
+            await notificationUser.save();
             return res.status(200).json({ success: true, message: "Payment Successful", response: response, roomBooked: roomBooked, roomBill: roomBill });
         } catch (error) {
 
@@ -407,7 +453,7 @@ export const countRooms = async (req, res, next) => {
     res.status(200).json({ success, message: "here is your Room count", RoomCount: RoomCount })
 }
 
-export const searchRoom = async (req, res, next) => {
+export const searchRoomByName = async (req, res, next) => {
     let { name } = req.body;
     let Rooms;
     try {
@@ -420,10 +466,23 @@ export const searchRoom = async (req, res, next) => {
         success = false;
         return res.status(400).json({ success, message: "no Rooms found in database" })
     }
+    return res.status(200).json({ success: true, message: "here are your all Rooms", Rooms: Rooms })
+}
+export const searchRoomById = async (req, res, next) => {
+    let id = req.body.id;
+    console.log(id);
+    let Rooms;
+    try {
+        Rooms = await BookHotel.find({ roomId: id });
+    } catch (error) {
+        return next(error);
+    }
 
-    const filteredRooms = Rooms.filter((Room) =>
-        Room.name.toLowerCase().includes(name.toLowerCase())
-    );
+    if (!Rooms) {
+        success = false;
+        return res.status(400).json({ success, message: "no Rooms found in database" })
+    }
 
-    return res.status(200).json({ success: true, message: "here are your all Rooms", filteredRooms: filteredRooms })
+
+    return res.status(200).json({ success: true, message: "here are your all Rooms", Rooms: Rooms })
 }

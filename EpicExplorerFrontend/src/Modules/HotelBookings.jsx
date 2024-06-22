@@ -5,11 +5,12 @@ import image1 from "../images/6437523_3313427.jpg";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { userHotelBookings } from "../Redux/Slices/UserBookingSlice";
+import { useNavigate } from "react-router";
 const HotelBookings = () => {
   const [hotels, setHotels] = useState([]);
   const dispatch = useDispatch();
   const { hotelBooking } = useSelector((state) => state.userBookings);
-
+  const navigate = useNavigate();
   useEffect(() => {
     dispatch(userHotelBookings());
   }, [dispatch]);
@@ -25,7 +26,9 @@ const HotelBookings = () => {
       new Date(dateString)
     );
   };
-
+  let showDetails = (id) => {
+    navigate(`/HotelBookingDet?id=${encodeURIComponent(id)}`);
+  };
   return (
     <div
       className="flex flex-col min-h-screen bg-center bg-cover"
@@ -55,7 +58,10 @@ const HotelBookings = () => {
                     {formatDate(hotel.bookingDate)}
                   </span>
                 </div>
-                <button className="bg-yellows text-gray-900 px-4 py-2 rounded-lg">
+                <button
+                  className="bg-yellows text-gray-900 px-4 py-2 rounded-lg"
+                  onClick={() => showDetails(hotel.roomId)}
+                >
                   Details
                 </button>
               </div>

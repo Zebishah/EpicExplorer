@@ -2,12 +2,14 @@ import {
   faBell,
   faCartPlus,
   faDashboard,
+  faDollar,
+  faDollarSign,
+  faDoorOpen,
   faHeart,
   faPen,
   faUser,
 } from "@fortawesome/free-solid-svg-icons";
 import { useEffect, useState } from "react";
-import { ToastContainer, toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
 import image from "../images/man-user-circle-icon.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -50,6 +52,13 @@ const SideBar = () => {
   let Bookings = () => {
     navigate("/Bookings");
   };
+  let payment = () => {
+    navigate("/PaymentOptions");
+  };
+  let Logout = () => {
+    localStorage.removeItem("jwtToken");
+    navigate("/SignIn");
+  };
   let Notifications = () => {
     navigate("/Notifications");
   };
@@ -68,15 +77,14 @@ const SideBar = () => {
   };
 
   return (
-    <div className="-ml-5 flex flex-col items-center gap-y-14 bg-fade-black w-[18%] p-6 h-[100vh] opacity-85 transition-all duration-500 ease-in-out">
-      <ToastContainer />
+    <div className=" flex flex-col items-center gap-y-14 bg-fade-black w-[18%] p-6 h-[100vh] opacity-85 transition-all duration-500 ease-in-out">
       <h1 className="text-yellows lg:text-2xl smd:text-lg text-xs font-joining ">
         User Dashboard
       </h1>
       <div className="flex flex-col gap-y-4 justify-center items-center">
         <div className="flex flex-col gap-y-3 justify-center items-center">
           <img
-            src={imageReal ? imageReal : image}
+            src={imageReal !== " " ? imageReal : image}
             alt="profile"
             className="h-8 w-8 md:h-14 md:w-14 rounded-full object-cover"
           />
@@ -90,7 +98,7 @@ const SideBar = () => {
           </div>
         </div>
       </div>
-      <ul className="flex flex-col gap-y-4 justify-center items-center">
+      <ul className="flex flex-col gap-y-4 justify-start items-stajustify-start">
         <li
           className="flex flex-row gap-x-4 items-center "
           onClick={goDashboard}
@@ -127,6 +135,18 @@ const SideBar = () => {
           <span className="flex flex-row gap-x-4 text-yellows items-center transition-all duration-300 ease-in-out cursor-pointer hover:text-black hover:bg-yellows p-3 rounded hover:shadow-lg hover:shadow-yellows">
             <FontAwesomeIcon icon={faHeart} className="text-lg" />
             <p className="hidden smd:block text-lg font-radios ">Favorites</p>
+          </span>
+        </li>
+        <li className="flex flex-row gap-x-4 items-center" onClick={Logout}>
+          <span className="flex flex-row gap-x-4 text-yellows items-center transition-all duration-300 ease-in-out cursor-pointer hover:text-black hover:bg-yellows p-3 rounded hover:shadow-lg hover:shadow-yellows">
+            <FontAwesomeIcon icon={faDoorOpen} className="text-lg" />
+            <p className="hidden smd:block text-lg font-radios ">Logout</p>
+          </span>
+        </li>
+        <li className="flex flex-row gap-x-4 items-center" onClick={payment}>
+          <span className="flex flex-row gap-x-4 text-yellows items-center transition-all duration-300 ease-in-out cursor-pointer hover:text-black hover:bg-yellows p-3 rounded hover:shadow-lg hover:shadow-yellows">
+            <FontAwesomeIcon icon={faDollarSign} className="text-lg" />
+            <p className="hidden smd:block text-lg font-radios ">Payments</p>
           </span>
         </li>
         <li

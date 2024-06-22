@@ -15,7 +15,7 @@ let TransportSchema = new Schema({
         required: true
     },
     type: {
-        type: Number,
+        type: String,
         required: true
     },
     description: {
@@ -57,7 +57,7 @@ let TransportSchema = new Schema({
     }],
 
     bookings: [{
-        type: Date,
+        type: String,
         default: Date.now
 
     }],

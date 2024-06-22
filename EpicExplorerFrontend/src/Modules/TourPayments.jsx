@@ -4,24 +4,23 @@ import SideBar from "./SideBar";
 import image1 from "../images/6437523_3313427.jpg";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
-import { userTransportBooking } from "../Redux/Slices/UserBookingSlice";
+import { userTourPayment } from "../Redux/Slices/UserBookingSlice";
 import { useNavigate } from "react-router";
-
-const TransportBookings = () => {
-  const [transport, setTransport] = useState([]);
-  const navigate = useNavigate();
+const TourPayments = () => {
+  const [tours, setTours] = useState([]);
   const dispatch = useDispatch();
-  const { transportBooking } = useSelector((state) => state.userBookings);
-
+  const { tourPayment } = useSelector((state) => state.userBookings);
+  const navigate = useNavigate();
   useEffect(() => {
-    dispatch(userTransportBooking());
+    dispatch(userTourPayment());
   }, [dispatch]);
 
   useEffect(() => {
-    if (transportBooking && transportBooking.TransportBookings) {
-      setTransport(transportBooking.TransportBookings);
+    if (tourPayment && tourPayment.getUserTourBill) {
+      setTours(tourPayment.getUserTourBill);
     }
-  }, [transportBooking]);
+    console.log(tourPayment);
+  }, [tourPayment]);
   const formatDate = (dateString) => {
     const options = { day: "2-digit", month: "2-digit", year: "numeric" };
     return new Intl.DateTimeFormat("en-GB", options).format(
@@ -29,7 +28,8 @@ const TransportBookings = () => {
     );
   };
   let showDetails = (id) => {
-    navigate(`/TransportBookingDet?id=${encodeURIComponent(id)}`);
+    console.log(id);
+    navigate(`/TourPaymentDet?id=${encodeURIComponent(id)}`);
   };
   return (
     <div
@@ -41,10 +41,10 @@ const TransportBookings = () => {
         <SideBar />
         <div className=" flex flex-col justify-center gap-y-10 p-6 items-center w-[80%]">
           <h1 className="text-yellows text-4xl font-bold my-10 bg-fade-black p-4 rounded-xl">
-            Transport Bookings
+            Tour Payments
           </h1>
           <div className="w-full space-y-4 flex flex-col justify-center items-center">
-            {transport.map((transport, index) => (
+            {tours.map((tour, index) => (
               <div
                 key={index}
                 className="bg-fade-black shadow-lg text-white p-4 rounded-lg flex justify-between items-center space-x-4 w-[70%]"
@@ -53,26 +53,21 @@ const TransportBookings = () => {
                   <span className="font-bold text-yellows">
                     # {String(index + 1).padStart(2, "0")}
                   </span>
-                  <span className="font-radios ">{transport.carName}</span>
-                  <span className="font-radios ">{transport.bookersName}</span>
-                  <span className="font-radios ">{transport.bookerEmail}</span>
-                  <span className="font-radios ">
-                    {formatDate(transport.bookingDate)}
-                  </span>
+                  <span className="font-radios ">{tour.tourName}</span>
+                  <span className="font-radios ">{tour.booker}</span>
+                  <span className="font-radios ">{tour.totalPrice}</span>
+                  <span className="font-radios ">{formatDate(tour.date)}</span>
                 </div>
                 <button
                   className="bg-yellows text-gray-900 px-4 py-2 rounded-lg"
-                  onClick={() => showDetails(transport.transportId)}
+                  onClick={() => showDetails(tour.booking)}
                 >
                   Details
                 </button>
               </div>
             ))}
           </div>
-          <button
-            type="button"
-            className="mt-10 bg-fade-black text-yellows px-6 py-2 rounded-lg"
-          >
+          <button className="mt-10 bg-fade-black text-yellows px-6 py-2 rounded-lg">
             See More
           </button>
         </div>
@@ -82,4 +77,4 @@ const TransportBookings = () => {
   );
 };
 
-export default TransportBookings;
+export default TourPayments;

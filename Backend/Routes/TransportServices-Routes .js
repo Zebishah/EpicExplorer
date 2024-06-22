@@ -3,7 +3,7 @@ import { addTransportServices, getTransportServicesIT } from '../Controllers/Tra
 import verifyToken from '../middleware/IdFromToken.js';
 const TransportServicesRoutes = express.Router();
 
-TransportServicesRoutes.post('/addTransportServices', verifyToken, addTransportServices);
+TransportServicesRoutes.post('/addTransportServices', addTransportServices);
 
 TransportServicesRoutes.post('/getTransportServices', getTransportServicesIT);
 

@@ -1,29 +1,30 @@
 import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
-let notificationUserSchema = new Schema({
-    accommodationName: {
+let TransportReviewsSchema = new Schema({
+    name: {
         type: String,
         required: true
     },
-    Category: {
+    email: {
         type: String,
         required: true
     },
-    user: {
-        type: String,
-        required: true
-    }, message: {
+    reviewedService: {
         type: String,
         required: true
     },
-    date: {
-        type: Date,
-        default: Date.now,  // Set default value to the current date and time
+
+    image: {
+        type: String,
         required: true
     },
-    broadCast: {
+    words: {
+        type: String,
+        required: true
+    },
+    rating: {
         type: String,
         required: true
     }
 });
-export default mongoose.model('notificationUser', notificationUserSchema);
+export default mongoose.model('TransportReview', TransportReviewsSchema);

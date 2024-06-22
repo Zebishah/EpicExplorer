@@ -1,4 +1,8 @@
-import { faCartShopping } from "@fortawesome/free-solid-svg-icons";
+import {
+  faCartShopping,
+  faDoorOpen,
+  faSignOut,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useState } from "react";
 import { ToastContainer } from "react-toastify";
@@ -21,7 +25,7 @@ import {
   faLinkedin,
   faWhatsapp,
 } from "@fortawesome/free-brands-svg-icons";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   resetUserSearchState,
   userSearchFrToken,
@@ -31,6 +35,7 @@ import {
 // const userName = queryParams.get("userName") || "";
 // import AboveNavbar from "./AboveNavbar";
 const Navbar = () => {
+  const navigate = useNavigate();
   const [isPackagesOpen, setIsPackagesOpen] = useState(false);
   const [imageReal, setImage] = useState("");
   const [isBookingsOpen, setIsBookingsOpen] = useState(false);
@@ -41,7 +46,10 @@ const Navbar = () => {
   useEffect(() => {
     dispatch(userSearchFrToken());
   }, [dispatch]);
-
+  let Logout = () => {
+    localStorage.removeItem("jwtToken");
+    navigate("/SignIn");
+  };
   useEffect(() => {
     if (userFrTokenData) {
       setUserName(userFrTokenData.userInfo.userName);
@@ -214,21 +222,20 @@ const Navbar = () => {
         <div className=" flex items-center smd:space-x-5 sssm:space-x-2">
           {localStorage.getItem("jwtToken") ? (
             <Link
-              to={"/signUp"}
-              className="hidden font-radios p-2 rounded-xl hover:shadow-lg hover:shadow-yellows text-yellows cursor-pointer duration-300 hover:bg-yellows hover:text-black transition-all ease-in-out sssm:text-sm lg:text-[14px] md:text-[12px]"
+              to={"/Dashboard"}
+              className="font-radios p-2 rounded-xl flex cursor-pointer hover:shadow-lg hover:bg-fade-black hover:shadow-yellows duration-300 font-semibold text-yellows sssm:text-sm lg:text-[14px] md:text-[12px] transition-all ease-in-out"
             >
-              <svg
-                className="fill-current h-5 w-5 mr-2 mt-0.5"
-                xmlns="http://www.w3.org/2000/svg"
-                xmlnsXlink="http://www.w3.org/1999/xlink"
-                version="1.1"
-                width={24}
-                height={24}
-                viewBox="0 0 24 24"
-              >
-                <path d="M12 0L11.34 .03L15.15 3.84L16.5 2.5C19.75 4.07 22.09 7.24 22.45 11H23.95C23.44 4.84 18.29 0 12 0M12 4C10.07 4 8.5 5.57 8.5 7.5C8.5 9.43 10.07 11 12 11C13.93 11 15.5 9.43 15.5 7.5C15.5 5.57 13.93 4 12 4M12 6C12.83 6 13.5 6.67 13.5 7.5C13.5 8.33 12.83 9 12 9C11.17 9 10.5 8.33 10.5 7.5C10.5 6.67 11.17 6 12 6M.05 13C.56 19.16 5.71 24 12 24L12.66 23.97L8.85 20.16L7.5 21.5C4.25 19.94 1.91 16.76 1.55 13H.05M12 13C8.13 13 5 14.57 5 16.5V18H19V16.5C19 14.57 15.87 13 12 13M12 15C14.11 15 15.61 15.53 16.39 16H7.61C8.39 15.53 9.89 15 12 15Z" />
-              </svg>
-              Register
+              {" "}
+              <div className="flex flex-row gap-x-1 justify-center items-center ">
+                <div className="rounded-full overflow-hidden mr-4 ">
+                  <img
+                    src={imageReal !== " " ? imageReal : image}
+                    alt="image"
+                    className="w-10 h-10"
+                  />
+                </div>
+                <p className="text-yellows text-lg font-radios">{userName}</p>
+              </div>
             </Link>
           ) : (
             <Link
@@ -253,19 +260,20 @@ const Navbar = () => {
             {localStorage.getItem("jwtToken") ? (
               <Link
                 to={"/Dashboard"}
-                className="font-radios p-2 rounded-xl flex cursor-pointer hover:shadow-lg hover:bg-fade-black hover:shadow-yellows duration-300 font-semibold text-yellows sssm:text-sm lg:text-[14px] md:text-[12px] transition-all ease-in-out"
+                className="font-radios p-3 rounded-xl flex cursor-pointer hover:shadow-lg hover:bg-fade-black hover:shadow-yellows duration-300 font-semibold text-yellows sssm:text-sm lg:text-[14px] md:text-[12px] transition-all ease-in-out"
               >
                 {" "}
-                <div className="flex flex-row gap-x-1 justify-center items-center ">
-                  <div className="rounded-full overflow-hidden mr-4 ">
-                    <img
-                      src={imageReal ? imageReal : image}
-                      alt="image"
-                      className="w-10 h-10"
-                    />
-                  </div>
-                  <p className="text-yellows text-lg font-radios">{userName}</p>
-                </div>
+                <li
+                  className="flex flex-row gap-x-4 items-center"
+                  onClick={Logout}
+                >
+                  <span className="flex flex-row gap-x-4 text-yellows items-center transition-all duration-300 ease-in-out cursor-pointer ">
+                    <FontAwesomeIcon icon={faSignOut} className="text-lg" />
+                    <p className="hidden smd:block text-lg font-radios ">
+                      Logout
+                    </p>
+                  </span>
+                </li>
               </Link>
             ) : (
               <Link
@@ -287,19 +295,7 @@ const Navbar = () => {
               </Link>
             )}
           </div>
-          <Link
-            to={"/Bookings"}
-            className="p-2 rounded-xl hover:shadow-lg hover:shadow-yellows hidden smd:flex text-yellows text-sm ssm:text-base md:text-lg hover:bg-yellows hover:text-black transition-all ease-in-out"
-          >
-            <FontAwesomeIcon icon={faCartShopping} />
-          </Link>
 
-          <Link
-            to={"/Favorites"}
-            className="p-2 rounded-xl hover:shadow-lg hover:shadow-yellows hidden smd:flex text-yellows text-lg ssm:text-base md:text-lg hover:bg-yellows hover:text-black transition-all ease-in-out"
-          >
-            <FontAwesomeIcon icon={faHeart} />
-          </Link>
           <button
             className="p-2 rounded-xl hover:shadow-lg hover:shadow-yellows lg:hidden text-yellows focus:outline-none ssm:text-base md:text-lg hover:bg-yellows hover:text-black transition-all ease-in-out"
             onClick={() => setIsMenuOpen(!isMenuOpen)}

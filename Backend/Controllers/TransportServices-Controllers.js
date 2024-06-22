@@ -5,7 +5,8 @@ import express, { response } from 'express';
 import Admin from '../Models/Admin.js';
 import ItrenaryServicesTour from '../Models/ItrenaryServicesTour.js';
 import ItrenaryServicesTransport from '../Models/ItrenaryServicesTransport.js';
-
+import NotificationsAdmin from '../Models/NotificationsAdmin.js';
+import notifyUsers from '../Utils/NotifyUser.js';
 const app = express();
 dotenv.config();
 
@@ -35,6 +36,9 @@ export const addTransportServices = async (req, res, next) => {
         return next(error);
     }
 
+    let date = new Date();
+    let notificationAdmin = new NotificationsAdmin({ accommodationName: "transport Service added Successfully", Category: "transport-Service Added", message: `New transport Service is added to our website is added to our site`, date });
+    await notificationAdmin.save();
 
     return res.status(200).json({ success: true, message: "Transport Services and itrenary is created", servicesIT: servicesIT });
 

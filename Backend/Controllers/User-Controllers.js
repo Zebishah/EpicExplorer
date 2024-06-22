@@ -25,6 +25,7 @@ import NotificationsAdmin from '../Models/NotificationsAdmin.js';
 import NotificationsUser from '../Models/NotificationsUser.js';
 import User from '../Models/User.js';
 import UserOTP from '../Models/UserOTP.js';
+import notifyUsers from '../Utils/NotifyUser.js';
 const app = express();
 dotenv.config();
 const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
@@ -46,7 +47,7 @@ export const createUser = async (req, res, next) => {
         return res.status(400).json({ success: false, message: "Invalid email address" });
     }
 
-    let user = await User.findOne({ email });
+    let user = await User.findOne({ email: email });
     if (user) {
         return res.status(400).json({ success: false, message: "User already exists" });
     }
@@ -87,7 +88,7 @@ export const createUser = async (req, res, next) => {
     else {
         verifiedStatus = "true";
     }
-
+    let date = new Date();
     try {
 
 
@@ -111,26 +112,51 @@ export const createUser = async (req, res, next) => {
         });
 
         await newUser.save();
-        if (googleSign == "no") {
+        if (googleSign == "false") {
             const otp = Math.floor(100000 + Math.random() * 900000).toString();
             let otpExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
             let otpUser = new UserOTP({ email, otp, expiresAt: otpExpires })
             await otpUser.save();
-
-
-
             const options = {
                 email: email, message: `Your account has been created successfully.And OTP for authentication is ${otp}`
             };
             await sendEmail(options);
+            let notificationAdmin = new NotificationsAdmin({ accommodationName: "user Created Successfully", Category: "User Creation", message: `One user ${userName} is added to our site`, date });
+            await notificationAdmin.save();
 
+            let data = {
+                type: 'User Creation',
+                message: `${userName} Your Account created Successfully and otp sended to you `,
+                date: date,
+                title: "Account Created Successfully"
+
+            };
+
+            notifyUsers(data);
+            let notificationUser = new NotificationsUser({ user: userName, broadCast: "no", accommodationName: "Account Created Successfully", Category: "User Creationd", message: `${userName} Your Account created Successfully and otp sended to you` });
+            await notificationUser.save();
             return res.status(200).json({ success: true, message: "Otp is send to ur email account", newUser });
         }
         const token = jwt.sign({ id: newUser.id }, process.env.JWT_SECRET, {
             expiresIn: '7d'
         });
 
+        let notificationAdmin = new NotificationsAdmin({ accommodationName: "user Created Successfully", Category: "User Creation", message: `One user ${userName} is added to our site`, date });
+        await notificationAdmin.save();
+
+        let data = {
+            type: 'User Creation',
+            message: `${userName} Your Account created Successfully and otp sended to you `,
+            date: date,
+            title: "Account Created Successfully"
+
+        };
+
+        notifyUsers(data);
+        let notificationUser = new NotificationsUser({ user: userName, broadCast: "no", accommodationName: "Account Created Successfully", Category: "User Creationd", message: `${userName} Your Account created Successfully and otp sended to you` });
+        await notificationUser.save();
         return res.status(200).json({ success: true, message: "Account created successfully", newUser, token });
+
     } catch (error) {
         return res.status(500).json({ success: false, message: "Error occurred while creating account", error: error.message });
     }
@@ -149,10 +175,26 @@ export const userLogin = async (req, res, next) => {
     if (!isCorrectPassword) {
         return res.status(400).json({ success: false, message: "wrong password", statusCode: 400 })
     }
-    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
+    const payload = {
+        id: user.id,
+        createdAt: Date.now() // Add createdAt timestamp
+    };
+    const token = jwt.sign(payload, process.env.JWT_SECRET, {
         expiresIn: '7d'
     });
+    let date = new Date();
 
+    let data = {
+        type: 'SignIn Successful',
+        message: `${user.userName}you Signed In Successfully Successfully `,
+        date: date,
+        title: "Signed In Successfully"
+
+    };
+
+    notifyUsers(data);
+    let notificationUser = new NotificationsUser({ user: user.userName, broadCast: "no", accommodationName: "Signed In Successfully", Category: "SignIn Successful", message: `${user.userName}you Signed In Successfully Successfully ` });
+    await notificationUser.save();
     return res.status(200).json({ success: true, message: "User signed in successfully", user, statusCode: 200, token: token })
 }
 
@@ -161,7 +203,7 @@ export const resendOtp = async (req, res, next) => {
     //getting user input from request Body  
     let { email } = req.body;
     console.log(email)
-
+    let userReal = await User.findOne({ email: email })
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
     let otpExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
     let user;
@@ -185,6 +227,21 @@ export const resendOtp = async (req, res, next) => {
         email: email, message: `Your account sended again Success.And OTP for authentication is ${otp}`
     };
     await sendEmail(options);
+    let date = new Date();
+
+
+    let data = {
+        type: 'otp resend',
+        message: `Your Otp resend Successfully to you `,
+        date: date,
+        title: "Signed In Successfully"
+
+    };
+
+    notifyUsers(data);
+    let notificationUser = new NotificationsUser({ user: userReal.userName, broadCast: "no", accommodationName: "Otp resend Successfull", Category: "otp resend", message: `Your Otp resend Successfully to you ` });
+    await notificationUser.save();
+
     return res.status(200).json({ success: true, message: "Otp resend successfully", email, statusCode: 200, otp: otp })
 }
 
@@ -215,12 +272,27 @@ export const verifyOTP = async (req, res, next) => {
         } catch (error) {
             return res.status(400).json({ error: error.message });
         }
-        let date = new Date();
-        let notificationAdmin = new NotificationsAdmin({ accommodationName: "userCreated", Category: "user", message: `One user ${realUser.userName} is added to our site`, date });
-        await notificationAdmin.save();
+
 
         realUser.verifiedStatus = "true"
         realUser.save();
+        let date = new Date();
+        let notificationAdmin = new NotificationsAdmin({ accommodationName: "user verified Successfully", Category: "userVerification", message: `One user ${realUser.userName} verified successfully`, date });
+        await notificationAdmin.save();
+
+
+        let data = {
+            type: 'userVerification',
+            message: `${realUser.userName}Your Account verified Successfully... `,
+            date: date,
+            title: "Account verified Successfully"
+
+        };
+
+        notifyUsers(data);
+        let notificationUser = new NotificationsUser({ user: realUser.userName, broadCast: "no", accommodationName: "Account verified Successfully", Category: "userVerification", message: `${realUser.userName}Your Account verified Successfully... ` });
+        await notificationUser.save();
+
         return res.status(200).json({ success: true, message: 'User signed up successfully and verified' });
     } catch (error) {
         return res.status(400).json({ error: error.message });
@@ -268,8 +340,9 @@ export const deleteUser = async (req, res, next) => {
         return res.status(400).json({ success: false, message: "User not existed that u are trying to delete", statusCode: 400 });
     }
     let date = new Date();
-    let notificationAdmin = new NotificationsAdmin({ accommodationName: deleteUser.name, Category: "userDeleted", message: `one user ${deleteUser.name} is deleted from our site `, date: date })
+    let notificationAdmin = new NotificationsAdmin({ accommodationName: "user deleted Successfully", Category: "userDelete", message: `One user ${deletedUser.userName} is deleted from our site`, date });
     await notificationAdmin.save();
+
     return res.status(200).json({ success: true, message: "User deleted successfully", deletedUser: deletedUser, statusCode: 200 })
 }
 export const updateUser = async (req, res, next) => {
@@ -290,10 +363,21 @@ export const updateUser = async (req, res, next) => {
 
     await user.save();
     let date = new Date();
-    let notificationAdmin = new NotificationsAdmin({ accommodationName: user.userName, Category: "user is updated", message: `one user ${user.userName} information is updated in our site`, date: date })
+    let notificationAdmin = new NotificationsAdmin({ accommodationName: "user updated successfully", Category: "User Updated", message: `one user ${user.userName} information is updated in our site`, date: date })
     await notificationAdmin.save();
-    let notificationUser = new NotificationsUser({ accommodationName: user.userName, Category: "user is updated", message: `one user ${user.userName} information is updated in our site`, date: date })
+
+    let data = {
+        type: 'User Information updated',
+        message: `${user.userName} Your information is updated Successfully `,
+        date: date,
+        title: "user updated successfully"
+
+    };
+
+    notifyUsers(data);
+    let notificationUser = new NotificationsUser({ user: user.userName, broadCast: "no", accommodationName: "user updated successfully", Category: "User Information updated", message: `${user.userName} Your information is updated Successfully ` });
     await notificationUser.save();
+
     return res.status(200).json({ success: true, message: 'user updated successfully', user: user });
 
 
@@ -312,6 +396,23 @@ export const updatePassword = async (req, res, next) => {
     const hashedNewPassword = bcrypt.hashSync(newPassword, 10); //hashing new Password
     user.password = hashedNewPassword;
     await user.save();
+    let date = new Date();
+    let notificationAdmin = new NotificationsAdmin({ accommodationName: "user Password Updated Successfully", Category: "userPassword", message: `One user ${user.userName} password updated Successfully`, date });
+    await notificationAdmin.save();
+
+
+    let data = {
+        type: 'User Password Updated',
+        message: `${user.userName} Your Account password updated Successfully `,
+        date: date,
+        title: "Your Account password Updated Successfully"
+
+    };
+
+    notifyUsers(data);
+    let notificationUser = new NotificationsUser({ user: user.userName, broadCast: "no", accommodationName: "Your Account password Updated Successfully", Category: "User Password Updated", message: `${user.userName} Your Account password updated Successfully` });
+    await notificationUser.save();
+
     return res.status(200).json({ success: true, message: "password updated successfully", updatedUser: user, statusCode: 200 })
 }
 export const forgetPassword = async (req, res, next) => {
@@ -363,7 +464,24 @@ export const resetPassword = async (req, res, next) => {
         const salt = await bcrypt.genSalt(10); //hashing password by adding some salt(some extra hashing) 
         user.password = await bcrypt.hash(req.body.password, salt);
         await user.save();                // Find and  update can be used
-        await token.deleteOne(); //deleting token that we made for reset 
+        await token.deleteOne();
+        let date = new Date();
+        let notificationAdmin = new NotificationsAdmin({ accommodationName: "user Password Updated Successfully", Category: "userPassword", message: `One user ${user.userName} password updated Successfully`, date });
+        await notificationAdmin.save();
+
+
+
+        let data = {
+            type: 'User Password Updated',
+            message: `${user.userName} Your Account password updated Successfully `,
+            date: date,
+            title: "Your Account password Updated Successfully"
+
+        };
+
+        notifyUsers(data);
+        let notificationUser = new NotificationsUser({ user: user.userName, broadCast: "no", accommodationName: "Your Account password Updated Successfully", Category: "User Password Updated", message: `${user.userName} Your Account password updated Successfully` });
+        await notificationUser.save(); //deleting token that we made for reset
         res.status(200).json({
             success: true, message: "Password changed successfully.", statusCode: 200
         });
@@ -453,9 +571,19 @@ export const requestBalance = async (req, res, next) => {
             user.Balance = Number(user.Balance) + xlmAmount;
             await user.save();
             let date = new Date();
-            let notificationAdmin = new NotificationsAdmin({ accommodationName: user.userName, Category: "requested Balance", message: `one user ${user.name} is requested ${amount} balance from our site `, date: date })
+            let notificationAdmin = new NotificationsAdmin({ accommodationName: "Balance Request send Successfully", Category: "Requested Balance ", message: `one user ${user.userName} is requested ${amount} xlm balance `, date: date })
             await notificationAdmin.save();
-            let notificationUser = new NotificationsUser({ accommodationName: user.userName, Category: "requested Balance", message: `${user.name} You requested ${amount} balance from our site `, date: date })
+
+            let data = {
+                type: 'User Requested Balance',
+                message: `${user.userName} You requested ${amount} xlm balance `,
+                date: date,
+                title: "Balance Request send Successfully"
+
+            };
+
+            notifyUsers(data);
+            let notificationUser = new NotificationsUser({ user: user.userName, broadCast: "no", accommodationName: "Balance Request send Successfully", Category: "User Requested Balance", message: `${user.userName} You requested ${amount} xlm balance` });
             await notificationUser.save();
             return res.status(200).json({ success: true, message: "Payment Successful", response, statusCode: 200 });
 
@@ -481,6 +609,7 @@ export const stellarPayment = async (req, res, next) => {
     const userPublicKey = userKeyPair.publicKey();
 
 
+    let date = new Date();
     try {
         const account = await server.loadAccount(userPublicKey);
 
@@ -578,11 +707,7 @@ export const stellarPayment = async (req, res, next) => {
                 await tour.save(); //saving data after updating 
                 await user.save();
 
-                let date = new Date();
-                let notificationAdmin = new NotificationsAdmin({ accommodationName: tourBooking.bookerName, Category: "payment of tour", message: `one user ${tourBooking.bookerName} is did ${amount} xlm payment from our site `, date: date })
-                await notificationAdmin.save();
-                let notificationUser = new NotificationsUser({ accommodationName: tourBooking.bookerName, Category: "payment of tour", message: `${tourBooking.bookerName} You did ${amount} xlm payment to our site `, date: date })
-                await notificationUser.save();
+
 
             } catch (error) {
                 return next(error);
@@ -604,6 +729,22 @@ export const stellarPayment = async (req, res, next) => {
             } catch (error) {
                 return next(error);
             }
+
+            let notificationAdmin = new NotificationsAdmin({ accommodationName: "Tour Payment  Successfully", Category: "Tour Payment", message: `one user ${tourHistory.bookerName} booked ${tourHistory.name} tour from our site and did Payment successfully`, date: date })
+            await notificationAdmin.save();
+
+
+            let data = {
+                type: 'Tour Payment',
+                message: `${tourHistory.bookerName} You booked ${tourHistory.name} tour successfully `,
+                date: date,
+                title: "Tour Payment Successfully"
+
+            };
+
+            notifyUsers(data);
+            let notificationUser = new NotificationsUser({ user: user.userName, broadCast: "no", accommodationName: "Tour Payment Successfully", Category: "Tour Payment", message: `${tourHistory.bookerName} You booked ${tourHistory.name} tour successfully` });
+            await notificationUser.save();
 
             return res.status(200).json({ success: true, message: "Payment Successful", response: response, statusCode: 200 });
         } catch (error) {
@@ -745,16 +886,18 @@ export const countUserBookedTours = async (req, res, next) => {
 
 
     let user = await req.user;
+    console.log(user.email)
     let toursCount;
     try {
 
-        toursCount = await ToursBookingHistory.find({ bookerEmail: user.email }).estimatedDocumentCount();
+        toursCount = await ToursBookingHistory.countDocuments({ bookerEmail: user.email })
 
     } catch (error) {
         return next(error);
     }
 
     success = true
+    console.log(toursCount)
     res.status(200).json({ success, message: "user booked that much tours", toursCount: toursCount })
 }
 
@@ -763,7 +906,8 @@ export const countUserTransactions = async (req, res, next) => {
     let toursCount;
     try {
 
-        toursCount = await ToursBookingHistory.find({ bookerEmail: user.email }).estimatedDocumentCount();
+        toursCount = await ToursBookingHistory.countDocuments({ bookerEmail: user.email })
+            ;
 
     } catch (error) {
         return next(error);
@@ -771,7 +915,8 @@ export const countUserTransactions = async (req, res, next) => {
     let hotelsCount;
     try {
 
-        hotelsCount = await HotelBookingHistory.find({ bookerEmail: user.email }).estimatedDocumentCount();
+        hotelsCount = await HotelBookingHistory.countDocuments({ bookerEmail: user.email })
+            ;
 
     } catch (error) {
         return next(error);
@@ -779,7 +924,8 @@ export const countUserTransactions = async (req, res, next) => {
     let transportCount
     try {
 
-        transportCount = await TransportBookingHistory.find({ bookerEmail: user.email }).estimatedDocumentCount();
+        transportCount = await TransportBookingHistory.countDocuments({ bookerEmail: user.email })
+            ;
 
     } catch (error) {
         return next(error);
@@ -794,13 +940,14 @@ export const countUserBookedTransport = async (req, res, next) => {
     let transportCount;
     try {
 
-        transportCount = await TransportBookingHistory.find({ bookerEmail: user.email }).estimatedDocumentCount();
+        transportCount = await TransportBookingHistory.countDocuments({ bookerEmail: user.email });
 
     } catch (error) {
         return next(error);
     }
 
     success = true
+    console.log(transportCount)
     res.status(200).json({ success, message: "user booked that much transport", transportCount: transportCount })
 }
 export const countUserBookedRooms = async (req, res, next) => {
@@ -808,7 +955,7 @@ export const countUserBookedRooms = async (req, res, next) => {
     let hotelsCount;
     try {
 
-        hotelsCount = await HotelBookingHistory.find({ bookerEmail: user.email }).estimatedDocumentCount();
+        hotelsCount = await HotelBookingHistory.countDocuments({ bookerEmail: user.email });
 
     } catch (error) {
         return next(error);

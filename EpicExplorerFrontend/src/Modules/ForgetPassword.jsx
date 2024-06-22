@@ -1,4 +1,4 @@
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import Navbar from "./Navbar";
 import { useEffect, useState } from "react";
 import Footer from "./Footer";
@@ -36,7 +36,7 @@ const ForgetPassword = () => {
   return (
     <div className="h-screen flex flex-col w-full gap-y-24 bg-light-black ">
       <Navbar />
-      <ToastContainer />
+
       <main
         id="content"
         role="main"

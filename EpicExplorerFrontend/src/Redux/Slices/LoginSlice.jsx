@@ -63,13 +63,12 @@ export const signUp = ({
     dispatch(signUpSuccess(response.data));
     dispatch(setEmail(email));
   } catch (error) {
-    dispatch(
-      signUpFailure(error.response ? error.response.data : error.message)
-    );
-    console.error(
-      "Error:",
-      error.response ? error.response.data : error.message
-    );
+    const errorMessage =
+      error.response && error.response.data
+        ? error.response.data.message
+        : error.message;
+    dispatch(signUpFailure(errorMessage));
+    console.log("errorSearch:", errorMessage);
   }
 };
 

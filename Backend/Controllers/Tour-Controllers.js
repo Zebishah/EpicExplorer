@@ -7,14 +7,23 @@ import BookingTour from '../Models/BookingTour.js';
 import makingTourBill from '../Models/makingTourBill.js';
 import NotificationsAdmin from '../Models/NotificationsAdmin.js';
 import NotificationsUser from '../Models/NotificationsUser.js';
+import notifyUsers from '../Utils/NotifyUser.js';
+import { createServer } from 'http';
+import { Server } from 'socket.io';
+import io from '../index.js';
+import BookTour from '../Models/BookTour.js';
+
 const app = express();
+const server = createServer(app);
+
+
 dotenv.config();
 
 let success = null;
 
 export const addTour = async (req, res, next) => {
 
-    let { name, price, startDate, endDate, parentCategory, description, image, type, departureTime, Departure_ReturnLocation, gallery, bookers, reviews, available, bookings, bookedCount } = req.body;
+    let { name, price, startDate, endDate, parentCategory, description, image, type, departureTime, Departure_ReturnLocation, gallery, bookers, reviews, available, bookings, Collection, bookedCount, membersLimit, tourLocation, ReviewsGiven } = req.body;
     let existingTour;
     try {
         existingTour = await Tour.findOne({ name: name });
@@ -28,7 +37,7 @@ export const addTour = async (req, res, next) => {
     }
     let tour;
     try {
-        tour = new Tour({ name, price, startDate, endDate, parentCategory, description, image, type, departureTime, Departure_ReturnLocation, gallery, bookers, reviews, available, bookings, bookedCount });
+        tour = new Tour({ name, price, startDate, endDate, parentCategory, description, image, type, departureTime, Departure_ReturnLocation, gallery, bookers, reviews, available, bookings, bookedCount, membersLimit, tourLocation, ReviewsGiven, Collection });
         tour = await tour.save();
     } catch (error) {
         return next(error);
@@ -47,9 +56,26 @@ export const addTour = async (req, res, next) => {
         return res.status(400).json({ success: false, message: "category not found", statusCode: 400 });
     }
     let date = new Date();
-    let notificationAdmin = new NotificationsAdmin({ accommodationName: name, Category: "new tour added", message: `one tour ${name} is added in our site`, date: date })
+
+    let notificationAdmin = new NotificationsAdmin({ accommodationName: "Tour Added Successfully", Category: "Tour Added", message: `One Tour ${name} is added to our site`, date });
     await notificationAdmin.save();
-    let notificationUser = new NotificationsUser({ accommodationName: name, Category: "new tour added", message: `new tour ${name} is added `, date: date })
+
+    let data = {
+        type: 'Tour Added',
+        message: `${name} Tour is Added Successfully`,
+        date: date,
+        title: "Tour Added Successfully"
+
+    };
+
+    io.emit('notification', data, (err) => { // Add error handling
+        if (err) {
+            console.error('Error emitting notification:', err);
+        } else {
+            console.log('Notification emitted successfully!');
+        }
+    });
+    let notificationUser = new NotificationsUser({ user: "no", broadCast: "yes", accommodationName: "Tour Added Successfully", Category: "Tour Added", message: `One Tour ${name} is added to our site`, });
     await notificationUser.save();
     return res.status(200).json({ success: true, message: "New Tour is created", tour: tour, statusCode: 200 });
 
@@ -83,10 +109,20 @@ export const deleteTour = async (req, res, next) => {
         }
 
         let date = new Date();
-        let notificationAdmin = new NotificationsAdmin({ accommodationName: tour.name, Category: "tour deleted", message: `Tour ${tour.name} is deleted from our site`, date: date });
+
+        let notificationAdmin = new NotificationsAdmin({ accommodationName: "Tour deleted Successfully", Category: "Tour deleted", message: `One Tour ${tour.name} is deleted from our site`, date });
         await notificationAdmin.save();
 
-        let notificationUser = new NotificationsUser({ accommodationName: tour.name, Category: "tour deleted", message: `Tour ${tour.name} is deleted`, date: date });
+        let data = {
+            type: 'Tour deleted',
+            message: `${tour.name} Tour is deleted Successfully`,
+            date: date,
+            title: "Tour deleted Successfully"
+
+        };
+
+        notifyUsers(data);
+        let notificationUser = new NotificationsUser({ user: "no", broadCast: "yes", accommodationName: "Tour deleted Successfully", Category: "Tour deleted", message: `One Tour ${tour.name} is deleted to our site`, });
         await notificationUser.save();
 
         return res.status(200).json({ success: true, message: "Tour deleted successfully", deletedTour: tour });
@@ -128,8 +164,10 @@ export const updateTour = async (req, res, next) => {
     }
     await tour.save();
     let date = new Date();
-    let notificationAdmin = new NotificationsAdmin({ accommodationName: tour.name, Category: "tour is updated", message: `one tour ${tour.name} information is updated in our site`, date: date })
+
+    let notificationAdmin = new NotificationsAdmin({ accommodationName: "Tour updated Successfully", Category: "Tour updated", message: `One Tour ${tour.name} is updated in our site`, date });
     await notificationAdmin.save();
+
 
     return res.status(200).json({ success: true, message: 'Tour updated successfully', tour: tour });
 
@@ -325,7 +363,7 @@ export const getFormData = async (req, res, next) => {
 
 };
 
-export const searchTour = async (req, res, next) => {
+export const searchTourByName = async (req, res, next) => {
     let { name } = req.body;
     let tours;
     try {
@@ -344,4 +382,25 @@ export const searchTour = async (req, res, next) => {
     );
 
     return res.status(200).json({ success: true, message: "here are your all tours", filteredTours: filteredTours })
+}
+
+
+export const searchTourById = async (req, res, next) => {
+
+    let id = req.body.id;
+
+    let tours;
+    try {
+        tours = await BookTour.find({ tourId: id });
+
+    } catch (error) {
+        return next(error);
+    }
+
+    if (!tours) {
+
+        return res.status(400).json({ success: false, message: "no tours found in database" })
+    }
+
+    return res.status(200).json({ success: true, message: "here are your all tours", tours: tours })
 }

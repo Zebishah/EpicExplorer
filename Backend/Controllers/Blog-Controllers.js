@@ -4,6 +4,7 @@ import Categorie from '../Models/Categorie.js';
 import NotificationsAdmin from '../Models/NotificationsAdmin.js';
 import NotificationsUser from '../Models/NotificationsUser.js';
 import Blogs from '../Models/Blogs.js';
+import notifyUsers from '../Utils/NotifyUser.js';
 const app = express();
 dotenv.config();
 
@@ -45,9 +46,20 @@ export const addBlog = async (req, res, next) => {
         return next(error);
     }
     let date = new Date();
-    let notificationAdmin = new NotificationsAdmin({ accommodationName: name, Category: "new blog added", message: `one blog ${name} is added in our site`, date: date })
+
+    let notificationAdmin = new NotificationsAdmin({ accommodationName: "Blog Added Successfully", Category: "Blog Added", message: `One Blog ${blog.name} is Added from our site`, date });
     await notificationAdmin.save();
-    let notificationUser = new NotificationsUser({ accommodationName: name, Category: "new blog added", message: `new blog ${name} is added `, date: date })
+
+    let data = {
+        type: 'Blog Added',
+        message: `${blog.name} Blog is added Successfully`,
+        date: date,
+        title: "Blog Added Successfully"
+
+    };
+
+    notifyUsers(data);
+    let notificationUser = new NotificationsUser({ user: "no", broadCast: "yes", accommodationName: "Blog Added Successfully", Category: "Blog Added", message: `${blog.name} Blog is added Successfully` });
     await notificationUser.save();
     return res.status(200).json({ success: true, message: "New blog is created", blog: blog });
 
@@ -84,7 +96,17 @@ export const deleteBlog = async (req, res, next) => {
         let notificationAdmin = new NotificationsAdmin({ accommodationName: blog.name, Category: "blog deleted", message: `blog ${blog.name} is deleted from our site`, date: date });
         await notificationAdmin.save();
 
-        let notificationUser = new NotificationsUser({ accommodationName: blog.name, Category: "blog deleted", message: `blog ${blog.name} is deleted`, date: date });
+
+        let data = {
+            type: 'Blog Deleted',
+            message: `${blog.name} Blog is Deleted Successfully`,
+            date: date,
+            title: "Blog Deleted Successfully"
+
+        };
+
+        notifyUsers(data);
+        let notificationUser = new NotificationsUser({ user: "no", broadCast: "yes", accommodationName: "Blog Deleted Successfully", Category: "Blog Deleted", message: `${blog.name} Blog is Deleted Successfully` });
         await notificationUser.save();
 
         return res.status(200).json({ success: true, message: "blog deleted successfully", deletedBlog: blog });

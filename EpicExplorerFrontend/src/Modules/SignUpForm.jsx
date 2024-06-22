@@ -82,7 +82,7 @@ const SignUpForm = () => {
       toast.error("Please agree to the terms before signing up");
       return;
     }
-    if (userName.includes(" ")) {
+    if (/\s/.test(userName)) {
       toast.error("UserName should not have space in it");
       return;
     }

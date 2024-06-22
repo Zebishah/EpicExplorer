@@ -25,6 +25,10 @@ let UserFavrt = new Schema({
         type: String,
         required: true
     },
+    accommodationName: {
+        type: String,
+        required: true
+    },
 
 
 });

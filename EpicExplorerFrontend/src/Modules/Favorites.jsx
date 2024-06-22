@@ -41,10 +41,10 @@ const Favorites = () => {
                 key={index}
                 className="bg-fade-black shadow-[0_2px_18px_-6px_rgba(0,0,0,0.2)] w-full max-w-sm overflow-hidden font-[sans-serif] flex flex-col"
               >
-                <div className="flex-shrink-0">
+                <div className="w-[100%]">
                   <img src={image2} className="w-full" alt="Tour" />
                 </div>
-                <div className="px-4 py-6 border-yellows border-2 border-t-0 flex-grow">
+                <div className="px-4 py-6 flex-grow">
                   <div className="flex flex-row justify-between">
                     <h3 className="text-yellows text-xl font-radios">
                       {tour.name}

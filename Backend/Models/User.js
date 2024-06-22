@@ -73,7 +73,12 @@ let userSchema = new Schema({
 
         type: mongoose.Types.ObjectId,
         ref: "UserFavrt",
-    }]
+    }],
+    createdAt: {
+        type: Date,
+        default: Date.now, // Automatically set to current date and time
+    }
+
 })
 
 export default mongoose.model('User', userSchema);
