@@ -1,11 +1,11 @@
-import Hotels from "../Models/Hotels";
-import NotificationsAdmin from "../Models/NotificationsAdmin";
-import NotificationsUser from "../Models/NotificationsUser";
-import Review from "../Models/Review";
-import Room from "../Models/Room";
+
+import NotificationsAdmin from "../Models/NotificationsAdmin.js";
+import NotificationsUser from "../Models/NotificationsUser.js";
+import Review from "../Models/Review.js";
+import Room from "../Models/Room.js";
 import notifyUsers from '../Utils/NotifyUser.js';
-import Tour from "../Models/Tour";
-import Transport from "../Models/Transport";
+import Tour from "../Models/Tour.js";
+import Transport from "../Models/Transport.js";
 import HotelReviews from "../Models/HotelReviews.js";
 import TransportReviews from "../Models/TransportReviews.js";
 let reviewNo = 0;
@@ -13,7 +13,8 @@ export const addReviews = async (req, res, next) => {
     let user = await req.user;
 
     let id = req.params.id; //fetching id from params
-    let { name, email, reviewedService, image, words, rating } = req.body;
+    let { name, email, words, rating } = req.body;
+    let existingReview = null;
     let tourCheck;
     try {
         tourCheck = await Tour.findById(id); //finding tour 
@@ -22,11 +23,12 @@ export const addReviews = async (req, res, next) => {
         return next(error);
     }
     if (tourCheck) {
-        let existingReview;
+
         try {
             existingReview = new Review({ name, email, reviewedService: tourCheck.name, image: user.pic, words, rating });
-            existingReview = existingReview.save();
+            existingReview = await existingReview.save();
             tourCheck.reviews.push(existingReview.id);
+            console.log(existingReview);
         } catch (error) {
             return next(error);
         }
@@ -46,10 +48,10 @@ export const addReviews = async (req, res, next) => {
         return next(error);
     }
     if (roomCheck) {
-        let existingReview;
+
         try {
-            existingReview = new HotelReviews({ name, email, reviewedService: roomCheck.roomName, image: user.pic, words, rating });
-            existingReview = existingReview.save();
+            existingReview = new HotelReviews({ name, email, reviewedService: roomCheck.name, image: user.pic, words, rating });
+            existingReview = await existingReview.save();
             roomCheck.reviews.push(existingReview.id)
         } catch (error) {
             return next(error);
@@ -64,16 +66,14 @@ export const addReviews = async (req, res, next) => {
     let transportCheck;
     try {
         transportCheck = await Transport.findById(id);
-
-
     } catch (error) {
         return next(error);
     }
     if (transportCheck) {
-        let existingReview;
+
         try {
             existingReview = new TransportReviews({ name, email, reviewedService: transportCheck.carName, image: user.pic, words, rating });
-            existingReview = existingReview.save();
+            existingReview = await existingReview.save();
             transportCheck.reviews.push(existingReview.id)
         } catch (error) {
             return next(error);
@@ -113,7 +113,7 @@ export const addReviews = async (req, res, next) => {
 
 export const getReviews = async (req, res, next) => {
 
-    let getReview;
+    let getReview, getHotelReviews, getTransportReviews;
     try {
         getReview = await Review.find();
     } catch (error) {
@@ -123,8 +123,26 @@ export const getReviews = async (req, res, next) => {
         success = false;
         return res.status(400).json({ success, message: "Did'nt get Reviews...." });
     }
-
-    return res.status(200).json({ success: true, message: "New review is created", getReview: getReview });
+    try {
+        getHotelReviews = await HotelReviews.find();
+    } catch (error) {
+        return next(error);
+    }
+    if (!getHotelReviews) {
+        success = false;
+        return res.status(400).json({ success, message: "Did'nt get Reviews...." });
+    }
+    try {
+        getTransportReviews = await TransportReviews.find();
+    } catch (error) {
+        return next(error);
+    }
+    if (!getTransportReviews) {
+        success = false;
+        return res.status(400).json({ success, message: "Did'nt get Reviews...." });
+    }
+    const allReviews = [...getReview, ...getHotelReviews, ...getTransportReviews];
+    return res.status(200).json({ success: true, message: "New review is created", allReviews: allReviews });
 
 
 };

@@ -4,24 +4,26 @@ const ContactForm = () => {
   };
   return (
     <div className="flex flex-col space-y-14 flex-wrap justify-center items-center p-8 ">
-      <h1 className="text-yellows text-5xl font-joining ">Contact Us</h1>
-      <div className="max-w-screen-lg mx-auto p-5 shadow-lg shadow-yellows">
-        <div className="grid grid-cols-1 md:grid-cols-12 border-2 border-yellows">
-          <div className="bg-yellows md:col-span-4 p-10 text-fade-black">
+      <h1 className="text-white text-lg smd:text-5xl font-joining bg-[#206eff] p-6 rounded-lg shadow-lg shadow-fade-black">
+        Contact Us
+      </h1>
+      <div className="max-w-screen-lg mx-auto p-5 shadow-lg shadow-fade-black">
+        <div className="grid grid-cols-1 md:grid-cols-12 ">
+          <div className="bg-[#206eff] md:col-span-4 p-10 text-white">
             <p className="mt-4 text-sm leading-7 font-bold uppercase font-radios">
               Contact
             </p>
             <h3 className="text-3xl sm:text-4xl leading-normal font-joining font-extrabold tracking-tight">
-              Get In <span className="text-fade-black font-joining">Touch</span>
+              Get In <span className="text-white font-joining">Touch</span>
             </h3>
-            <p className="mt-4 leading-7 text-fade-black font-radios">
+            <p className="mt-4 leading-7 text-white font-radios">
               Lorem Ipsum is simply dummy text of the printing and typesetting
               industry. Lorem Ipsum has been the industry standard dummy text
               ever since the 1500s.
             </p>
             <div className="flex items-center mt-5">
               <svg
-                className="h-6 mr-2 text-fade-black font-bold"
+                className="h-6 mr-2 text-white font-bold"
                 fill="currentColor"
                 version="1.1"
                 xmlns="http://www.w3.org/2000/svg"
@@ -37,13 +39,13 @@ const ContactForm = () => {
                   </g>
                 </g>
               </svg>
-              <span className="text-sm text-fade-black font-bold ">
+              <span className="text-sm text-white font-bold ">
                 House #14, Street #12, Darulaman Road, Kabul, Afghanistan.
               </span>
             </div>
             <div className="flex items-center mt-5">
               <svg
-                className="h-6 mr-2 text-fade-black font-bold"
+                className="h-6 mr-2 text-white font-bold"
                 fill="currentColor"
                 version="1.1"
                 id="Capa_1"
@@ -92,13 +94,13 @@ const ContactForm = () => {
                   ></path>
                 </g>
               </svg>
-              <span className="text-sm text-fade-black font-bold">
+              <span className="text-sm text-white font-bold">
                 +93 749 99 65 50
               </span>
             </div>
             <div className="flex items-center mt-5">
               <svg
-                className="h-6 mr-2 text-fade-black font-bold"
+                className="h-6 mr-2 text-white font-bold"
                 fill="currentColor"
                 version="1.1"
                 id="Capa_1"
@@ -121,7 +123,7 @@ const ContactForm = () => {
                   </g>
                 </g>
               </svg>
-              <span className="text-sm text-fade-black font-bold">
+              <span className="text-sm text-white font-bold">
                 zebihaider123@gmail.com
               </span>
             </div>
@@ -131,16 +133,16 @@ const ContactForm = () => {
             method="post"
             className="md:col-span-8 p-10"
           >
-            <div className="flex flex-wrap -mx-3 mb-6 bg-light-black">
+            <div className="flex flex-wrap -mx-3 mb-6">
               <div className="w-full md:w-1/2 px-3 mb-6 md:mb-0">
                 <label
-                  className="block uppercase tracking-wide text-yellows text-xs font-bold mb-2"
+                  className="block uppercase tracking-wide text-[#3654ff] text-xs font-bold mb-2"
                   htmlFor="grid-first-name"
                 >
                   First Name
                 </label>
                 <input
-                  className="appearance-none block w-full bg-gray-200 text-gray-700 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
+                  className="appearance-none placeholder:text-white block w-full bg-blue-400 text-gray-700 rounded py-3 px-4 mb-3 leading-tight focus:outline-none "
                   id="grid-first-name"
                   type="text"
                   placeholder="Jane"
@@ -148,13 +150,13 @@ const ContactForm = () => {
               </div>
               <div className="w-full md:w-1/2 px-3">
                 <label
-                  className="block uppercase tracking-wide text-yellows text-xs font-bold mb-2"
+                  className="block uppercase tracking-wide text-[#3654ff] text-xs font-bold mb-2"
                   htmlFor="grid-last-name"
                 >
                   Last Name
                 </label>
                 <input
-                  className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                  className="appearance-none placeholder:text-white block w-full bg-blue-400 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:border-gray-500"
                   id="grid-last-name"
                   type="text"
                   placeholder="Doe"
@@ -164,13 +166,13 @@ const ContactForm = () => {
             <div className="flex flex-wrap -mx-3 mb-6">
               <div className="w-full px-3">
                 <label
-                  className="block uppercase tracking-wide text-yellows text-xs font-bold mb-2"
+                  className="block uppercase tracking-wide text-[#3654ff] text-xs font-bold mb-2"
                   htmlFor="grid-password"
                 >
                   Email Address
                 </label>
                 <input
-                  className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                  className="appearance-none placeholder:text-white block w-full bg-blue-400 text-gray-700 border border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:border-gray-500"
                   id="grid-email"
                   type="email"
                   placeholder="********@*****.**"
@@ -180,22 +182,23 @@ const ContactForm = () => {
             <div className="flex flex-wrap -mx-3 mb-6">
               <div className="w-full px-3">
                 <label
-                  className="block uppercase tracking-wide text-yellows text-xs font-bold mb-2"
+                  className="block uppercase tracking-wide text-[#3654ff] text-xs font-bold mb-2"
                   htmlFor="grid-password"
                 >
                   Your Message
                 </label>
                 <textarea
                   rows={10}
-                  className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                  className="appearance-none placeholder:text-white block w-full bg-blue-400 text-gray-700 border border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:border-gray-500"
                   defaultValue={""}
+                  placeholder="Your Message"
                 />
               </div>
               <div className="flex flex-col gap-y-3 smd:flex-row justify-between w-full px-3 ">
                 <div className="md:flex md:items-center">
                   <label className="block text-gray-500 font-bold">
                     <input className="mr-2 leading-tight" type="checkbox" />
-                    <span className="text-sm font-radios text-yellows">
+                    <span className="text-sm font-radios text-[#3654ff]">
                       Send me your newsletter!
                     </span>
                   </label>
@@ -203,7 +206,7 @@ const ContactForm = () => {
                 <button
                   type="submit"
                   onSubmit={BookTour}
-                  className="w-[90%] p-2 smd:w-[40%] hover:before:bg-red rounded-xl relative h-auto overflow-hidden border border-yellows bg-fade-black px-3 text-yellows shadow-lg transition-all ease-in-out before:absolute before:bottom-0 before:left-0 before:top-0 before:z-0 before:h-full before:w-0 before:bg-yellows before:transition-all before:duration-500 hover:text-black hover:shadow-yellow-400 hover:before:left-0 hover:before:w-full"
+                  className="w-[90%] p-2 smd:w-[40%] hover:before:bg-red rounded-xl relative h-auto overflow-hidden border border-[#3654ff] bg-[#206eff] ext-white px-3 text-white shadow-lg transition-all ease-in-out before:absolute before:bottom-0 before:left-0 before:top-0 before:z-0 before:h-full before:w-0 before:bg-white before:transition-all before:duration-500 hover:text-[#3654ff] hover:shadow-fade-black hover:before:left-0 hover:before:w-full"
                 >
                   <span className="relative z-10 text-radios text-lg">
                     Send Message

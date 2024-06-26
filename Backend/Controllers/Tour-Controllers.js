@@ -45,7 +45,7 @@ export const addTour = async (req, res, next) => {
 
     let category;
     try {
-        category = await Categorie.findById(parentCategory);
+        category = await Categorie.findOne({ name: parentCategory });
 
         category.items.push(tour.id);
         category.save();
@@ -401,6 +401,66 @@ export const searchTourById = async (req, res, next) => {
 
         return res.status(400).json({ success: false, message: "no tours found in database" })
     }
+
+    return res.status(200).json({ success: true, message: "here are your all tours", tours: tours })
+}
+
+export const tourPackages = async (req, res, next) => {
+
+    let tours;
+    try {
+        tours = await Tour.find({ parentCategory: "6672a0d8e8cc4b2b8b3bf63e" });
+
+    } catch (error) {
+        return next(error);
+    }
+
+    if (!tours) {
+
+        return res.status(400).json({ success: false, message: "no tours found in database" })
+    }
+    const honeymoonTours = tours.filter(tour => tour.type === "Honeymoon");
+    const familyTours = tours.filter(tour => tour.type === "Family");
+    const personalTours = tours.filter(tour => tour.type === "Personal");
+
+
+    return res.status(200).json({ success: true, message: "here are your all tours", honeymoonTours: honeymoonTours, familyTours: familyTours, personalTours: personalTours })
+}
+
+export const AllTourPackages = async (req, res, next) => {
+
+    let tours;
+    try {
+        tours = await Tour.find({ parentCategory: "6672a0d8e8cc4b2b8b3bf63e" });
+
+    } catch (error) {
+        return next(error);
+    }
+
+    if (!tours) {
+
+        return res.status(400).json({ success: false, message: "no tours found in database" })
+    }
+
+
+    return res.status(200).json({ success: true, message: "here are your all tours", tours: tours })
+}
+
+export const AllLatestTours = async (req, res, next) => {
+
+    let tours;
+    try {
+        tours = await Tour.find({ parentCategory: "6672a0a4e8cc4b2b8b3bf63b" });
+
+    } catch (error) {
+        return next(error);
+    }
+
+    if (!tours) {
+
+        return res.status(400).json({ success: false, message: "no tours found in database" })
+    }
+
 
     return res.status(200).json({ success: true, message: "here are your all tours", tours: tours })
 }

@@ -334,7 +334,7 @@ export const transportPayment = async (req, res, next) => {
                 // Format the checkout date as YYYY-MM-DD
                 const checkoutDate = checkout.toISOString().split('T')[0];
 
-                transportHistory = new TransportBookingHistory({ transportId: transportBooking.transportId, image: transportBooking.image, carName: transportBooking.carName, checkOutDate: checkoutDate, bookingDate: transportBooking.checkInDate, bookersName: transportBooking.bookerName, bookerEmail: transportBooking.bookerEmail })
+                transportHistory = new TransportBookingHistory({ transportId: transportBooking.transportId, price: transportBooking.prices, carName: transportBooking.carName, bookingDate: transportBooking.checkInDate, bookersName: transportBooking.bookerName, bookerEmail: transportBooking.bookerEmail })
                 await transportHistory.save();
                 transport.bookers.push(user.id);
                 transport.bookings.push(transportBooking.checkInDate); //updating attributes information of collections in database

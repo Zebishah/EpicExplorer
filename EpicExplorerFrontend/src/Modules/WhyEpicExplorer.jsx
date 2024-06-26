@@ -10,18 +10,18 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const WhyEpicExplorer = () => {
   return (
-    <div className="landing-page h-auto flex flex-col justify-center items-center w-full bg-light-black md:mt-0 ">
-      <h1 className="text-yellows text-lg smd:text-5xl font-joining ">
+    <div className="landing-page h-auto flex flex-col justify-center items-center w-full md:mt-0 ">
+      <h1 className="text-white text-lg smd:text-5xl font-joining bg-[#206eff] p-4 rounded-lg shadow-lg shadow-fade-black">
         Why Epic Explorer
       </h1>
       <section className="benefits-container grid grid-cols-1 md:grid-cols-3 gap-8 px-4 py-16 w-[80%]">
-        <div className="benefit-card bg-fade-black rounded-md shadow-lg shadow-yellows p-4 flex flex-col items-center gap-y-3">
+        <div className="benefit-card bg-[#206eff] rounded-md shadow-lg shadow-fade-black  text-white p-4 flex flex-col items-center gap-y-3">
           <FontAwesomeIcon
             icon={faMap}
-            className="text-yellows text-4xl items-center"
+            className="text-white text-4xl items-center"
           ></FontAwesomeIcon>
           <div className="flex flex-col gap-y-0 justify-center items-center">
-            <h3 className="text-xl font-semibold mb-2 text-yellows ">
+            <h3 className="text-xl font-semibold mb-2 text-white ">
               Explore & Discover
             </h3>
             <p className="text-white text-center ">
@@ -30,13 +30,13 @@ const WhyEpicExplorer = () => {
             </p>
           </div>
         </div>
-        <div className="benefit-card bg-fade-black rounded-md shadow-lg shadow-yellows p-4 flex flex-col items-center gap-y-3">
+        <div className="benefit-card bg-[#206eff] rounded-md shadow-lg shadow-fade-black text-white p-4 flex flex-col items-center gap-y-3">
           <FontAwesomeIcon
             icon={faVanShuttle}
-            className="text-yellows text-4xl items-center"
+            className="text-white text-4xl items-center"
           ></FontAwesomeIcon>
           <div className="flex flex-col gap-y-0 justify-center items-center">
-            <h3 className="text-xl font-semibold mb-2 text-yellows text-center">
+            <h3 className="text-xl font-semibold mb-2 text-white text-center">
               Luxury Escapes
             </h3>
             <p className="text-white text-center">
@@ -45,13 +45,13 @@ const WhyEpicExplorer = () => {
             </p>
           </div>
         </div>
-        <div className="benefit-card bg-fade-black rounded-md shadow-lg shadow-yellows p-4 flex flex-col items-center gap-y-3">
+        <div className="benefit-card bg-[#206eff] rounded-md shadow-lg shadow-fade-black text-white p-4 flex flex-col items-center gap-y-3">
           <FontAwesomeIcon
             icon={faMapLocationDot}
-            className="text-yellows text-4xl items-center"
+            className="text-white text-4xl items-center"
           ></FontAwesomeIcon>
           <div className="flex flex-col gap-y-0 justify-center items-center">
-            <h3 className="text-xl font-semibold mb-2 text-yellows text-center">
+            <h3 className="text-xl font-semibold mb-2 text-white text-center">
               Adventure Expeditions
             </h3>
             <p className="text-white text-center">
@@ -60,13 +60,13 @@ const WhyEpicExplorer = () => {
             </p>
           </div>
         </div>
-        <div className="benefit-card bg-fade-black rounded-md shadow-lg shadow-yellows p-4 flex flex-col items-center gap-y-3">
+        <div className="benefit-card bg-[#206eff] rounded-md shadow-lg shadow-fade-black text-white p-4 flex flex-col items-center gap-y-3">
           <FontAwesomeIcon
             icon={faEdit}
-            className="text-yellows text-4xl items-center"
+            className="text-white text-4xl items-center"
           ></FontAwesomeIcon>
           <div className="flex flex-col gap-y-0 justify-center items-center">
-            <h3 className="text-xl font-semibold mb-2 text-yellows text-center">
+            <h3 className="text-xl font-semibold mb-2 text-white text-center">
               Customized Trips
             </h3>
             <p className="text-white text-center">
@@ -75,13 +75,13 @@ const WhyEpicExplorer = () => {
             </p>
           </div>
         </div>
-        <div className="benefit-card bg-fade-black rounded-md shadow-lg shadow-yellows p-4 flex flex-col items-center gap-y-3">
+        <div className="benefit-card bg-[#206eff] rounded-md shadow-lg shadow-fade-black text-white p-4 flex flex-col items-center gap-y-3">
           <FontAwesomeIcon
             icon={faUserGroup}
-            className="text-yellows text-4xl items-center"
+            className="text-white text-4xl items-center"
           ></FontAwesomeIcon>
           <div className="flex flex-col gap-y-0 justify-center items-center">
-            <h3 className="text-xl font-semibold mb-2 text-yellows text-center">
+            <h3 className="text-xl font-semibold mb-2 text-white text-center">
               Group Retreats
             </h3>
             <p className="text-white text-center">
@@ -90,13 +90,13 @@ const WhyEpicExplorer = () => {
             </p>
           </div>
         </div>
-        <div className="benefit-card bg-fade-black rounded-md shadow-lg shadow-yellows p-4 flex flex-col items-center gap-y-3">
+        <div className="benefit-card bg-[#206eff] rounded-md shadow-lg shadow-fade-black text-white p-4 flex flex-col items-center gap-y-3">
           <FontAwesomeIcon
             icon={faBriefcase}
-            className="text-yellows text-4xl items-center"
+            className="text-white text-4xl items-center"
           ></FontAwesomeIcon>
           <div className="flex flex-col gap-y-0 justify-center items-center">
-            <h3 className="text-xl font-semibold mb-2 text-yellows text-center">
+            <h3 className="text-xl font-semibold mb-2 text-white text-center">
               Wellness Retreats
             </h3>
             <p className="text-white text-center">

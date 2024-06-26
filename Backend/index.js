@@ -20,6 +20,7 @@ import TransportServicesRoutes from './Routes/TransportServices-Routes .js';
 import UserFavoriteRoutes from './Routes/UserFavrt-Routes.js';
 import NotificationRoutes from './Routes/Notification-Routes.js';
 import BillRoutes from './Routes/Bill-Routes.js';
+import ReviewsRoutes from './Routes/Review-Routes.js';
 
 
 
@@ -50,6 +51,7 @@ connectDB();
 let host = process.env.REACT_APP_API_HOST
 
 app.use('/Admin', AdminRoutes);
+app.use('/Review', ReviewsRoutes);
 app.use('/Notification', NotificationRoutes);
 app.use('/User', UserRoutes);
 app.use('/UserFavrt', UserFavoriteRoutes);

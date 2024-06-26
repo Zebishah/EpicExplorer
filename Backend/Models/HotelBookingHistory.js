@@ -13,14 +13,11 @@ let HotelBookingHistory_Schema = new Schema({
         type: String,
         required: true
     },
-    image: {
+    amount: {
         type: String,
         required: true
     },
-    checkoutDate: {
-        type: String,
-        required: true
-    },
+
     bookingDate: {
         type: Date,
         default: Date.now

@@ -368,7 +368,7 @@ export const roomPayment = async (req, res, next) => {
 
             try {
                 room = await Room.findById(roomBooking.roomId);
-                roomHistory = new HotelBookingHistory({ hotelId: roomBooking.hotelId, roomId: roomBooking.roomId, image: roomBooking.image, roomName: roomBooking.roomName, bookingDate: roomBooking.checkInDate, bookerName: roomBooking.bookerName, bookerEmail: roomBooking.bookerEmail, checkoutDate: checkoutDate })
+                roomHistory = new HotelBookingHistory({ hotelId: roomBooking.hotelId, roomId: roomBooking.roomId, amount: roomBooking.roomPrice, roomName: roomBooking.roomName, bookingDate: roomBooking.checkInDate, bookerName: roomBooking.bookerName, bookerEmail: roomBooking.bookerEmail })
                 await roomHistory.save();
                 room.bookers.push(user.id);
                 room.bookings.push(roomBooking.checkInDate);//updating attributes information of collections in database

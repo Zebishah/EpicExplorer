@@ -9,7 +9,7 @@ let TransportBookingHistory_Schema = new Schema({
         type: String,
         required: true
     },
-    image: {
+    price: {
         type: String,
         required: true
     },
@@ -26,9 +26,6 @@ let TransportBookingHistory_Schema = new Schema({
         required: true
     },
 
-    checkOutDate: {
-        type: String,
-        required: true
-    }
+
 });
 export default mongoose.model('TransportBookingHistory', TransportBookingHistory_Schema);

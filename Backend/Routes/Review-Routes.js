@@ -6,7 +6,7 @@ const ReviewsRoutes = express.Router();
 
 ReviewsRoutes.post('/addReviews/:id', verifyToken, getUserById, addReviews);
 
-ReviewsRoutes.post('/getReviews', getReviews);
+ReviewsRoutes.get('/getReviews', getReviews);
 
 ReviewsRoutes.post('/getUserTourReviews', verifyToken, getUserById, getUserTourReviews);
 
@@ -18,4 +18,7 @@ ReviewsRoutes.post('/getTourReviews', verifyToken, getUserById, getTourReviews);
 
 ReviewsRoutes.post('/getUserReviews', verifyToken, getUserById, getUserReviews);
 
-ReviewRoutes.get('/ReviewCounter', countReviews);
+ReviewsRoutes.get('/ReviewCounter', countReviews);
+
+
+export default ReviewsRoutes;

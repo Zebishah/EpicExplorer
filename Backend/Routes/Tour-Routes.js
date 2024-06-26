@@ -1,5 +1,5 @@
 import express from 'express';
-import { addTour, countTours, deleteTour, filterTours, getFormData, getTours, openTour, perPageTours, searchTourById, searchTourByName, updateTour } from '../Controllers/Tour-Controllers.js';
+import { AllLatestTours, AllTourPackages, addTour, countTours, deleteTour, filterTours, getFormData, getTours, openTour, perPageTours, searchTourById, searchTourByName, tourPackages, updateTour } from '../Controllers/Tour-Controllers.js';
 import verifyToken from '../middleware/IdFromToken.js';
 import getUserById from '../middleware/UserFromId.js';
 const TourRoutes = express.Router();
@@ -13,6 +13,12 @@ TourRoutes.post('/deleteTour/:id', deleteTour);
 TourRoutes.post('/updateTour/:id', updateTour);
 
 TourRoutes.post('/filterTour', filterTours);
+
+TourRoutes.get('/TourPackages', tourPackages);
+
+TourRoutes.get('/LatestTour', AllLatestTours);
+
+TourRoutes.get('/AllTourPackages', AllTourPackages);
 
 TourRoutes.get('/tourCounter', countTours);
 

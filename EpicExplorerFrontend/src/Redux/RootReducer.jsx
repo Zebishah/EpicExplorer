@@ -10,6 +10,7 @@ import userInfoSlice from "./Slices/userInfoSlice";
 import ManageUserSlice from "./Slices/ManageUserSlice";
 import ForgetPasswordSlice from "./Slices/ForgetPasswordSlice";
 import UserBookingSlice from "./Slices/UserBookingSlice";
+import TourPackagesSlice from "./Slices/TourPackagesSlice";
 
 // Import your slice reducers here
 // import counterReducer from './counterSlice';
@@ -26,6 +27,7 @@ const rootReducer = combineReducers({
   manageUser: ManageUserSlice,
   forgotPassword: ForgetPasswordSlice,
   userBookings: UserBookingSlice,
+  TourPackage: TourPackagesSlice,
   // todo: todoReducer,
 });
 

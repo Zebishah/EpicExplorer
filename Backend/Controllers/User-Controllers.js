@@ -695,7 +695,7 @@ export const stellarPayment = async (req, res, next) => {
 
             try {
                 tour = await Tour.findById(tourBooking.tourId); //adding booked tour information in database
-                tourHistory = new ToursBookingHistory({ tourId: tourBooking.tourId, name: tourBooking.name, image: tourBooking.image, bookingDate: tourBooking.checkInDate, bookerName: tourBooking.bookerName, bookerEmail: tourBooking.bookerEmail, checkOutDate: tour.endDate })
+                tourHistory = new ToursBookingHistory({ tourId: tourBooking.tourId, name: tourBooking.name, Price: tourBooking.price, bookingDate: tourBooking.checkInDate, bookerName: tourBooking.bookerName, bookerEmail: tourBooking.bookerEmail })
                 await tourHistory.save();
                 if (!tourHistory) {
                     return res.status(400).json({ success: false, message: "tour history you created is null", statusCode: 400 });

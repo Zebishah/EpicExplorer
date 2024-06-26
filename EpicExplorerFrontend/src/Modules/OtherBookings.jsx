@@ -11,12 +11,12 @@ const OtherBookings = () => {
     console.log(e.target);
   };
   return (
-    <div className="flex flex-col w-full h-autp mt-16 bg-light-black">
-      <h1 className="text-yellows text-5xl font-joining text-center mt-8">
+    <div className="flex flex-col w-full h-auto mt-16">
+      <h1 className="text-white text-lg smd:text-5xl font-joining bg-[#3654ff] p-4 rounded-lg shadow-lg shadow-fade-black">
         Other Bookings
       </h1>
       <div className="flex flex-col space-y-6 items-center justify-center h-screen p-8">
-        <div className="relative border-2 border-yellows bg-gradient-to-r from-purple-600 to-blue-600 h-screen text-white overflow-hidden w-[80%] rounded-xl shadow-lg shadow-yellows">
+        <div className="relative border-2 border-[#3654ff] bg-gradient-to-r from-purple-600 to-blue-600 h-screen text-white overflow-hidden w-[80%] rounded-xl shadow-lg shadow-fade-black">
           <div className="absolute inset-0 ">
             <img
               src={backgroundImage}
@@ -34,7 +34,7 @@ const OtherBookings = () => {
             <button
               type="submit"
               onClick={BookTransport}
-              className=" mt-4 w-[55%] md:w-[25%] hover:before:bg-red rounded-xl relative h-[50px] overflow-hidden border border-yellows bg-[#00000065] px-3 text-yellows shadow-lg transition-all before:absolute before:bottom-0 before:left-0 before:top-0 before:z-0 before:h-full before:w-0 before:bg-yellows before:transition-all before:duration-500 hover:text-black hover:shadow-yellow-400 hover:before:left-0 hover:before:w-full"
+              className=" mt-4 w-[55%] md:w-[25%] hover:before:bg-red rounded-xl relative h-[50px] overflow-hidden border border-[#3654ff] bg-[#00000065] px-3 text-white shadow-lg transition-all before:absolute before:bottom-0 before:left-0 before:top-0 before:z-0 before:h-full before:w-0 before:bg-[#3654ff] before:transition-all before:duration-500 hover:text-white hover:shadow-[#3654ff] hover:before:left-0 hover:before:w-full"
             >
               <span className="relative z-10 text-radios text-lg">
                 Book Transport
@@ -43,7 +43,7 @@ const OtherBookings = () => {
           </div>
         </div>
 
-        <div className="relative border-2 border-yellows bg-gradient-to-r from-purple-600 to-blue-600 h-screen text-white overflow-hidden w-[80%] rounded-xl shadow-lg shadow-yellows">
+        <div className="relative border-2 border-[#3654ff] bg-gradient-to-r from-purple-600 to-blue-600 h-screen text-white overflow-hidden w-[80%] rounded-xl shadow-lg shadow-fade-black">
           <div className="absolute inset-0">
             <img
               src={backgroundImage2}
@@ -61,7 +61,7 @@ const OtherBookings = () => {
             <button
               type="submit"
               onClick={BookHotel}
-              className=" mt-4 w-[55%] md:w-[25%] hover:before:bg-red rounded-xl relative h-[50px] overflow-hidden border border-yellows bg-[#00000065] px-3 text-yellows shadow-lg transition-all before:absolute before:bottom-0 before:left-0 before:top-0 before:z-0 before:h-full before:w-0 before:bg-yellows before:transition-all before:duration-500 hover:text-black hover:shadow-yellow-400 hover:before:left-0 hover:before:w-full"
+              className=" mt-4 w-[55%] md:w-[25%] hover:before:bg-red rounded-xl relative h-[50px] overflow-hidden border border-[#3654ff] bg-[#00000065] px-3 text-white shadow-lg transition-all before:absolute before:bottom-0 before:left-0 before:top-0 before:z-0 before:h-full before:w-0 before:bg-[#3654ff] before:transition-all before:duration-500 hover:text-white hover:shadow-[#3654ff] hover:before:left-0 hover:before:w-full"
             >
               <span className="relative z-10 text-radios text-lg">
                 Book Hotels
