@@ -21,6 +21,7 @@ import UserFavoriteRoutes from './Routes/UserFavrt-Routes.js';
 import NotificationRoutes from './Routes/Notification-Routes.js';
 import BillRoutes from './Routes/Bill-Routes.js';
 import ReviewsRoutes from './Routes/Review-Routes.js';
+import BlogRoutes from './Routes/Blog-Routes.js';
 
 
 
@@ -56,6 +57,7 @@ app.use('/Notification', NotificationRoutes);
 app.use('/User', UserRoutes);
 app.use('/UserFavrt', UserFavoriteRoutes);
 app.use('/Tour', TourRoutes);
+app.use('/Blog', BlogRoutes);
 app.use('/Bill', BillRoutes);
 app.use('/Hotel', HotelRoutes);
 app.use('/Room', RoomRoutes);

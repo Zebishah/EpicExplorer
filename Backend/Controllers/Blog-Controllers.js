@@ -5,6 +5,7 @@ import NotificationsAdmin from '../Models/NotificationsAdmin.js';
 import NotificationsUser from '../Models/NotificationsUser.js';
 import Blogs from '../Models/Blogs.js';
 import notifyUsers from '../Utils/NotifyUser.js';
+import Tour from '../Models/Tour.js';
 const app = express();
 dotenv.config();
 
@@ -13,9 +14,8 @@ let success = null;
 
 export const addBlog = async (req, res, next) => {
 
-    let blogNo = 0;
 
-    let { name, parentCategory, type, pic, words, gallery } = req.body;
+    let { name, AccommodationId, type, pic, words, category } = req.body;
 
     let existingBlog;
     try {
@@ -30,21 +30,13 @@ export const addBlog = async (req, res, next) => {
     let blog;
     try {
 
-        blog = new Blogs({ name, parentCategory, type, pic, words, gallery });
+        blog = new Blogs({ name, AccommodationId, type, pic, words, category });
         blog = await blog.save();
     } catch (error) {
         return next(error);
     }
 
-    let category;
-    try {
-        category = await Categorie.findById(parentCategory);
 
-        category.items.push(blog.id);
-        category.save();
-    } catch (error) {
-        return next(error);
-    }
     let date = new Date();
 
     let notificationAdmin = new NotificationsAdmin({ accommodationName: "Blog Added Successfully", Category: "Blog Added", message: `One Blog ${blog.name} is Added from our site`, date });
@@ -81,7 +73,28 @@ export const getBlogs = async (req, res, next) => {
 
     return res.status(200).json({ success: true, message: "here are your all blogs", blogs: blogs })
 }
+export const getTourBlogs = async (req, res, next) => {
+    let id = req.body.id
+    let tour;
+    try {
+        tour = await Tour.findById(id);
+    } catch (error) {
+        return next(error);
+    }
 
+    if (!tour) {
+        success = false;
+        return res.status(400).json({ success, message: "no toursfound in database" })
+    }
+    let blogs;
+    try {
+        blogs = await Blogs.find({ type: tour.type });
+    } catch (error) {
+        return next(error);
+    }
+    console.log(blogs)
+    return res.status(200).json({ success: true, message: "here are your all blogs", blogs: blogs })
+}
 export const deleteBlog = async (req, res, next) => {
     let id = req.params.id;
 

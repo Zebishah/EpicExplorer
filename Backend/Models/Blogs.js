@@ -6,7 +6,11 @@ let BlogSchema = new Schema({
         type: String,
         required: true
     },
-    parentCategory: {
+    category: {
+        type: String,
+        required: true
+    },
+    AccommodationId: {
         type: String,
         required: true
     },
@@ -22,10 +26,7 @@ let BlogSchema = new Schema({
         type: String,
         required: true
     },
-    gallery: [{
-        type: String,
-        required: true
-    }],
+
 
 });
 export default mongoose.model('Blog', BlogSchema);

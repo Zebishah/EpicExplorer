@@ -12,8 +12,7 @@ let reviewNo = 0;
 export const addReviews = async (req, res, next) => {
     let user = await req.user;
 
-    let id = req.params.id; //fetching id from params
-    let { name, email, words, rating } = req.body;
+    let { id, name, email, words, rating } = req.body;
     let existingReview = null;
     let tourCheck;
     try {
@@ -112,7 +111,7 @@ export const addReviews = async (req, res, next) => {
 };
 
 export const getReviews = async (req, res, next) => {
-
+    console.log("getReviews")
     let getReview, getHotelReviews, getTransportReviews;
     try {
         getReview = await Review.find();
@@ -164,11 +163,21 @@ export const getUserReviews = async (req, res, next) => {
 
 };
 export const getTourReviews = async (req, res, next) => {
-    let user = await req.user;
-    let id = req.params.id;
+    let id = req.body.id;
+    let tour;
+    try {
+        tour = await Tour.findById(id);
+    } catch (error) {
+        return next(error);
+    }
+    if (!tour) {
+        success = false;
+        return res.status(400).json({ success, message: "Did'nt get tour...." });
+    }
+
     let getReview;
     try {
-        getReview = await Review.find({ reviewedServiceId: id });
+        getReview = await Review.find({ reviewedService: tour.name });
     } catch (error) {
         return next(error);
     }
@@ -180,7 +189,42 @@ export const getTourReviews = async (req, res, next) => {
     return res.status(200).json({ success: true, message: "Your reviews are here", getReview: getReview });
 
 
-}; export const getUserTourReviews = async (req, res, next) => {
+};
+export const getHotelReviews = async (req, res, next) => {
+    let id = req.params.id;
+    let getReview;
+    try {
+        getReview = await HotelReviews.find({ reviewedService: tour.name });
+    } catch (error) {
+        return next(error);
+    }
+    if (!getReview) {
+        success = false;
+        return res.status(400).json({ success, message: "Did'nt get Reviews...." });
+    }
+
+    return res.status(200).json({ success: true, message: "Your reviews are here", getReview: getReview });
+
+
+};
+export const getTransportReviews = async (req, res, next) => {
+    let id = req.params.id;
+    let getReview;
+    try {
+        getReview = await TransportReviews.find({ reviewedService: tour.name });
+    } catch (error) {
+        return next(error);
+    }
+    if (!getReview) {
+        success = false;
+        return res.status(400).json({ success, message: "Did'nt get Reviews...." });
+    }
+
+    return res.status(200).json({ success: true, message: "Your reviews are here", getReview: getReview });
+
+
+};
+export const getUserTourReviews = async (req, res, next) => {
     let user = await req.user;
     let id = req.params.id;
     let getReview;

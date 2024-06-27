@@ -30,11 +30,12 @@ const TourPackages = () => {
     }
   }, [tourPackage]);
 
-  const BookTour = (e) => {
-    e.preventDefault();
-    console.log(e.target);
+  const BookTour = (id) => {
+    navigate(`/BookTour?id=${encodeURIComponent(id)}`);
   };
-
+  const BookLTour = (id) => {
+    navigate(`/BookTour?id=${encodeURIComponent(id)}`);
+  };
   return (
     <div className="flex flex-col space-y-14 flex-wrap justify-center items-center p-8 w-full">
       <h1 className="text-white text-lg smd:text-5xl font-joining bg-[#206eff] p-6 rounded-lg shadow-lg shadow-fade-black">
@@ -63,7 +64,7 @@ const TourPackages = () => {
               <div className="flex justify-center mt-6">
                 <button
                   type="button"
-                  onClick={BookTour}
+                  onClick={() => BookTour(tour._id)}
                   className="w-[40%] hover:before:bg-red rounded-xl relative h-[50px] overflow-hidden border border-[#3654ff] bg-white px-3 text-[#3654ff] shadow-lg transition-all ease-in-out before:absolute before:bottom-0 before:left-0 before:top-0 before:z-0 before:h-full before:w-0 before:bg-[#206eff] hover:shadow-lg hover:shadow-white before:transition-all before:duration-500 hover:text-white hover:before:left-0 hover:before:w-full"
                 >
                   <span className="relative z-10 text-radios text-lg">
@@ -108,7 +109,7 @@ const TourPackages = () => {
               <div className="flex justify-center mt-6">
                 <button
                   type="submit"
-                  onSubmit={BookTour}
+                  onSubmit={() => BookLTour(tour._id)}
                   className="w-[40%] hover:before:bg-red rounded-xl relative h-[50px] overflow-hidden border border-[#3654ff] bg-white px-3 text-[#3654ff] shadow-lg transition-all ease-in-out before:absolute before:bottom-0 before:left-0 before:top-0 before:z-0 before:h-full before:w-0 before:bg-[#206eff] hover:shadow-lg hover:shadow-white before:transition-all before:duration-500 hover:text-white hover:before:left-0 hover:before:w-full"
                 >
                   <span className="relative z-10 text-radios text-lg">

@@ -12,6 +12,7 @@ import { createServer } from 'http';
 import { Server } from 'socket.io';
 import io from '../index.js';
 import BookTour from '../Models/BookTour.js';
+import mongoose from 'mongoose';
 
 const app = express();
 const server = createServer(app);
@@ -277,7 +278,10 @@ export const perPageTours = async (req, res, next) => {
 }
 
 export const openTour = async (req, res, next) => {
-    let id = req.params.id;
+    let { id } = req.params;
+
+    id = id.toString();
+
 
     let tour;
     try {
@@ -463,4 +467,23 @@ export const AllLatestTours = async (req, res, next) => {
 
 
     return res.status(200).json({ success: true, message: "here are your all tours", tours: tours })
+}
+
+export const relatedTours = async (req, res, next) => {
+    let id = req.body.id;
+    let tours;
+    try {
+        tours = await Tour.findById(id);
+
+    } catch (error) {
+        return next(error);
+    }
+
+    if (!tours) {
+
+        return res.status(400).json({ success: false, message: "no tours found in database" })
+    }
+    let finalTour = await Tour.find({ type: tours.type });
+
+    return res.status(200).json({ success: true, message: "here are your all tours", tours: finalTour })
 }

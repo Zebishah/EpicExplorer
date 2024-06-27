@@ -7,7 +7,7 @@ import OtherBookings from "./OtherBookings";
 import Reviews from "./Reviews";
 import TourPackages from "./TourPackages";
 import WhyEpicExplorer from "./WhyEpicExplorer";
-import image2 from "../images/stocks/vecteezy_blue-trendy-background-design-template-for-banner-poster_.jpg";
+import image2 from "../images/vecteezy_blue-trendy-background-design-template-for-banner-poster_.jpg";
 const LandingPage = () => {
   const BookTour = (e) => {
     e.preventDefault();
