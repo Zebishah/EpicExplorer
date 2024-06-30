@@ -38,7 +38,7 @@ const LatestTours = () => {
             key={index}
           >
             <div className="relative">
-              <div className="absolute top-8 right-0 transform translate-y-[-50%]">
+              <div className="absolute top-8 right-0 transform translate-y-[-50%] animate-blink">
                 <img src={newIcon} alt="icon" />
               </div>
               <img src={image1} className="w-full" />

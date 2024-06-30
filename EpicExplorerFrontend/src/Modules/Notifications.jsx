@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import Footer from "./Footer";
 import Navbar from "./Navbar";
 import SideBar from "./SideBar";
-import image1 from "../images/6437523_3313427.jpg";
+import image1 from "../images/vecteezy_blue-trendy-background-design-template-for-banner-poster_.jpg";
 import { useDispatch, useSelector } from "react-redux";
 import { userNotifications } from "../Redux/Slices/userInfoSlice";
 
@@ -49,14 +49,14 @@ const Notifications = () => {
 
   return (
     <div
-      className="flex flex-col min-h-screen bg-center bg-cover"
+      className="flex flex-col min-h-screen "
       style={{ backgroundImage: `url(${image1})` }}
     >
       <Navbar />
       <div className="flex flex-row gap-x-6 h-full w-full overflow-hidden bg-opacity-0 bg-light-black smd:mt-40 mt-20">
         <SideBar />
         <div className="flex flex-col gap-y-10 p-6 items-center w-[80%] ">
-          <h1 className="text-yellows text-lg lg:text-4xl font-joining bg-light-black bg-opacity-60 p-4 rounded-lg">
+          <h1 className="text-white text-lg lg:text-4xl font-joining bg-blue-600 bg-opacity-60 p-4 rounded-lg">
             User Notifications
           </h1>
 

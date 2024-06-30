@@ -138,21 +138,21 @@ const Navbar = () => {
             {isPackagesOpen && (
               <div className="p-2 rounded-xl hover:shadow-lg hover:shadow-fade-black flex flex-col items-center absolute mt-2 w-40 bg-fade-black shadow-lg shadow-black z-10 -ml-14 ">
                 <Link
-                  to={"/FamilyTour"}
+                  to={"/FamilyTours"}
                   href="#"
                   className="font-radios block px-2 py-2 text-sm text-[#3654ff] hover:text-white hover:bg-[#3654ff] rounded-md lg:text-[14px] md:text-[12px] "
                 >
                   Family Packages{" "}
                 </Link>
                 <Link
-                  to={"/FamilyTour"}
+                  to={"/HoneyMoonPackages"}
                   href="#"
                   className="font-radios block px-2 py-2 text-sm text-[#3654ff] hover:text-white hover:bg-[#3654ff] rounded-md lg:text-[14px] md:text-[12px]"
                 >
                   Honeymoon Packages{" "}
                 </Link>
                 <Link
-                  to={"/FamilyTour"}
+                  to={"/PersonalPackages"}
                   href="#"
                   className="font-radios block px-2 py-2 text-sm text-[#3654ff] hover:text-white hover:bg-[#3654ff] rounded-md lg:text-[14px] md:text-[12px]"
                 >
@@ -196,7 +196,7 @@ const Navbar = () => {
             )}
           </div>
           <Link
-            to={"/DiscountedTour"}
+            to={"/discountedTour"}
             className="font-radios p-2 rounded-xl hover:shadow-lg hover:shadow-fade-black flex text-[#3654ff] cursor-pointer duration-300 hover:bg-[#3654ff] hover:text-white transition-all ease-in-out lg:text-[14px] md:text-[12px]"
           >
             Discounts{" "}

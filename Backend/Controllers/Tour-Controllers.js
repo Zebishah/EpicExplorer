@@ -86,7 +86,7 @@ export const getTours = async (req, res, next) => {
 
     let tours;
     try {
-        tours = await Tour.find();
+        tours = await Tour.find({ available: "yes" });
     } catch (error) {
         return next(error);
     }
@@ -176,67 +176,56 @@ export const updateTour = async (req, res, next) => {
 }
 export const filterTours = async (req, res, next) => {
 
+    let { type, price, membersLimit, tourLocation, name } = req.body;
 
-    let { type, price } = req.query;
-    const sampleQueryObj = {}, QueryObj = {};
-
-
-    if (type) {
-        type = type.split(',');
-        sampleQueryObj.type = type;
+    const queryObj = {};
+    console.log(name)
+    if (name) {
+        queryObj.name = { $regex: new RegExp(`^${name}`, 'i') };
     }
-    let existingTour;
-    if (sampleQueryObj) {
+    // Handle the type filter
+    if (type && type.length > 0) {
+        queryObj.type = { $in: type };
+    }
 
-        try {
-            existingTour = await Tour.find(sampleQueryObj);
+    // Handle the membersLimit filter
+    if (membersLimit && membersLimit.length > 0) {
+        queryObj.membersLimit = { $in: membersLimit };
+    }
 
-        } catch (error) {
-            return console.log(error);
+    // Handle the tourLocation filter
+    if (tourLocation && tourLocation.length > 0) {
+        queryObj.tourLocation = { $in: tourLocation };
+    }
+    // Handle the price filter
+    if (price.length > 0) {
+        if (Array.isArray(price)) {
+            const priceRanges = price.map(range => {
+                const [minPrice, maxPrice] = range.split('-').map(Number);
+                return { price: { $gte: minPrice, $lte: maxPrice } };
+            });
+            queryObj.$or = priceRanges;
+        } else {
+            const [minPrice, maxPrice] = price.split('-').map(Number);
+            queryObj.price = { $gte: minPrice, $lte: maxPrice };
         }
-        if (!existingTour) {
-            success = false;
-            return res.status(400).json({ success, message: "tour not found of filter" });
-        }
-    }
-    console.log(existingTour)
-    const typeIds = [];
-    if (existingTour) {
-        // Array to store category IDs
-
-        existingTour.forEach(tour => {
-            typeIds.push(tour._id); // Push each category ID into the array
-        });
-
-
-    }
-    if (typeIds) {
-        QueryObj._id = typeIds;
     }
 
-    if (price) {
-        price.gte = parseInt(price.gte);
-        price.lte = parseInt(price.lte);
-        QueryObj.price = { $gte: price.gte, $lte: price.lte }
-    }
-    console.log(QueryObj)
-    if (QueryObj) {
-        let existingTour;
-        try {
-            existingTour = await Tour.find(QueryObj);
+    console.log(queryObj);
 
-
-        } catch (error) {
-            return console.log(error);
-        }
-        success = true;
-        return res.status(200).json({ success, existingTour });
-
-
+    // Fetch tours based on the combined query object
+    let filteredTours;
+    try {
+        filteredTours = await Tour.find(queryObj);
+    } catch (error) {
+        return res.status(500).json({ success: false, message: "Error fetching tours", error });
     }
 
-
-}
+    if (!filteredTours || filteredTours.length === 0) {
+        return res.status(404).json({ success: false, message: "No tours found with the given filter" });
+    }
+    return res.status(200).json({ success: true, tours: filteredTours });
+};
 export const countTours = async (req, res, next) => {
     let toursCount;
     try {
@@ -258,7 +247,7 @@ export const countTours = async (req, res, next) => {
 export const perPageTours = async (req, res, next) => {
 
 
-    let page = req.params.page ? req.params.page : 1;
+    let page = req.body.page ? req.body.page : 1;
     let perPage = 3;
 
     if (page) {
@@ -428,7 +417,26 @@ export const tourPackages = async (req, res, next) => {
     const personalTours = tours.filter(tour => tour.type === "Personal");
 
 
-    return res.status(200).json({ success: true, message: "here are your all tours", honeymoonTours: honeymoonTours, familyTours: familyTours, personalTours: personalTours })
+    return res.status(200).json({ success: true, message: "here are your all tours", honeymoonTours: honeymoonTours, familyTours: familyTours, personalTours: personalTours, tours: tours })
+}
+
+export const DiscountedTours = async (req, res, next) => {
+
+    let tours;
+    try {
+        tours = await Tour.find({ parentCategory: "6672a109e8cc4b2b8b3bf644" });
+
+    } catch (error) {
+        return next(error);
+    }
+
+    if (!tours) {
+
+        return res.status(400).json({ success: false, message: "no tours found in database" })
+    }
+
+
+    return res.status(200).json({ success: true, message: "here are your all tours", tours: tours })
 }
 
 export const AllTourPackages = async (req, res, next) => {

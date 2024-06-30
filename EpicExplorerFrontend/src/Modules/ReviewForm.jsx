@@ -42,8 +42,11 @@ const ReviewForm = (id) => {
     });
   };
   useEffect(() => {
-    if (Review.success == true) {
-      toast.success("Review submitted successfully");
+    if (Review) {
+      if (Review.success == true) {
+        toast.success("Review submitted successfully");
+      }
+      console.log(Review.existingReview);
     }
   }, [Review]);
 

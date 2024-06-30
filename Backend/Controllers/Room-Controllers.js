@@ -39,14 +39,6 @@ export const addRoom = async (req, res, next) => {
         success = false;
         return res.status(400).json({ success, message: "Room already existed " });
     }
-    let room;
-    try {
-        //creating new room in a hotel
-        room = new Room({ hotelId, name, prices, type, description, image, gallery, features, location, reviews, bookers, noOfGuests, available, bookings, bookedCount });
-        room = await room.save();
-    } catch (error) {
-        return next(error);
-    }
     let hotel;
     try {
         //adding room in specific hotel record
@@ -60,6 +52,15 @@ export const addRoom = async (req, res, next) => {
     if (!hotel) {
         success = false;
         return res.status(400).json({ success, message: "Hotel not found " });
+    }
+
+    let room;
+    try {
+        //creating new room in a hotel
+        room = new Room({ hotelId, hotelName: hotel.name, name, prices, type, description, image, gallery, features, location, reviews, bookers, noOfGuests, available, bookings, bookedCount });
+        room = await room.save();
+    } catch (error) {
+        return next(error);
     }
 
     let date = new Date();
@@ -173,7 +174,58 @@ export const updateRoom = async (req, res, next) => {
 
 
 }
+export const filterRooms = async (req, res, next) => {
 
+    let { type, prices, noOfGuests, location, name } = req.body;
+
+    const queryObj = {};
+    console.log(name)
+    if (name) {
+        queryObj.name = { $regex: new RegExp(`^${name}`, 'i') };
+    }
+    // Handle the type filter
+    if (type && type.length > 0) {
+        queryObj.type = { $in: type };
+    }
+
+    // Handle the membersLimit filter
+    if (noOfGuests && noOfGuests.length > 0) {
+        queryObj.noOfGuests = { $in: noOfGuests };
+    }
+
+    // Handle the tourLocation filter
+    if (location && location.length > 0) {
+        queryObj.location = { $in: location };
+    }
+    // Handle the price filter
+    if (prices.length > 0) {
+        if (Array.isArray(prices)) {
+            const priceRanges = prices.map(range => {
+                const [minPrice, maxPrice] = range.split('-').map(Number);
+                return { prices: { $gte: minPrice, $lte: maxPrice } };
+            });
+            queryObj.$or = priceRanges;
+        } else {
+            const [minPrice, maxPrice] = prices.split('-').map(Number);
+            queryObj.prices = { $gte: minPrice, $lte: maxPrice };
+        }
+    }
+
+    console.log(queryObj);
+
+    // Fetch tours based on the combined query object
+    let filteredRooms;
+    try {
+        filteredRooms = await Room.find(queryObj);
+    } catch (error) {
+        return res.status(500).json({ success: false, message: "Error fetching rooms", error });
+    }
+
+    if (!filteredRooms || filteredRooms.length === 0) {
+        return res.status(404).json({ success: false, message: "No rooms found with the given filter" });
+    }
+    return res.status(200).json({ success: true, rooms: filteredRooms });
+};
 export const openRoom = async (req, res, next) => {
     let id = req.params.id;
     let room;

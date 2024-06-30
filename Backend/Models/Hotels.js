@@ -7,7 +7,7 @@ let hotelSchema = new Schema({
         required: true
     },
     prices: {
-        type: Number,
+        type: String,
         required: true
     },
     roomCount: {

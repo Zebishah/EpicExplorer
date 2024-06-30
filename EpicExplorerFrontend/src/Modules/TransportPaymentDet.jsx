@@ -5,7 +5,7 @@ import { transportPaymentDetail } from "../Redux/Slices/UserBookingSlice";
 import Footer from "./Footer";
 import Navbar from "./Navbar";
 import SideBar from "./SideBar";
-import image1 from "../images/6437523_3313427.jpg";
+import image1 from "../images/vecteezy_blue-trendy-background-design-template-for-banner-poster_.jpg";
 const TransportPaymentDet = () => {
   const location = useLocation();
   const dispatch = useDispatch();

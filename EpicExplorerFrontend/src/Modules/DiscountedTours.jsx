@@ -1,11 +1,42 @@
+import { useDispatch, useSelector } from "react-redux";
+import image1 from "../images/marc-zimmer-a5QnUtau8lo-unsplash.jpg";
+import { useEffect, useState } from "react";
+import image from "../images/drif-riadh-YpkuRn54y4w-unsplash.jpg";
+import { useNavigate } from "react-router";
 import Navbar from "./Navbar";
-import image from "../images/harrison-fitts-zE2VGbJSYns-unsplash.jpg";
-import image1 from "../images/harrison-fitts-zE2VGbJSYns-unsplash.jpg";
-import backgroundImage from "../images/harrison-fitts-zE2VGbJSYns-unsplash.jpg";
 import Footer from "./Footer";
+import { showDiscountedTours } from "../Redux/Slices/showAccommodationsSlice";
+import image2 from "../images/vecteezy_blue-trendy-background-design-template-for-banner-poster_.jpg";
 const DiscountedTours = () => {
+  const [DiscountedTours, setDiscountedTours] = useState([]);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { discountedTour } = useSelector((state) => state.showAccommodations);
+
+  useEffect(() => {
+    dispatch(showDiscountedTours());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (discountedTour) {
+      console.log(discountedTour);
+      if (discountedTour.tours) {
+        setDiscountedTours(discountedTour.tours);
+      } else {
+        console.warn("Tours not found in discountedTour");
+      }
+    }
+  }, [discountedTour]);
+  const BookTour = (id) => {
+    navigate(`/BookTour?id=${encodeURIComponent(id)}`);
+  };
   return (
-    <div className="bg-light-black">
+    <div
+      className="bg-center"
+      style={{
+        backgroundImage: `url(${image2})`,
+      }}
+    >
       <Navbar />
       <div className="relative w-full mt-20 h-[35vh]">
         <img
@@ -15,302 +46,57 @@ const DiscountedTours = () => {
         />
         <div className="absolute inset-0 flex items-center justify-center">
           <h2 className="text-white text-6xl font-radios font-bold p-4 rounded">
-            All Transport
+            All Discounted Tours
           </h2>
         </div>
       </div>
       <div className="bg-dark flex-col lg:flex-row gap-x-6 p-8 min-h-screen flex items-center justify-center overflow-hidden">
         <div className="container mx-auto">
-          <div className="text-center bg-yellows py-4 rounded mb-8">
+          <div className="text-center bg-[#206eff] text-white py-4 rounded mb-8">
             <h1 className="text-2xl font-bold">List of All Tours</h1>
           </div>
 
-          <div className="flex flex-wrap gap-8 justify-center">
-            <div className="bg-fade-black shadow-[0_2px_18px_-6px_rgba(0,0,0,0.2)] w-full max-w-sm rounded-lg overflow-hidden font-[sans-serif]">
-              <img src={image1} className="w-full" alt="Car" />
-              <div className="px-4 py-6 border-yellows border-2 border-t-0">
-                <div className="flex flex-row justify-between">
-                  <h3 className="text-yellows text-xl font-radios">Heading</h3>
-                  <h3 className="text-yellows text-xl font-radios">
-                    10,000 PKR
-                  </h3>
+          <div className="flex flex-row gap-x-10 md:mt-0 sssm:mt-72 gap-y-4 flex-wrap">
+            {DiscountedTours.map((tour, index) => (
+              <div
+                className="bg-[#206eff] w-full max-w-sm rounded-lg overflow-hidden mx-auto font-[sans-serif] shadow-lg shadow-fade-black "
+                key={index}
+              >
+                <div className="relative ">
+                  <div className="absolute top-8 right-0 transform translate-y-[-50%]">
+                    <div className="tag absolute -top-4 right-2 bg-blue-600 text-white w-max px-5 py-2 rounded-xl font-radios shadow-lg shadow-fade-black animate-blink">
+                      5% Discount
+                    </div>
+                  </div>
+                  <img src={image1} className="w-full" />
                 </div>
-                <p className="mt-4 text-sm text-white font-radios">
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed
-                  auctor auctor arcu, at fermentum dui. Maecenas Lorem ipsum
-                  dolor sit amet, consectetur adipiscing elit. Sed auctor auctor
-                  arcu, at fermentum dui. Maecenas.
-                </p>
-                <div className="flex justify-center mt-6">
-                  <button
-                    type="button"
-                    className="px-6 py-2.5 rounded text-sm tracking-wider font-radios border-none outline-none bg-yellows text-black"
-                  >
-                    Book Now
-                  </button>
-                </div>
-              </div>
-            </div>
+                <div className="px-4 py-6 ">
+                  <div className="flex flex-row justify-between">
+                    <h3 className="text-white text-xl font-radios">
+                      {tour.name}
+                    </h3>
+                    <h3 className="text-white text-xl font-radios">
+                      {tour.price} pkr
+                    </h3>
+                  </div>
 
-            <div className="bg-fade-black shadow-[0_2px_18px_-6px_rgba(0,0,0,0.2)] w-full max-w-sm rounded-lg overflow-hidden font-[sans-serif]">
-              <img src={image1} className="w-full" alt="Car" />
-              <div className="px-4 py-6 border-yellows border-2 border-t-0">
-                <div className="flex flex-row justify-between">
-                  <h3 className="text-yellows text-xl font-radios">Heading</h3>
-                  <h3 className="text-yellows text-xl font-radios">
-                    10,000 PKR
-                  </h3>
-                </div>
-                <p className="mt-4 text-sm text-white font-radios">
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed
-                  auctor auctor arcu, at fermentum dui. Maecenas Lorem ipsum
-                  dolor sit amet, consectetur adipiscing elit. Sed auctor auctor
-                  arcu, at fermentum dui. Maecenas.
-                </p>
-                <div className="flex justify-center mt-6">
-                  <button
-                    type="button"
-                    className="px-6 py-2.5 rounded text-sm tracking-wider font-radios border-none outline-none bg-yellows text-black"
-                  >
-                    Book Now
-                  </button>
+                  <p className="mt-4 text-sm text-white font-radios">
+                    {tour.description}
+                  </p>
+                  <div className="flex justify-center mt-6">
+                    <button
+                      type="button"
+                      onClick={() => BookTour(tour._id)}
+                      className="w-[40%] hover:before:bg-red rounded-xl relative h-[50px] overflow-hidden border border-[#3654ff] bg-white px-3 text-[#3654ff] shadow-lg transition-all ease-in-out before:absolute before:bottom-0 before:left-0 before:top-0 before:z-0 before:h-full before:w-0 before:bg-[#206eff] hover:shadow-lg hover:shadow-white before:transition-all before:duration-500 hover:text-white hover:before:left-0 hover:before:w-full"
+                    >
+                      <span className="relative z-10 text-radios text-lg">
+                        Book Tour
+                      </span>
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
-
-            <div className="bg-fade-black shadow-[0_2px_18px_-6px_rgba(0,0,0,0.2)] w-full max-w-sm rounded-lg overflow-hidden font-[sans-serif]">
-              <img src={image1} className="w-full" alt="Car" />
-              <div className="px-4 py-6 border-yellows border-2 border-t-0">
-                <div className="flex flex-row justify-between">
-                  <h3 className="text-yellows text-xl font-radios">Heading</h3>
-                  <h3 className="text-yellows text-xl font-radios">
-                    10,000 PKR
-                  </h3>
-                </div>
-                <p className="mt-4 text-sm text-white font-radios">
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed
-                  auctor auctor arcu, at fermentum dui. Maecenas Lorem ipsum
-                  dolor sit amet, consectetur adipiscing elit. Sed auctor auctor
-                  arcu, at fermentum dui. Maecenas.
-                </p>
-                <div className="flex justify-center mt-6">
-                  <button
-                    type="button"
-                    className="px-6 py-2.5 rounded text-sm tracking-wider font-radios border-none outline-none bg-yellows text-black"
-                  >
-                    Book Now
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-fade-black shadow-[0_2px_18px_-6px_rgba(0,0,0,0.2)] w-full max-w-sm rounded-lg overflow-hidden font-[sans-serif]">
-              <img src={image1} className="w-full" alt="Car" />
-              <div className="px-4 py-6 border-yellows border-2 border-t-0">
-                <div className="flex flex-row justify-between">
-                  <h3 className="text-yellows text-xl font-radios">Heading</h3>
-                  <h3 className="text-yellows text-xl font-radios">
-                    10,000 PKR
-                  </h3>
-                </div>
-                <p className="mt-4 text-sm text-white font-radios">
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed
-                  auctor auctor arcu, at fermentum dui. Maecenas Lorem ipsum
-                  dolor sit amet, consectetur adipiscing elit. Sed auctor auctor
-                  arcu, at fermentum dui. Maecenas.
-                </p>
-                <div className="flex justify-center mt-6">
-                  <button
-                    type="button"
-                    className="px-6 py-2.5 rounded text-sm tracking-wider font-radios border-none outline-none bg-yellows text-black"
-                  >
-                    Book Now
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-fade-black shadow-[0_2px_18px_-6px_rgba(0,0,0,0.2)] w-full max-w-sm rounded-lg overflow-hidden font-[sans-serif]">
-              <img src={image1} className="w-full" alt="Car" />
-              <div className="px-4 py-6 border-yellows border-2 border-t-0">
-                <div className="flex flex-row justify-between">
-                  <h3 className="text-yellows text-xl font-radios">Heading</h3>
-                  <h3 className="text-yellows text-xl font-radios">
-                    10,000 PKR
-                  </h3>
-                </div>
-                <p className="mt-4 text-sm text-white font-radios">
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed
-                  auctor auctor arcu, at fermentum dui. Maecenas Lorem ipsum
-                  dolor sit amet, consectetur adipiscing elit. Sed auctor auctor
-                  arcu, at fermentum dui. Maecenas.
-                </p>
-                <div className="flex justify-center mt-6">
-                  <button
-                    type="button"
-                    className="px-6 py-2.5 rounded text-sm tracking-wider font-radios border-none outline-none bg-yellows text-black"
-                  >
-                    Book Now
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-fade-black shadow-[0_2px_18px_-6px_rgba(0,0,0,0.2)] w-full max-w-sm rounded-lg overflow-hidden font-[sans-serif]">
-              <img src={image1} className="w-full" alt="Car" />
-              <div className="px-4 py-6 border-yellows border-2 border-t-0">
-                <div className="flex flex-row justify-between">
-                  <h3 className="text-yellows text-xl font-radios">Heading</h3>
-                  <h3 className="text-yellows text-xl font-radios">
-                    10,000 PKR
-                  </h3>
-                </div>
-                <p className="mt-4 text-sm text-white font-radios">
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed
-                  auctor auctor arcu, at fermentum dui. Maecenas Lorem ipsum
-                  dolor sit amet, consectetur adipiscing elit. Sed auctor auctor
-                  arcu, at fermentum dui. Maecenas.
-                </p>
-                <div className="flex justify-center mt-6">
-                  <button
-                    type="button"
-                    className="px-6 py-2.5 rounded text-sm tracking-wider font-radios border-none outline-none bg-yellows text-black"
-                  >
-                    Book Now
-                  </button>
-                </div>
-              </div>
-            </div>
-            <div className="bg-fade-black shadow-[0_2px_18px_-6px_rgba(0,0,0,0.2)] w-full max-w-sm rounded-lg overflow-hidden font-[sans-serif]">
-              <img src={image1} className="w-full" alt="Car" />
-              <div className="px-4 py-6 border-yellows border-2 border-t-0">
-                <div className="flex flex-row justify-between">
-                  <h3 className="text-yellows text-xl font-radios">Heading</h3>
-                  <h3 className="text-yellows text-xl font-radios">
-                    10,000 PKR
-                  </h3>
-                </div>
-                <p className="mt-4 text-sm text-white font-radios">
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed
-                  auctor auctor arcu, at fermentum dui. Maecenas Lorem ipsum
-                  dolor sit amet, consectetur adipiscing elit. Sed auctor auctor
-                  arcu, at fermentum dui. Maecenas.
-                </p>
-                <div className="flex justify-center mt-6">
-                  <button
-                    type="button"
-                    className="px-6 py-2.5 rounded text-sm tracking-wider font-radios border-none outline-none bg-yellows text-black"
-                  >
-                    Book Now
-                  </button>
-                </div>
-              </div>
-            </div>
-            <div className="bg-fade-black shadow-[0_2px_18px_-6px_rgba(0,0,0,0.2)] w-full max-w-sm rounded-lg overflow-hidden font-[sans-serif]">
-              <img src={image1} className="w-full" alt="Car" />
-              <div className="px-4 py-6 border-yellows border-2 border-t-0">
-                <div className="flex flex-row justify-between">
-                  <h3 className="text-yellows text-xl font-radios">Heading</h3>
-                  <h3 className="text-yellows text-xl font-radios">
-                    10,000 PKR
-                  </h3>
-                </div>
-                <p className="mt-4 text-sm text-white font-radios">
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed
-                  auctor auctor arcu, at fermentum dui. Maecenas Lorem ipsum
-                  dolor sit amet, consectetur adipiscing elit. Sed auctor auctor
-                  arcu, at fermentum dui. Maecenas.
-                </p>
-                <div className="flex justify-center mt-6">
-                  <button
-                    type="button"
-                    className="px-6 py-2.5 rounded text-sm tracking-wider font-radios border-none outline-none bg-yellows text-black"
-                  >
-                    Book Now
-                  </button>
-                </div>
-              </div>
-            </div>
-            <div className="bg-fade-black shadow-[0_2px_18px_-6px_rgba(0,0,0,0.2)] w-full max-w-sm rounded-lg overflow-hidden font-[sans-serif]">
-              <img src={image1} className="w-full" alt="Car" />
-              <div className="px-4 py-6 border-yellows border-2 border-t-0">
-                <div className="flex flex-row justify-between">
-                  <h3 className="text-yellows text-xl font-radios">Heading</h3>
-                  <h3 className="text-yellows text-xl font-radios">
-                    10,000 PKR
-                  </h3>
-                </div>
-                <p className="mt-4 text-sm text-white font-radios">
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed
-                  auctor auctor arcu, at fermentum dui. Maecenas Lorem ipsum
-                  dolor sit amet, consectetur adipiscing elit. Sed auctor auctor
-                  arcu, at fermentum dui. Maecenas.
-                </p>
-                <div className="flex justify-center mt-6">
-                  <button
-                    type="button"
-                    className="px-6 py-2.5 rounded text-sm tracking-wider font-radios border-none outline-none bg-yellows text-black"
-                  >
-                    Book Now
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className=" hidden lg:flex flex-col justify-center items-center gap-y-6 w-full sssm:w-[90%] xl:w-[25%] lg:w-[35%] p-4">
-          <div className="bg-fade-black p-6 rounded-lg flex flex-col justify-center items-center flex-1 shadow-lg border-2 border-yellows">
-            <h2 className="text-yellows text-lg font-bold mb-4 font-radios">
-              For Enquiry
-            </h2>
-            <p className="text-white text-center font-radios">
-              Call us on +92-51-5739027 for individual, tailored advice for your
-              perfect stay or send us a message with your hotel booking query.
-            </p>
-            <p className="text-yellows mt-4 font-radios">
-              Email: zebhaider123@gmail.com
-            </p>
-          </div>
-
-          <div className="bg-fade-black p-6 rounded-lg flex flex-col justify-center items-center flex-1 shadow-lg border-2 border-yellows">
-            <h2 className="text-yellows text-lg font-bold mb-4 font-radios">
-              For Enquiry
-            </h2>
-            <p className="text-white text-center font-radios">
-              Call us on +92-51-5739027 for individual, tailored advice for your
-              perfect stay or send us a message with your hotel booking query.
-            </p>
-            <p className="text-yellows mt-4 font-radios">
-              Email: zebhaider123@gmail.com
-            </p>
-          </div>
-          <div className="bg-fade-black p-6 rounded-lg flex flex-col justify-center items-center gap-y-4 flex-1 shadow-lg border-2 border-yellows sssm:w-[100%] lg:w-[100%]">
-            <h2 className="text-yellows text-lg font-bold mb-4 font-radios">
-              Related Blogs
-            </h2>
-            <div className="flex flex-col justify-center items-center gap-y-4">
-              <div className="relative h-[30vh] w-full">
-                <img
-                  src={backgroundImage}
-                  alt="Skardu Blog"
-                  className="object-cover h-[70%] w-full rounded-lg"
-                />
-                <button className="bg-yellows text-black font-bold py-2 rounded w-full mt-2">
-                  Skardu Blogs
-                </button>
-              </div>
-              <div className="relative h-[30vh] w-full">
-                <img
-                  src={backgroundImage}
-                  alt="Balochistan Blog"
-                  className="object-cover h-[70%] w-full rounded-lg"
-                />
-                <button className="bg-yellows text-black font-bold py-2 rounded w-full mt-2">
-                  Balochistan Blogs
-                </button>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       </div>

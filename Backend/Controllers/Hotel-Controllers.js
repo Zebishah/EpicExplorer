@@ -54,18 +54,18 @@ export const addHotel = async (req, res, next) => {
 };
 export const getHotel = async (req, res, next) => {
 
-    let Hotels;
+    let Hotel;
     try {
-        Hotels = await Hotels.find();
+        Hotel = await Hotels.find();
     } catch (error) {
         return next(error);
     }
 
-    if (!Hotels) {
+    if (!Hotel) {
         return res.status(400).json({ success: false, message: "no Hotels found in database", statusCode: 400 })
     }
 
-    return res.status(200).json({ success: true, message: "here are your all Hotels", Hotels: Hotels, statusCode: 200 })
+    return res.status(200).json({ success: true, message: "here are your all Hotels", Hotel: Hotel, statusCode: 200 })
 }
 
 export const deleteHotel = async (req, res, next) => {
@@ -138,19 +138,25 @@ export const updateHotel = async (req, res, next) => {
     return res.status(200).json({ success: true, message: 'Hotel updated successfully', Hotel: Hotel, statusCode: 200 });
 }
 export const getHotelRooms = async (req, res, next) => {
-    let id = req.params.id;
+    let id = req.body.id;
+    console.log(id)
     let rooms;
     try {
-        rooms = await Room.findOne({ hotelId: id });
+        rooms = await Room.find({ hotelId: id });
     } catch (error) {
         return next(error);
     }
-
-    if (!rooms) {
+    let hotel;
+    try {
+        hotel = await Hotels.findById(id);
+    } catch (error) {
+        return next(error);
+    }
+    if (!hotel) {
         return res.status(400).json({ success: false, message: "no rooms found in database", statusCode: 400 })
     }
 
-    return res.status(200).json({ success: true, message: "here are your all rooms", Hotels: Hotels, statusCode: 200 })
+    return res.status(200).json({ success: true, message: "here are your all rooms", rooms: rooms, hotel: hotel.name, statusCode: 200 })
 }
 
 export const countHotels = async (req, res, next) => {

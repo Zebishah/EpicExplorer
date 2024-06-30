@@ -2,54 +2,31 @@ import { useState } from "react";
 import ReactStars from "react-rating-stars-component";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
-import { showReviewStart } from "../Redux/Slices/TourPackagesSlice";
-const ReviewShowingTour = () => {
-  const [rating, setRating] = useState(3);
+import { showTourReviews } from "../Redux/Slices/ShowTourDetailsSlice";
+const ReviewShowingTour = (id) => {
   const [Reviews, setReviews] = useState([]);
   const dispatch = useDispatch();
-  const { TourReviews } = useSelector((state) => state.TourPackage);
+  const { TourReviews } = useSelector((state) => state.TourDetail);
 
   useEffect(() => {
-    dispatch(showReviewStart());
+    dispatch(showTourReviews(id));
   }, [dispatch]);
 
   useEffect(() => {
     if (TourReviews) {
       if (TourReviews.getReview) {
         setReviews(TourReviews.getReview.slice(0, 3));
+        console.log(TourReviews.getReview);
       }
     }
   }, [TourReviews]);
 
-  //   const reviews = [
-  //     {
-  //       name: "Emma Davis",
-  //       date: "20 Mar, 2024",
-  //       review:
-  //         "I recently had the opportunity to explore Pagedone's UI design system, and it left a lasting impression on my workflow. The system seamlessly blends user-friendly features with a robust set of design components, making it a go-to for creating visually stunning and consistent interfaces.",
-  //       likes: 8,
-  //       comments: 2,
-  //       img: "https://via.placeholder.com/50", // replace with actual image URL
-  //     },
-  //     {
-  //       name: "Anuj Mishra",
-  //       date: "16 Dec, 2023",
-  //       review:
-  //         "I recently had the opportunity to explore Pagedone's UI design system, and it left a lasting impression on my workflow. The system seamlessly blends user-friendly features with a robust set of design components, making it a go-to for creating visually stunning and consistent interfaces.",
-  //       likes: 10,
-  //       comments: 5,
-  //       img: "https://via.placeholder.com/50", // replace with actual image URL
-  //     },
-  //     {
-  //       name: "Robert Karmazov",
-  //       date: "24 Oct, 2023",
-  //       review:
-  //         "I recently had the opportunity to explore Pagedone's UI design system, and it left a lasting impression on my workflow. The system seamlessly blends user-friendly features with a robust set of design components, making it a go-to for creating visually stunning and consistent interfaces.",
-  //       likes: 4,
-  //       comments: 0,
-  //       img: "https://via.placeholder.com/50", // replace with actual image URL
-  //     },
-  //   ];
+  const formatDate = (dateString) => {
+    const options = { day: "2-digit", month: "2-digit", year: "numeric" };
+    return new Intl.DateTimeFormat("en-GB", options).format(
+      new Date(dateString)
+    );
+  };
   return (
     <div className="max-w-4xl mx-auto p-6">
       <h2 className="text-center text-2xl font-bold mb-6 text-white bg-[#206eff] p-3 rounded-lg shadow-lg">
@@ -58,10 +35,10 @@ const ReviewShowingTour = () => {
       {Reviews.map((review, index) => (
         <div
           key={index}
-          className="bg-white shadow-black shadow-lg rounded-lg p-6 mb-6 flex flex-col md:flex-row items-start md:items-center"
+          className="bg-white shadow-black shadow-lg rounded-lg p-6 mb-6 flex flex-col md:flex-row items-start md:items-start"
         >
           <img
-            src={review.pic}
+            src={review.image}
             alt={review.name}
             className="w-12 h-12 rounded-full mr-4 mb-4 md:mb-0"
           />
@@ -79,10 +56,15 @@ const ReviewShowingTour = () => {
                     edit={false}
                   />
                 </div>
+                <h3 className="text-lg font-semibold">
+                  {review.reviewedService}
+                </h3>
               </div>
-              <span className="text-gray-500 text-sm">{review.date}</span>
+              <span className="text-gray-500 text-sm">
+                {formatDate(review.createdAt)}
+              </span>
             </div>
-            <p className="text-gray-700 mb-4">{review.review}</p>
+            <p className="text-gray-700 mb-4">{review.words}</p>
             <div className="flex items-center text-gray-500">
               <div className="flex items-center mr-4">
                 <svg

@@ -3,9 +3,9 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Footer from "./Footer";
 import Navbar from "./Navbar";
 import SideBar from "./SideBar";
-import image1 from "../images/6437523_3313427.jpg";
-import { Link } from "react-router-dom";
 
+import { Link } from "react-router-dom";
+import image1 from "../images/vecteezy_blue-trendy-background-design-template-for-banner-poster_.jpg";
 const PaymentOptions = () => {
   return (
     <div
@@ -13,22 +13,22 @@ const PaymentOptions = () => {
       style={{ backgroundImage: `url(${image1})` }}
     >
       <Navbar />
-      <div className="flex flex-row gap-x-6 h-full w-full overflow-hidden bg-opacity-0 bg-light-black smd:mt-40 mt-20">
+      <div className="flex flex-row gap-x-6 h-full w-full overflow-hidden bg-opacity-0 smd:mt-40 mt-20">
         <SideBar />
 
         <div className="flex flex-col justify-center gap-y-10 p-6 items-center w-[80%] ">
-          <h1 className="text-yellows text-5xl font-joining bg-light-black bg-opacity-70 p-4 rounded-lg ">
+          <h1 className="text-white text-5xl font-joining bg-[#3654ff] bg-opacity-70 p-4 rounded-lg ">
             User Bookings
           </h1>
           <section className="benefits-container grid grid-cols-1 md:grid-cols-3 gap-4 px-4 py-16 w-[80%]">
             <Link to={"/tourPayment"}>
-              <div className="benefit-card bg-fade-black rounded-md shadow-lg p-4 flex flex-col items-center gap-y-3">
+              <div className="benefit-card bg-[#3654ff] rounded-md shadow-lg p-4 flex flex-col items-center gap-y-3">
                 <FontAwesomeIcon
                   icon={faMap}
-                  className="text-yellows text-4xl items-center"
+                  className="text-white text-4xl items-center"
                 ></FontAwesomeIcon>
                 <div className="flex flex-col gap-y-0 justify-center items-center">
-                  <h3 className="text-xl font-semibold mb-2 text-yellows ">
+                  <h3 className="text-xl font-semibold mb-2 text-white ">
                     Tours Payments
                   </h3>
                   <p className="text-white text-center ">
@@ -39,13 +39,13 @@ const PaymentOptions = () => {
               </div>
             </Link>
             <Link to={"/hotelPayment"}>
-              <div className="benefit-card bg-fade-black rounded-md shadow-lg p-4 flex flex-col items-center gap-y-3">
+              <div className="benefit-card bg-[#3654ff] rounded-md shadow-lg p-4 flex flex-col items-center gap-y-3">
                 <FontAwesomeIcon
                   icon={faHotel}
-                  className="text-yellows text-4xl items-center"
+                  className="text-white text-4xl items-center"
                 ></FontAwesomeIcon>
                 <div className="flex flex-col gap-y-0 justify-center items-center">
-                  <h3 className="text-xl font-semibold mb-2 text-yellows text-center">
+                  <h3 className="text-xl font-semibold mb-2 text-white text-center">
                     Hotel Payments
                   </h3>
                   <p className="text-white text-center">
@@ -56,13 +56,13 @@ const PaymentOptions = () => {
               </div>
             </Link>
             <Link to={"/transportPayment"}>
-              <div className="benefit-card bg-fade-black rounded-md shadow-lg p-4 flex flex-col items-center gap-y-3 ">
+              <div className="benefit-card bg-[#3654ff] rounded-md shadow-lg p-4 flex flex-col items-center gap-y-3 ">
                 <FontAwesomeIcon
                   icon={faCar}
-                  className="text-yellows text-4xl items-center"
+                  className="text-white text-4xl items-center"
                 ></FontAwesomeIcon>
                 <div className="flex flex-col gap-y-0 justify-center items-center">
-                  <h3 className="text-xl font-semibold mb-2 text-yellows text-center">
+                  <h3 className="text-xl font-semibold mb-2 text-white text-center">
                     transport Payments
                   </h3>
                   <p className="text-white text-center">

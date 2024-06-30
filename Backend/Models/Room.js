@@ -6,6 +6,10 @@ let RoomSchema = new Schema({
         type: String,
         required: true
     },
+    hotelName: {
+        type: String,
+        required: true
+    },
     name: {
         type: String,
         required: true

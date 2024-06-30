@@ -1,15 +1,18 @@
 import backgroundImage from "../images/traffic-vehicle-urban-reflections-city.jpg";
 import backgroundImage2 from "../images/pexels-pixabay-261102.jpg";
+import { useNavigate } from "react-router";
 
 const OtherBookings = () => {
+  const navigate = useNavigate();
   const BookTransport = (e) => {
     e.preventDefault();
     console.log(e.target);
   };
   const BookHotel = (e) => {
     e.preventDefault();
-    console.log(e.target);
+    navigate("/AllHotels");
   };
+
   return (
     <div className="flex flex-col w-full h-auto mt-16">
       <h1 className="text-white text-lg smd:text-5xl font-joining bg-[#3654ff] p-4 rounded-lg shadow-lg shadow-fade-black">

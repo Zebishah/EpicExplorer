@@ -8,7 +8,7 @@ HotelRoutes.post('/addHotel', addHotel);
 
 HotelRoutes.get('/showHotel', getHotel);
 
-HotelRoutes.get('/showHotelRooms/:id', getHotelRooms);
+HotelRoutes.post('/showHotelRooms', getHotelRooms);
 
 HotelRoutes.post('/deleteHotel/:id', verifyToken, deleteHotel);
 

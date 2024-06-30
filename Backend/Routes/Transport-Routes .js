@@ -1,5 +1,5 @@
 import express from 'express';
-import { addTransport, countTransports, deleteTransport, getFormData, getTransport, openTransport, searchTransportById, searchTransportByName, transportPayment, updateTransport } from '../Controllers/Transport-Controllers.js';
+import { addTransport, countTransports, deleteTransport, filterTransport, getFormData, getTransport, openTransport, searchTransportById, searchTransportByName, transportPayment, updateTransport } from '../Controllers/Transport-Controllers.js';
 import verifyToken from '../middleware/IdFromToken.js';
 import getUserById from '../middleware/UserFromId.js';
 import getAdminById from '../middleware/AdminFromId.js';
@@ -8,6 +8,8 @@ const TransportRoutes = express.Router();
 TransportRoutes.post('/addTransport', addTransport);
 
 TransportRoutes.get('/showTransport', getTransport);
+
+TransportRoutes.post('/filterTransport', filterTransport);
 
 TransportRoutes.post('/deleteTransport/:id', verifyToken, deleteTransport);
 

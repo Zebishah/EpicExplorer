@@ -1,5 +1,5 @@
 import express from 'express';
-import { addRoom, countRooms, deleteRoom, getFormData, getRoom, openRoom, roomPayment, searchRoomById, searchRoomByName, updateRoom } from '../Controllers/Room-Controllers.js';
+import { addRoom, countRooms, deleteRoom, filterRooms, getFormData, getRoom, openRoom, roomPayment, searchRoomById, searchRoomByName, updateRoom } from '../Controllers/Room-Controllers.js';
 import verifyToken from '../middleware/IdFromToken.js';
 import getUserById from '../middleware/UserFromId.js';
 import getAdminById from '../middleware/AdminFromId.js';
@@ -20,6 +20,8 @@ RoomRoutes.post('/openRoom/:id', openRoom);
 RoomRoutes.post('/getFormData/:id', verifyToken, getUserById, getFormData);
 
 RoomRoutes.get('/RoomCounter', countRooms);
+
+RoomRoutes.post('/RoomFilters', filterRooms);
 
 RoomRoutes.post('/searchRoomByName', searchRoomByName);
 

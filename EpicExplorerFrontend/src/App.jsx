@@ -52,12 +52,29 @@ import TransportBookingDet from "./Modules/TransportBookingDet";
 import TourPaymentDet from "./Modules/TourPaymentDet";
 import HotelPaymentDet from "./Modules/HotelPaymentDet";
 import TransportPaymentDet from "./Modules/TransportPaymentDet";
+import AllTourPackages from "./Modules/AllTourPackages";
+import FamilyPackage from "./Modules/FamilyPackage";
+import PersonalPackage from "./Modules/PersonalPackage";
+import AllRoom from "./Modules/AllRoom";
+import Room from "./Modules/Room";
+import HoneyMoonPackages from "./Modules/HoneyMoonPackages";
+import ViewBlog from "./Modules/ViewBlog";
 function App() {
   return (
     <>
       <Router>
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/ViewBlog" element={<ViewBlog />} />
+          <Route path="/discountedTour" element={<DiscountedTours />} />
+          <Route path="/HoneyMoonPackages" element={<HoneyMoonPackages />} />
+          <Route path="/AllTransport" element={<AllTransport />} />
+          <Route path="/allRooms" element={<Room />} />
+          <Route path="/AllRoom" element={<AllRoom />} />
+          <Route path="/AllHotels" element={<AllHotels />} />
+          <Route path="/PersonalPackages" element={<PersonalPackage />} />
+          <Route path="/FamilyTours" element={<FamilyPackage />} />
+          <Route path="/AllTourPackages" element={<AllTourPackages />} />
           <Route
             path="/TransportPaymentDet"
             element={<TransportPaymentDet />}

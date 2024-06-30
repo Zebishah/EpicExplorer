@@ -1,7 +1,8 @@
 import SideBar from "./SideBar";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import image1 from "../images/6437523_3313427.jpg";
+
+import image2 from "../images/vecteezy_blue-trendy-background-design-template-for-banner-poster_.jpg";
 import sub from "../images/man-user-circle-icon.png";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -111,72 +112,72 @@ const Dashboard = () => {
   return (
     <div
       className="flex flex-col min-h-screen bg-center bg-cover"
-      style={{ backgroundImage: `url(${image1})` }}
+      style={{ backgroundImage: `url(${image2})` }}
     >
       <Navbar />
 
-      <div className="flex flex-row gap-x-6 h-full w-full overflow-hidden bg-opacity-0 bg-light-black smd:mt-40 mt-20">
+      <div className="flex flex-row gap-x-6 h-full w-full overflow-hidden bg-opacity-0 smd:mt-40 mt-20">
         <SideBar />
 
         <div className="flex flex-col gap-y-10 p-6 items-center w-[80%] ">
           {userFrTokenData &&
             userFrTokenData.userInfo.verifiedStatus === "false" && (
-              <div className="flex flex-row justify-between items-center -mt-4 p-4 bg-fade-black shadow-lg shadow-yellows w-full rounded-lg ">
-                <p className="text-yellows font-radios text-sm ">
+              <div className="flex flex-row justify-between items-center -mt-4 p-4 bg-[#3654ff] shadow-lg shadow-fade-black w-full rounded-lg ">
+                <p className="text-white font-radios text-sm ">
                   Your account is not verified. please verify your account
                 </p>
                 <button
                   type="button"
                   onClick={verifyAccount}
-                  className="text-light-black hover:bg-light-black hover:text-yellows transition-all ease-in-out duration-300 bg-yellows p-3 rounded-lg shadow-lg shadow-yellows"
+                  className="text-light-black hover:bg-[#3654ff] hover:text-yellows transition-all ease-in-out duration-300 bg-yellows p-3 rounded-lg shadow-lg shadow-fade-black"
                 >
                   Verify Account
                 </button>
               </div>
             )}
-          <h1 className="text-yellows text-lg lg:text-4xl font-joining bg-light-black bg-opacity-60 p-4 rounded-lg ">
+          <h1 className="text-white text-lg lg:text-4xl font-joining bg-[#3654ff] bg-opacity-60 p-4 rounded-lg ">
             User Booking Count
           </h1>
           <div className="flex flex-col smd:flex-row justify-center items-center flex-wrap gap-y-2 gap-x-4 lg:gap-x-14 w-full">
-            <div className="flex flex-col gap-y-4 justify-center items-center bg-fade-black p-6 shadow-lg rounded-lg w-full sm:w-auto">
-              <h1 className="text-yellows text-2xl font-radios font-bold">
+            <div className="flex flex-col gap-y-4 justify-center items-center bg-[#3654ff] p-6 shadow-lg rounded-lg w-full sm:w-auto">
+              <h1 className="text-white text-2xl font-radios font-bold">
                 {tourBooked}
               </h1>
-              <h3 className="text-yellows text-lg font-radios font-bold">
+              <h3 className="text-white text-lg font-radios font-bold">
                 Booked Tours
               </h3>
             </div>
-            <div className="flex flex-col gap-y-4 justify-center items-center bg-fade-black p-6 shadow-lg rounded-lg w-full sm:w-auto">
-              <h1 className="text-yellows text-2xl font-radios font-bold">
+            <div className="flex flex-col gap-y-4 justify-center items-center bg-[#3654ff] p-6 shadow-lg rounded-lg w-full sm:w-auto">
+              <h1 className="text-white text-2xl font-radios font-bold">
                 {transportBooked}
               </h1>
-              <h3 className="text-yellows text-lg font-radios font-bold">
+              <h3 className="text-white text-lg font-radios font-bold">
                 Booked Transport
               </h3>
             </div>
-            <div className="flex flex-col gap-y-4 justify-center items-center bg-fade-black p-6 shadow-lg rounded-lg w-full sm:w-auto">
-              <h1 className="text-yellows text-2xl font-radios font-bold">
+            <div className="flex flex-col gap-y-4 justify-center items-center bg-[#3654ff] p-6 shadow-lg rounded-lg w-full sm:w-auto">
+              <h1 className="text-white text-2xl font-radios font-bold">
                 {hotelBooked}
               </h1>
-              <h3 className="text-yellows text-lg font-radios font-bold">
+              <h3 className="text-white text-lg font-radios font-bold">
                 Booked Hotels
               </h3>
             </div>
-            <div className="flex flex-col gap-y-4 justify-center items-center bg-fade-black p-6 shadow-lg rounded-lg w-full sm:w-auto">
-              <h1 className="text-yellows text-2xl font-radios font-bold">
+            <div className="flex flex-col gap-y-4 justify-center items-center bg-[#3654ff] p-6 shadow-lg rounded-lg w-full sm:w-auto">
+              <h1 className="text-white text-2xl font-radios font-bold">
                 {transaction}
               </h1>
-              <h3 className="text-yellows text-lg font-radios font-bold">
+              <h3 className="text-white text-lg font-radios font-bold">
                 Total Transactions
               </h3>
             </div>
           </div>
-          <h1 className="text-yellows text-lg font-joining lg:text-4xl bg-light-black bg-opacity-60 p-4 rounded-lg ">
+          <h1 className="text-white text-lg font-joining lg:text-4xl bg-[#3654ff] bg-opacity-60 p-4 rounded-lg ">
             User Personal Information
           </h1>
-          <div className="bg-fade-black shadow-yellows rounded-lg shadow overflow-hidden sm:rounded-lg w-[80%]">
+          <div className="bg-[#3654ff] shadow-fade-black rounded-lg shadow overflow-hidden sm:rounded-lg w-[80%]">
             <div className="px-4 py-5 sm:px-6 w-full">
-              <h3 className="text-lg leading-6 font-medium text-yellows">
+              <h3 className="text-lg leading-6 font-medium text-white">
                 User database
               </h3>
               <p className="mt-1 text-sm text-white">
@@ -198,7 +199,7 @@ const Dashboard = () => {
                   </dd>
                 </div>
                 <div className="px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                  <dt className="text-sm font-medium text-yellows font-radios">
+                  <dt className="text-sm font-medium text-white font-radios">
                     User-Name
                   </dt>
                   <dd className="mt-1 text-sm text-white sm:mt-0 sm:col-span-2 font-radios">
@@ -206,7 +207,7 @@ const Dashboard = () => {
                   </dd>
                 </div>
                 <div className="px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                  <dt className="text-sm font-medium text-yellows font-radios">
+                  <dt className="text-sm font-medium text-white font-radios">
                     User-Email
                   </dt>
                   <dd className="mt-1 text-sm text-white sm:mt-0 sm:col-span-2 font-radios">
@@ -214,7 +215,7 @@ const Dashboard = () => {
                   </dd>
                 </div>
                 <div className="px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                  <dt className="text-sm font-medium text-yellows font-radios">
+                  <dt className="text-sm font-medium text-white font-radios">
                     User-Phone
                   </dt>
                   <dd className="mt-1 text-sm text-white sm:mt-0 sm:col-span-2 font-radios">
@@ -222,7 +223,7 @@ const Dashboard = () => {
                   </dd>
                 </div>
                 <div className="px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                  <dt className="text-sm font-medium text-yellows font-radios">
+                  <dt className="text-sm font-medium text-white font-radios">
                     User-Address
                   </dt>
                   <dd className="mt-1 text-sm text-white sm:mt-0 sm:col-span-2 font-radios">
@@ -230,7 +231,7 @@ const Dashboard = () => {
                   </dd>
                 </div>
                 <div className="px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                  <dt className="text-sm font-medium text-yellows font-radios">
+                  <dt className="text-sm font-medium text-white font-radios">
                     User-City
                   </dt>
                   <dd className="mt-1 text-sm text-white sm:mt-0 sm:col-span-2 font-radios">
@@ -238,7 +239,7 @@ const Dashboard = () => {
                   </dd>
                 </div>
                 <div className="px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                  <dt className="text-sm font-medium text-yellows font-radios">
+                  <dt className="text-sm font-medium text-white font-radios">
                     User-Balance
                   </dt>
                   <dd className="mt-1 text-sm text-white sm:mt-0 sm:col-span-2 font-radios">
@@ -246,7 +247,7 @@ const Dashboard = () => {
                   </dd>
                 </div>
                 <div className="px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                  <dt className="text-sm font-medium text-yellows font-radios">
+                  <dt className="text-sm font-medium text-white font-radios">
                     User-Verified
                   </dt>
                   <dd className="mt-1 text-sm text-white sm:mt-0 sm:col-span-2 font-radios">
@@ -254,7 +255,7 @@ const Dashboard = () => {
                   </dd>
                 </div>
                 <div className="px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                  <dt className="text-sm font-medium text-yellows font-radios">
+                  <dt className="text-sm font-medium text-white font-radios">
                     userAccountId
                   </dt>
                   <dd className="mt-1 text-sm text-white sm:mt-0 sm:col-span-2 font-radios">

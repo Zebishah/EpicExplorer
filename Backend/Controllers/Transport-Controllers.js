@@ -81,6 +81,59 @@ export const getTransport = async (req, res, next) => {
     return res.status(200).json({ success: true, message: "here are your all transport", transport: transport })
 }
 
+export const filterTransport = async (req, res, next) => {
+
+    let { type, prices, allowedGuests, seats, carName } = req.body;
+
+    const queryObj = {};
+
+    if (carName) {
+        queryObj.carName = { $regex: new RegExp(`^${carName}`, 'i') };
+    }
+    // Handle the type filter
+    if (type && type.length > 0) {
+        queryObj.type = { $in: type };
+    }
+
+    // Handle the noOfGuests filter
+    if (allowedGuests && allowedGuests.length > 0) {
+        queryObj.allowedGuests = { $in: allowedGuests };
+    }
+
+    // Handle the tourLocation filter
+    if (seats && seats.length > 0) {
+        queryObj.seats = { $in: seats };
+    }
+    // Handle the price filter
+    if (prices.length > 0) {
+        if (Array.isArray(prices)) {
+            const priceRanges = prices.map(range => {
+                const [minPrice, maxPrice] = range.split('-').map(Number);
+                return { prices: { $gte: minPrice, $lte: maxPrice } };
+            });
+            queryObj.$or = priceRanges;
+        } else {
+            const [minPrice, maxPrice] = prices.split('-').map(Number);
+            queryObj.prices = { $gte: minPrice, $lte: maxPrice };
+        }
+    }
+
+    console.log(queryObj);
+
+    // Fetch tours based on the combined query object
+    let filteredTransport;
+    try {
+        filteredTransport = await Transport.find(queryObj);
+    } catch (error) {
+        return res.status(500).json({ success: false, message: "Error fetching Transports", error });
+    }
+
+    if (!filteredTransport || filteredTransport.length === 0) {
+        return res.status(404).json({ success: false, message: "No Transports found with the given filter" });
+    }
+    return res.status(200).json({ success: true, transport: filteredTransport });
+};
+
 export const deleteTransport = async (req, res, next) => {
     let id = req.params.id;
 

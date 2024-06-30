@@ -2,7 +2,7 @@ import { toast } from "react-toastify";
 import Navbar from "./Navbar";
 import { useEffect, useState } from "react";
 import Footer from "./Footer";
-
+import image2 from "../images/vecteezy_blue-trendy-background-design-template-for-banner-poster_.jpg";
 import { forgotPassword } from "../Redux/Slices/ForgetPasswordSlice";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -34,7 +34,12 @@ const ForgetPassword = () => {
   }, [forgotPasswordData, error]);
 
   return (
-    <div className="h-screen flex flex-col w-full gap-y-24 bg-light-black ">
+    <div
+      className="h-screen flex flex-col w-full gap-y-36 bg-white"
+      style={{
+        backgroundImage: `url(${image2})`,
+      }}
+    >
       <Navbar />
 
       <main
@@ -42,16 +47,16 @@ const ForgetPassword = () => {
         role="main"
         className="w-full mx-auto p-6 flex flex-col gap-y-3 justify-center items-center"
       >
-        <div className="mt-7 bg-fade-black rounded-xl shadow-lg shadow-yellows border-2 border-indigo-300 w-[30%]">
+        <div className="mt-7 bg-white rounded-xl shadow-lg shadow-fade-black border-2 border-indigo-300 w-[30%]">
           <div className="p-4 sm:p-7">
             <div className="text-center">
-              <h1 className="block text-2xl font-bold text-yellows">
+              <h1 className="block text-2xl font-bold text-[#3654ff]">
                 Forgot password?
               </h1>
-              <p className="mt-2 text-sm text-white flex flex-row gap-x-2 justify-center items-center">
+              <p className="mt-2 text-sm text-[#3654ff] flex flex-row gap-x-2 justify-center items-center">
                 Remember your password?
                 <a
-                  className="text-yellows decoration-2 hover:underline font-medium"
+                  className="text-[#3654ff] decoration-2 hover:underline font-medium"
                   href="#"
                 >
                   Login here
@@ -64,7 +69,7 @@ const ForgetPassword = () => {
                   <div>
                     <label
                       htmlFor="email"
-                      className="block text-xl font-bold ml-1 mb-2 text-yellows"
+                      className="block text-xl font-bold ml-1 mb-2 text-[#3654ff]"
                     >
                       Email address
                     </label>
@@ -73,7 +78,7 @@ const ForgetPassword = () => {
                         type="email"
                         id="email"
                         name="email"
-                        className="py-3 px-4 block w-full border-2 border-gray-200 rounded-md text-sm shadow-sm text-black"
+                        className="py-3 px-4 block w-full border-2 border-gray-300 rounded-md text-sm shadow-sm text-black"
                         value={email}
                         onChange={handleEmailChange}
                         required
@@ -83,7 +88,7 @@ const ForgetPassword = () => {
                   <button
                     type="button"
                     onClick={resetPassword}
-                    className=" mt-4 w-full hover:before:bg-red rounded-xl relative h-[50px] overflow-hidden border border-yellows bg-light-black px-3 text-yellows shadow-lg transition-all before:absolute before:bottom-0 before:left-0 before:top-0 before:z-0 before:h-full before:w-0 before:bg-yellows before:transition-all before:duration-500 hover:text-black hover:shadow-yellow-400 hover:before:left-0 hover:before:w-full"
+                    className=" mt-4 w-full hover:before:bg-red rounded-xl relative h-[50px] overflow-hidden border border-[#3654ff] bg-[#3654ff] px-3 text-white shadow-lg transition-all before:absolute before:bottom-0 before:left-0 before:top-0 before:z-0 before:h-full before:w-0 before:bg-white before:transition-all before:duration-500 hover:text-[#3654ff] hover:shadow-[#3654ff] hover:before:left-0 hover:before:w-full"
                   >
                     <span className="relative z-10 text-radios text-lg">
                       Reset Password
@@ -96,7 +101,7 @@ const ForgetPassword = () => {
         </div>
         <p className="mt-3 flex justify-center items-center text-center divide-x">
           <a
-            className="pr-3.5 inline-flex items-center gap-x-2 text-sm text-yellows decoration-2 hover:underline hover:text-blue-600 dark:text-yellows dark:hover:text-gray-200"
+            className="pr-3.5 inline-flex items-center gap-x-2 text-sm text-[#3654ff] decoration-2 hover:underline hover:text-black"
             href="#"
             target="_blank"
           >
@@ -113,7 +118,7 @@ const ForgetPassword = () => {
             View Github
           </a>
           <a
-            className="pl-3 inline-flex items-center gap-x-2 text-sm text-yellows decoration-2 hover:underline hover:text-blue-600 dark:text-yellows dark:hover:text-gray-200"
+            className="pl-3 inline-flex items-center gap-x-2 text-sm text-[#3654ff] decoration-2 hover:underline hover:text-black p-2 hover:bg-white hover:shadow-lg shadow-black"
             href="#"
           >
             Contact us!

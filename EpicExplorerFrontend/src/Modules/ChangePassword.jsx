@@ -1,7 +1,7 @@
 import Footer from "./Footer";
 import Navbar from "./Navbar";
 import SideBar from "./SideBar";
-import image1 from "../images/6437523_3313427.jpg";
+import image2 from "../images/vecteezy_blue-trendy-background-design-template-for-banner-poster_.jpg";
 import { useDispatch, useSelector } from "react-redux";
 import {
   changeUserPassword,
@@ -44,20 +44,20 @@ const ChangePassword = () => {
 
       <div
         className="flex flex-col min-h-screen bg-center bg-cover"
-        style={{ backgroundImage: `url(${image1})` }}
+        style={{ backgroundImage: `url(${image2})` }}
       >
         <Navbar />
 
-        <div className="flex flex-row gap-x-6 h-full w-full overflow-hidden bg-opacity-0 bg-light-black smd:mt-40 mt-20">
+        <div className="flex flex-row gap-x-6 h-full w-full overflow-hidden bg-opacity-0 smd:mt-40 mt-20">
           <SideBar />
           <div className="flex flex-col gap-y-10 p-6 items-center w-[80%] ">
             <section className=" w-full">
               <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0 w-[100%]">
-                <h1 className="flex font-radios items-center mb-6 text-4xl font-semibold text-yellows dark:text-yellows bg-light-black opacity-50 p-4 rounded-lg">
+                <h1 className="flex font-radios items-center mb-6 text-4xl font-semibold text-white bg-[#3654ff] opacity-80 p-4 rounded-lg">
                   Update Password
                 </h1>
-                <div className="w-full p-6 bg-light-black rounded-lg shadow-lg dark:border md:mt-0 sm:max-w-md dark:bg-fade-black dark:border-fade-black sm:p-8">
-                  <h2 className="mb-1 text-xl font-radios font-bold leading-tight tracking-tight text-yellows md:text-2xl dark:text-yellows">
+                <div className="w-full p-6 bg-white rounded-lg shadow-lg dark:border md:mt-0 sm:max-w-md dark:border-[#3654ff] sm:p-8">
+                  <h2 className="mb-1 text-xl font-radios font-bold leading-tight tracking-tight text-[#3654ff] md:text-2xl">
                     Change Password
                   </h2>
                   <form
@@ -67,7 +67,7 @@ const ChangePassword = () => {
                     <div>
                       <label
                         htmlFor="oldPassword"
-                        className="block mb-2 text-sm font-radios font-medium text-yellows dark:text-yellows"
+                        className="block mb-2 text-sm font-radios font-medium text-[#3654ff]"
                       >
                         old Password
                       </label>
@@ -76,14 +76,14 @@ const ChangePassword = () => {
                         name="oldPassword"
                         id="oldPassword"
                         placeholder="••••••••"
-                        className="bg-fade-black border border-gray-300 text-yellows sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-fade-black dark:border-white dark:placeholder-gray-400 dark:text-yellows dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                        className="bg-[#3654ff] border text-white sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:border-white dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
                         required
                       />
                     </div>
                     <div>
                       <label
                         htmlFor="password"
-                        className="block mb-2 text-sm font-radios font-medium text-yellows dark:text-yellows"
+                        className="block mb-2 text-sm font-radios font-medium text-[#3654ff]"
                       >
                         New Password
                       </label>
@@ -92,14 +92,14 @@ const ChangePassword = () => {
                         name="password"
                         id="password"
                         placeholder="••••••••"
-                        className="bg-fade-black border border-gray-300 text-yellows sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-fade-black dark:border-white dark:placeholder-gray-400 dark:text-yellows dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                        className="bg-[#3654ff] border text-white sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:border-white dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
                         required
                       />
                     </div>
                     <div>
                       <label
                         htmlFor="confirm-password"
-                        className="block mb-2 text-sm font-radios font-medium text-yellows dark:text-yellows"
+                        className="block mb-2 text-sm font-radios font-medium text-[#3654ff]"
                       >
                         Confirm password
                       </label>
@@ -108,7 +108,7 @@ const ChangePassword = () => {
                         name="confirm-password"
                         id="confirm-password"
                         placeholder="••••••••"
-                        className="bg-fade-black border border-gray-300 text-yellows sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-fade-black dark:border-white dark:placeholder-gray-400 dark:text-yellows dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                        className="bg-[#3654ff] border text-white sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:border-white dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
                         required
                       />
                     </div>
@@ -116,9 +116,9 @@ const ChangePassword = () => {
                     <button
                       type="button"
                       onClick={changePassword}
-                      className="w-full text-yellows shadow-lg bg-fade-black hover:bg-fade-black focus:ring-4 focus:outline-none focus:ring-primary-300 font-radios font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-fade-black dark:hover:bg-fade-black dark:focus:ring-primary-800"
+                      className="w-full text-white shadow-lg bg-[#3654ff] hover:bg-white shadow-fade-black transition-all duration-500 ease-in-out hover:text-blue-500 focus:ring-4 focus:outline-none focus:ring-primary-300 font-radios font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:focus:ring-primary-800"
                     >
-                      Reset passwod
+                      Reset password
                     </button>
                   </form>
                 </div>

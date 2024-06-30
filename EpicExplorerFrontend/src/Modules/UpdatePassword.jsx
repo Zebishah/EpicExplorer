@@ -4,7 +4,7 @@ import { ToastContainer, toast } from "react-toastify";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useLocation } from "react-router";
-
+import image2 from "../images/vecteezy_blue-trendy-background-design-template-for-banner-poster_.jpg";
 import {
   resetFPasswordState,
   updatePasswordUser,
@@ -49,25 +49,30 @@ const UpdatePassword = () => {
     }
   }, [email, hash, updatePasswordData, error, navigate, dispatch]);
   return (
-    <div className="flex flex-col min-h-screen bg-center bg-cover bg-light-black">
+    <div
+      className="flex flex-col min-h-screen bg-center bg-cover bg-white"
+      style={{
+        backgroundImage: `url(${image2})`,
+      }}
+    >
       <Navbar />
 
       <div className="flex flex-col p-6 justify-center items-center w-[100%] ">
         <ToastContainer />
         <section className=" w-full flex flex-col justify-center items-center">
           <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0 w-[100%]">
-            <h1 className="flex font-radios items-center mb-6 text-4xl font-semibold text-yellows dark:text-yellows p-4 rounded-lg">
+            <h1 className="flex font-radios items-center mb-6 text-4xl font-semibold text-[#3654ff] p-4 rounded-lg">
               Update Password
             </h1>
-            <div className="w-full p-6 bg-light-black rounded-lg shadow-lg dark:border md:mt-0 sm:max-w-md dark:bg-fade-black dark:border-fade-black sm:p-8">
-              <h2 className="mb-1 text-xl font-radios font-bold leading-tight tracking-tight text-yellows md:text-2xl dark:text-yellows">
+            <div className="w-full p-6 bg-white rounded-lg shadow-lg dark:border md:mt-0 sm:max-w-md shadow-fade-black sm:p-8">
+              <h2 className="mb-1 text-xl font-radios font-bold leading-tight tracking-tight text-[#3654ff] md:text-2xl">
                 Change Password
               </h2>
               <form className="mt-4 space-y-8 lg:mt-5 md:space-y-8" action="#">
                 <div>
                   <label
                     htmlFor="password"
-                    className="block mb-2 text-sm font-radios font-medium text-yellows dark:text-yellows"
+                    className="block mb-2 text-sm font-radios font-medium text-[#3654ff]"
                   >
                     New Password
                   </label>
@@ -76,7 +81,7 @@ const UpdatePassword = () => {
                     name="password"
                     id="password"
                     placeholder="••••••••"
-                    className="bg-fade-black border border-gray-300 text-yellows sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-fade-black dark:border-white dark:placeholder-gray-400 dark:text-yellows dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    className="bg-[#3654ff] border border-gray-300 text-white sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:border-white dark:placeholder-white dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                     required
                     value={password}
                     onChange={handlePasswordChange}
@@ -85,7 +90,7 @@ const UpdatePassword = () => {
                 <div>
                   <label
                     htmlFor="confirm-password"
-                    className="block mb-2 text-sm font-radios font-medium text-yellows dark:text-yellows"
+                    className="block mb-2 text-sm font-radios font-medium text-[#3654ff]"
                   >
                     Confirm password
                   </label>
@@ -94,7 +99,7 @@ const UpdatePassword = () => {
                     name="confirm-password"
                     id="confirm-password"
                     placeholder="••••••••"
-                    className="bg-fade-black border border-gray-300 text-yellows sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-fade-black dark:border-white dark:placeholder-gray-400 dark:text-yellows dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    className="bg-[#3654ff] border border-gray-300 text-yellows sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:border-white dark:placeholder-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                     required
                     value={confirmPassword}
                     onChange={handleConfirmPasswordChange}
@@ -104,7 +109,7 @@ const UpdatePassword = () => {
                 <button
                   type="button"
                   onClick={updatePassword}
-                  className=" mt-4 w-full hover:before:bg-red rounded-xl relative h-[50px] overflow-hidden border border-yellows bg-light-black px-3 text-yellows shadow-lg transition-all before:absolute before:bottom-0 before:left-0 before:top-0 before:z-0 before:h-full before:w-0 before:bg-yellows before:transition-all before:duration-500 hover:text-black hover:shadow-yellow-400 hover:before:left-0 hover:before:w-full"
+                  className=" mt-4 w-full hover:before:bg-red rounded-xl relative h-[50px] overflow-hidden border border-white bg-[#3654ff] px-3 text-white shadow-lg transition-all before:absolute before:bottom-0 before:left-0 before:top-0 before:z-0 before:h-full before:w-0 before:bg-white before:transition-all before:duration-500 hover:text-[#3654ff] hover:shadow-[#3654ff] hover:before:left-0 hover:before:w-full"
                 >
                   <span className="relative z-10 text-radios text-lg">
                     Reset Password

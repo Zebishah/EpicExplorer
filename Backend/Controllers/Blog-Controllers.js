@@ -15,7 +15,7 @@ let success = null;
 export const addBlog = async (req, res, next) => {
 
 
-    let { name, AccommodationId, type, pic, words, category } = req.body;
+    let { name, AccommodationId, type, pic, words, category, writer } = req.body;
 
     let existingBlog;
     try {
@@ -30,7 +30,7 @@ export const addBlog = async (req, res, next) => {
     let blog;
     try {
 
-        blog = new Blogs({ name, AccommodationId, type, pic, words, category });
+        blog = new Blogs({ name, AccommodationId, type, pic, words, category, writer });
         blog = await blog.save();
     } catch (error) {
         return next(error);
@@ -62,6 +62,22 @@ export const getBlogs = async (req, res, next) => {
     let blogs;
     try {
         blogs = await Blogs.find();
+    } catch (error) {
+        return next(error);
+    }
+
+    if (!blogs) {
+        success = false;
+        return res.status(400).json({ success, message: "no blogs found in database" })
+    }
+
+    return res.status(200).json({ success: true, message: "here are your all blogs", blogs: blogs })
+}
+export const getBlogsById = async (req, res, next) => {
+    let id = req.body.id
+    let blogs;
+    try {
+        blogs = await Blogs.findById(id);
     } catch (error) {
         return next(error);
     }

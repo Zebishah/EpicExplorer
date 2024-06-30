@@ -8,10 +8,12 @@ import Reviews from "./Reviews";
 import TourPackages from "./TourPackages";
 import WhyEpicExplorer from "./WhyEpicExplorer";
 import image2 from "../images/vecteezy_blue-trendy-background-design-template-for-banner-poster_.jpg";
+import { useNavigate } from "react-router";
 const LandingPage = () => {
+  const navigate = useNavigate();
   const BookTour = (e) => {
     e.preventDefault();
-    console.log("Book Tour");
+    navigate("/AllTours");
   };
   const CustomizeTour = (e) => {
     e.preventDefault();

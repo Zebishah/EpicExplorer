@@ -34,6 +34,7 @@ let success = null;
 
 import validator from 'validator';
 import CreateUser from '../Models/CreateUser.js';
+import Message from '../Models/Message.js';
 
 export const createUser = async (req, res, next) => {
 
@@ -964,3 +965,25 @@ export const countUserBookedRooms = async (req, res, next) => {
     success = true
     res.status(200).json({ success, message: "user booked that much rooms", hotelsCount: hotelsCount })
 }
+
+export const contactUs = async (req, res, next) => {
+    let user = await req.user;
+    let { firstName, lastName, email, message } = req.body
+    let messages;
+    try {
+
+        let fullName = `${firstName} ${lastName}`;
+
+        // Create a new Message instance with the concatenated name and other properties
+        messages = new Message({ name: fullName, email, message, userId: user.id });
+        await messages.save(); //deleting token that we made for reset
+
+    } catch (error) {
+        return next(error);
+    }
+
+    success = true
+    res.status(200).json({ success, message: "user booked that much rooms", message: messages })
+}
+
+

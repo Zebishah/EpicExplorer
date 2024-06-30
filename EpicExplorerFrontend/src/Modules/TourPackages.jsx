@@ -29,7 +29,9 @@ const TourPackages = () => {
       }
     }
   }, [tourPackage]);
-
+  const seeMore = () => {
+    navigate(`/AllTourPackages`);
+  };
   const BookTour = (id) => {
     navigate(`/BookTour?id=${encodeURIComponent(id)}`);
   };
@@ -42,16 +44,20 @@ const TourPackages = () => {
         Honey-Moon Tour Packages
       </h1>
 
-      <div className="flex flex-row gap-x-10 md:mt-0 sssm:mt-72 gap-y-4 md:flex-nowrap sssm:flex-wrap">
+      <div className="flex flex-row gap-x-10 md:mt-0 sssm:mt-72 gap-y-4 flex-wrap">
         {HoneyTours.map((tour, index) => (
           <div
             className="bg-[#206eff] w-full max-w-sm rounded-lg overflow-hidden mx-auto font-[sans-serif] shadow-lg shadow-fade-black "
             key={index}
           >
-            <img
-              src={image1}
-              className="w-full border-2 border-[#3654ff] border-b-0"
-            />
+            <div className="relative ">
+              <div className="absolute top-8 right-0 transform translate-y-[-50%]">
+                <div className="tag absolute -top-4 right-2 bg-blue-600 text-white w-max px-5 py-2 rounded-xl font-radios shadow-lg shadow-fade-black animate-blink">
+                  Package
+                </div>
+              </div>
+              <img src={image1} className="w-full" />
+            </div>
             <div className="px-4 py-6 border-[#3654ff] border-2 border-t-0 ">
               <div className="flex flex-row justify-between">
                 <h3 className="text-white text-xl font-radios">{tour.name}</h3>
@@ -78,7 +84,7 @@ const TourPackages = () => {
       </div>
       <button
         type="button"
-        onClick={BookTour}
+        onClick={seeMore}
         className="w-[20%] hover:before:bg-red rounded-xl relative h-[50px] overflow-hidden border border-[#3654ff] bg-[#206eff] px-3 text-white shadow-lg transition-all duration-300 ease-in-out before:absolute before:bottom-0 before:left-0 before:top-0 before:z-0 before:h-full before:w-0 before:bg-white before:transition-all before:duration-500 hover:text-[#3654ff] hover:shadow-[#3654ff] hover:before:left-0 hover:before:w-full"
       >
         <span className="relative z-10 text-radios text-lg">See More</span>
@@ -93,14 +99,20 @@ const TourPackages = () => {
             className="bg-[#206eff] w-full max-w-sm rounded-lg overflow-hidden mx-auto font-[sans-serif] shadow-lg shadow-fade-black "
             key={index}
           >
-            <img
-              src={image1}
-              className="w-full border-2 border-[#3654ff] border-b-0"
-            />
+            <div className="relative">
+              <div className="absolute top-8 right-0 transform translate-y-[-50%]">
+                <div className="tag absolute -top-4 right-2 bg-blue-600 text-white w-max px-5 py-2 rounded-xl font-radios shadow-lg shadow-fade-black animate-blink">
+                  Package
+                </div>
+              </div>
+              <img src={image1} className="w-full" />
+            </div>
             <div className="px-4 py-6 border-[#3654ff] border-2 border-t-0 ">
               <div className="flex flex-row justify-between">
                 <h3 className="text-white text-xl font-radios">{tour.name}</h3>
-                <h3 className="text-white text-xl font-radios">{tour.price}</h3>
+                <h3 className="text-white text-xl font-radios">
+                  {tour.price} pkr
+                </h3>
               </div>
 
               <p className="mt-4 text-sm text-white font-radios">
@@ -121,9 +133,10 @@ const TourPackages = () => {
           </div>
         ))}
       </div>
+
       <button
-        type="submit"
-        onSubmit={BookTour}
+        type="button"
+        onClick={seeMore}
         className="w-[20%] hover:before:bg-red rounded-xl relative h-[50px] overflow-hidden border border-[#3654ff] bg-[#206eff] px-3 text-white shadow-lg transition-all duration-300 ease-in-out before:absolute before:bottom-0 before:left-0 before:top-0 before:z-0 before:h-full before:w-0 before:bg-white before:transition-all before:duration-500 hover:text-[#3654ff] hover:shadow-[#3654ff] hover:before:left-0 hover:before:w-full"
       >
         <span className="relative z-10 text-radios text-lg">See More</span>
