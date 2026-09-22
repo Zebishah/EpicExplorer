@@ -77,4 +77,12 @@ let adminSchema = new Schema({
 
     }],
 })
+adminSchema.set('toJSON', {
+    transform: (_doc, ret) => {
+        delete ret.password;
+        delete ret.SecretSeed;
+        return ret;
+    },
+});
+
 export default mongoose.model('Admin', adminSchema);

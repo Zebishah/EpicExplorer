@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
-let userSchema = new Schema({
+let ticketSchema = new Schema({
     ticketNo: {
         type: Number,
         required: true
@@ -22,13 +22,10 @@ let userSchema = new Schema({
     }, tourName: {
         type: String,
         required: true
-    }, ticketNo: {
-        type: String,
-        required: true
     },
     bookerAddress: {
         type: String,
         required: true
     },
 })
-export default mongoose.model('User', userSchema);
+export default mongoose.model('Ticket', ticketSchema);

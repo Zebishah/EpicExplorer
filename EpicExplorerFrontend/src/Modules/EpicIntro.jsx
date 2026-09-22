@@ -1,5 +1,4 @@
 import image1 from "../images/pexels-rachel-claire-7263334.jpg";
-import image2 from "../images/brian-kungu-BVOajLMQtFs-unsplash.jpg";
 import { RiMapPin2Fill } from "react-icons/ri";
 import { IoIosCash } from "react-icons/io";
 import { FaUserFriends } from "react-icons/fa";

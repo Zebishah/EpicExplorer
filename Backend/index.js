@@ -1,16 +1,16 @@
 import express, { json } from 'express';
-import connectDB from '../Backend/Db.js';
+import connectDB from './Db.js';
 import { Server } from 'socket.io';
 import { createServer } from 'http';
+import { fileURLToPath } from 'url';
 import AdminRoutes from './Routes/Admin-Routes.js';
-import bodyParser from 'body-parser';
 import CategoryRoutes from './Routes/Category-Routes.js';
 import TourRoutes from './Routes/Tour-Routes.js';
 import ServiceItrenaryRoutes from './Routes/TourServices-Routes.js';
 import { config } from 'dotenv';
 config();
 import cors from 'cors';
-import UserRoutes from './Routes/User-Routes.js';
+import UserRoutes from './Routes/User-routes.js';
 import HotelRoutes from './Routes/Hotel-Routes.js';
 import RoomRoutes from './Routes/Room-Routes.js';
 import TransportRoutes from './Routes/Transport-Routes .js';
@@ -27,11 +27,29 @@ import BlogRoutes from './Routes/Blog-Routes.js';
 
 const app = express();
 const server = createServer(app);
-const io = new Server(server, {
-    cors: {
-        origin: 'http://localhost:5173', // Allow requests from this origin
-        credentials: true, // Allow cookies to be sent with the request
+const configuredOrigins = (process.env.CLIENT_ORIGIN || '')
+    .split(',')
+    .map((origin) => origin.trim())
+    .filter(Boolean);
+const allowedOrigins = [
+    'http://localhost:5173',
+    'http://localhost:5174',
+    'http://127.0.0.1:5173',
+    'http://127.0.0.1:5174',
+    ...configuredOrigins,
+].filter((origin, index, origins) => origins.indexOf(origin) === index);
+const corsOptions = {
+    origin: (origin, callback) => {
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+            return;
+        }
+        callback(new Error(`Origin ${origin} is not allowed by CORS`));
     },
+    credentials: true,
+};
+const io = new Server(server, {
+    cors: corsOptions,
 });
 io.on('connection', (socket) => {
     console.log('New client connected');
@@ -42,14 +60,13 @@ io.on('connection', (socket) => {
     // io.emit('notification', "baba")
 });
 
-app.use(cors({
-    origin: 'http://localhost:5173', // Allow requests from this origin
-    credentials: true, // Allow cookies to be sent with the request
-}));
+app.use(cors(corsOptions));
 app.use(json());
 const port = process.env.PORT || 5000;
-connectDB();
-let host = process.env.REACT_APP_API_HOST
+
+app.get('/health', (_req, res) => {
+    res.status(200).json({ success: true, service: 'epic-explorer-api' });
+});
 
 app.use('/Admin', AdminRoutes);
 app.use('/Review', ReviewsRoutes);
@@ -66,8 +83,27 @@ app.use('/Category', CategoryRoutes);
 app.use('/ToServicesIt', TourServiceRoutes);
 app.use('/HoServicesIt', HotelServicesRoutes);
 app.use('/TrServicesIt', TransportServicesRoutes);
-server.listen(port, () => {
-    console.log("Server is Listening at Port " + port);
+app.use((error, _req, res, _next) => {
+    console.error(error);
+    res.status(error.statusCode || 500).json({
+        success: false,
+        message: error.statusCode ? error.message : 'Internal server error',
+    });
 });
 
+const startServer = async () => {
+    await connectDB();
+    server.listen(port, () => {
+        console.log(`Server is listening on port ${port}`);
+    });
+};
+
+if (process.argv[1] && fileURLToPath(import.meta.url) === fileURLToPath(`file://${process.argv[1]}`)) {
+    startServer().catch((error) => {
+        console.error(`Unable to start server: ${error.message}`);
+        process.exitCode = 1;
+    });
+}
+
+export { app, io, server };
 export default io;

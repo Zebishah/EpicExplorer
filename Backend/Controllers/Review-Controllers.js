@@ -8,11 +8,28 @@ import Tour from "../Models/Tour.js";
 import Transport from "../Models/Transport.js";
 import HotelReviews from "../Models/HotelReviews.js";
 import TransportReviews from "../Models/TransportReviews.js";
+import { isValidEmail, normalizeText } from "../Utils/Validation.js";
 let reviewNo = 0;
 export const addReviews = async (req, res, next) => {
     let user = await req.user;
 
     let { id, name, email, words, rating } = req.body;
+    name = normalizeText(name);
+    email = normalizeText(email).toLowerCase();
+    words = normalizeText(words);
+    rating = Number(rating);
+    if (!id || !name || name.length > 100) {
+        return res.status(400).json({ success: false, message: "Name is required and must be 100 characters or fewer." });
+    }
+    if (!isValidEmail(email)) {
+        return res.status(400).json({ success: false, message: "Enter a valid email address." });
+    }
+    if (!words || words.length < 10 || words.length > 2000) {
+        return res.status(400).json({ success: false, message: "Review must be between 10 and 2000 characters." });
+    }
+    if (!Number.isInteger(rating) || rating < 1 || rating > 5) {
+        return res.status(400).json({ success: false, message: "Rating must be between 1 and 5 stars." });
+    }
     let existingReview = null;
     let tourCheck;
     try {
@@ -33,7 +50,7 @@ export const addReviews = async (req, res, next) => {
         }
         if (!existingReview) {
 
-            return res.status(400).json({ success: false, message: "Please give valid Review...." });
+            return res.status(400).json({ success: false, message: "Review could not be saved. Please check the review details." });
         }
 
     }
@@ -57,7 +74,7 @@ export const addReviews = async (req, res, next) => {
         }
         if (!existingReview) {
 
-            return res.status(400).json({ success: false, message: "Please give valid Review...." });
+            return res.status(400).json({ success: false, message: "Review could not be saved. Please check the review details." });
         }
 
     }
@@ -79,7 +96,7 @@ export const addReviews = async (req, res, next) => {
         }
         if (!existingReview) {
 
-            return res.status(400).json({ success: false, message: "Please give valid Review...." });
+            return res.status(400).json({ success: false, message: "Review could not be saved. Please check the review details." });
         }
 
     }

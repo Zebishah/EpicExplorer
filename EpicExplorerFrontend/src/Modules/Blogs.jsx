@@ -20,7 +20,6 @@ const Blogs = () => {
     if (blogs) {
       if (blogs.blogs) {
         setBlogs(blogs.blogs);
-        console.log(Blogs);
       }
     }
   }, [blogs]);

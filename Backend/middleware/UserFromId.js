@@ -6,6 +6,10 @@ const getUserById = async (req, res, next) => {
     try {
         user = await User.findById(userId);
 
+        if (!user) {
+            return res.status(404).json({ success: false, message: 'User not found' });
+        }
+
         req.user = user; // Attach the user object to the request object
         next();
         return;

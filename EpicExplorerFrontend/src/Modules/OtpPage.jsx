@@ -6,6 +6,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { otpSender, resetOTPState } from "../Redux/Slices/OtpSlices";
 import { useLocation } from "react-router-dom";
 import { resendOtp } from "../Redux/Slices/ResendOtpSlice";
+import { getErrorMessage } from "../utils/validation";
 const OtpPage = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -18,7 +19,7 @@ const OtpPage = () => {
   const [otp, setOTP] = useState("");
 
   const handleOTPChange = (e) => {
-    setOTP(e.target.value);
+    setOTP(e.target.value.replace(/\D/g, "").slice(0, 6));
   };
   const resend = () => {
     dispatch(resendOtp(email));
@@ -26,9 +27,12 @@ const OtpPage = () => {
   };
   const sendOTP = (event) => {
     event.preventDefault();
-    console.log("hey");
-    if (otp.length < 6) {
-      toast.error("Invalid OTP");
+    if (!email) {
+      toast.error("Verification email is missing. Please sign up again.");
+      return;
+    }
+    if (!/^\d{6}$/.test(otp)) {
+      toast.error("OTP must be exactly 6 digits.");
       return;
     }
 
@@ -37,7 +41,7 @@ const OtpPage = () => {
 
   useEffect(() => {
     if (otpError) {
-      toast.error("Invalid credentials");
+      toast.error(getErrorMessage(otpError, "The OTP is invalid or expired."));
     }
     if (otpData) {
       toast.success("signed up successfully!");
@@ -78,8 +82,22 @@ const OtpPage = () => {
                     placeholder="Enter OTP"
                     value={otp}
                     onChange={handleOTPChange}
+                    inputMode="numeric"
+                    autoComplete="one-time-code"
+                    minLength={6}
+                    maxLength={6}
+                    pattern="[0-9]{6}"
+                    title="Enter exactly 6 digits."
+                    aria-describedby="otp-format"
+                    onInvalid={(event) =>
+                      event.currentTarget.setCustomValidity("OTP must contain exactly 6 digits.")
+                    }
+                    onInput={(event) => event.currentTarget.setCustomValidity("")}
                     required
                   />
+                  <p id="otp-format" className="mt-2 text-sm text-white" aria-live="polite">
+                    Format: exactly 6 digits from the verification email.
+                  </p>
                   <div className="flex flex-col space-y-5">
                     <div>
                       <button

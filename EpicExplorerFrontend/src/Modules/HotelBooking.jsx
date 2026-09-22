@@ -5,6 +5,7 @@ import HotelServices from "./HotelServices";
 import Navbar from "./Navbar";
 import RelatedHotels from "./RelatedHotels";
 const HotelBooking = () => {
+  const handleSubmit = (event) => event.preventDefault();
   return (
     <div className="bg-light-black">
       <Navbar />
@@ -66,40 +67,78 @@ const HotelBooking = () => {
           <h1 className="text-yellows text-4xl mb-4 font-joining font-bold mt-3">
             Book Form
           </h1>
-          <form className="flex flex-col space-y-6 w-full mt-8">
+          <form
+            className="flex flex-col space-y-6 w-full mt-8"
+            onSubmit={handleSubmit}
+          >
             <input
               type="text"
+              name="name"
               placeholder="Name"
+              minLength={2}
+              maxLength={100}
+              required
               className="p-4 bg-fade-black shadow-lg text-yellows placeholder-yellows rounded-xl"
             />
             <input
               type="email"
+              name="email"
               placeholder="E-mail"
+              required
               className="p-4 bg-fade-black shadow-lg text-yellows placeholder-yellows rounded-xl"
             />
             <input
               type="text"
+              name="phone"
               placeholder="Phone number"
+              inputMode="tel"
+              pattern="[+0-9()\s.-]{7,20}"
+              title="Enter a valid phone number."
+              aria-describedby="hotel-phone-format"
+              onInvalid={(event) =>
+                event.currentTarget.setCustomValidity(
+                  "Phone must contain 7–20 digits. Spaces, +, parentheses, hyphens, and periods are allowed."
+                )
+              }
+              onInput={(event) => event.currentTarget.setCustomValidity("")}
+              required
               className="p-4 bg-fade-black shadow-lg text-yellows placeholder-yellows rounded-xl"
             />
+            <p id="hotel-phone-format" className="-mt-4 text-xs text-yellows">
+              Format: 7–20 digits; spaces, +, parentheses, hyphens, and periods are allowed.
+            </p>
             <input
               type="number"
+              name="guests"
               placeholder="Total guests"
+              min={1}
+              max={100}
+              required
               className="p-4 bg-fade-black shadow-lg text-yellows placeholder-yellows rounded-xl"
             />
             <input
               type="date"
+              name="checkIn"
               placeholder="Check-in date"
+              required
               className="p-4 bg-fade-black shadow-lg text-yellows placeholder-yellows rounded-xl"
             />
             <input
               type="text"
+              name="dropOff"
               placeholder="Drop Off Location"
+              minLength={2}
+              maxLength={150}
+              required
               className="p-4 bg-fade-black shadow-lg text-yellows placeholder-yellows rounded-xl"
             />
             <input
               type="text"
+              name="pickup"
               placeholder="Pickup Location"
+              minLength={2}
+              maxLength={150}
+              required
               className="p-4 bg-fade-black shadow-lg text-yellows placeholder-yellows rounded-xl"
             />
             <button className="bg-yellows text-black font-radios font-bold py-4 rounded-xl hover:bg-yellow-600">

@@ -4,7 +4,8 @@ import Navbar from "./Navbar";
 
 const Confirmation = () => {
   let Navigate = useNavigate();
-  let ProceedPayment = () => {
+  let ProceedPayment = (event) => {
+    event.preventDefault();
     Navigate("/Ticket");
   };
 

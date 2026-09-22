@@ -13,7 +13,6 @@ import image2 from "../images/vecteezy_blue-trendy-background-design-template-fo
 
 const Room = () => {
   const [Rooms, setRooms] = useState([]);
-  const [Hotel, setHotel] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -42,7 +41,6 @@ const Room = () => {
   useEffect(() => {
     if (allRooms && allRooms.rooms) {
       setRooms(allRooms.rooms);
-      setHotel(allRooms.hotel);
       console.log(allRooms);
     }
   }, [allRooms]);
@@ -75,6 +73,7 @@ const Room = () => {
     selectedMembers,
     selectedLocations,
     searchTerm,
+    allRooms,
   ]);
   const handleSearch = (e) => {
     setSearchTerm(e.target.value);

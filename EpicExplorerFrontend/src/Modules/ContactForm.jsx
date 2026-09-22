@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { contactMessage } from "../Redux/Slices/showAccommodationsSlice";
 import { ToastContainer, toast } from "react-toastify";
+import { validateEmail, validateText } from "../utils/validation";
 
 const ContactForm = () => {
   const [firstName, setFirstName] = useState("");
@@ -21,7 +22,25 @@ const ContactForm = () => {
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-    dispatch(contactMessage(firstName, lastName, email, message));
+    const errors = [
+      validateText("First name", firstName, { min: 2, max: 80 }),
+      validateText("Last name", lastName, { min: 2, max: 80 }),
+      validateEmail(email),
+      validateText("Message", message, { min: 10, max: 2000 }),
+    ];
+    const firstError = errors.find(Boolean);
+    if (firstError) {
+      toast.error(firstError);
+      return;
+    }
+    dispatch(
+      contactMessage(
+        firstName.trim(),
+        lastName.trim(),
+        email.trim().toLowerCase(),
+        message.trim()
+      )
+    );
     setFirstName("");
     setLastName("");
     setEmail("");
@@ -189,6 +208,10 @@ const ContactForm = () => {
                     placeholder="Jane"
                     value={firstName}
                     onChange={handleFirstNameChange}
+                    autoComplete="given-name"
+                    minLength={2}
+                    maxLength={80}
+                    required
                   />
                 </div>
                 <div className="w-full md:w-1/2 px-3">
@@ -205,6 +228,10 @@ const ContactForm = () => {
                     placeholder="Doe"
                     value={lastName}
                     onChange={handleLastNameChange}
+                    autoComplete="family-name"
+                    minLength={2}
+                    maxLength={80}
+                    required
                   />
                 </div>
               </div>
@@ -223,6 +250,9 @@ const ContactForm = () => {
                     placeholder="********@*****.**"
                     value={email}
                     onChange={handleEmailChange}
+                    autoComplete="email"
+                    maxLength={254}
+                    required
                   />
                 </div>
               </div>
@@ -241,6 +271,9 @@ const ContactForm = () => {
                     placeholder="Your Message"
                     value={message}
                     onChange={handleMessageChange}
+                    minLength={10}
+                    maxLength={2000}
+                    required
                   />
                 </div>
               </div>

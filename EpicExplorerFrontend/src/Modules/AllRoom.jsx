@@ -40,7 +40,7 @@ const AllRoom = () => {
   };
   useEffect(() => {
     dispatch(showRooms(id));
-  }, [dispatch]);
+  }, [dispatch, id]);
 
   useEffect(() => {
     if (room && room.rooms) {
@@ -78,6 +78,7 @@ const AllRoom = () => {
     selectedMembers,
     selectedLocations,
     searchTerm,
+    room,
   ]);
   const handleSearch = (e) => {
     setSearchTerm(e.target.value);

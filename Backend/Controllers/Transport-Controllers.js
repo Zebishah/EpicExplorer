@@ -19,6 +19,7 @@ import NotificationsUser from '../Models/NotificationsUser.js';
 import PublicNotifications from '../Models/PublicNotifications.js';
 const server = new Server("https://horizon-testnet.stellar.org/");
 import notifyUsers from '../Utils/NotifyUser.js';
+import { amountValidationError, bookingValidationError, normalizeEmail, normalizeText } from '../Utils/Validation.js';
 const app = express();
 dotenv.config();
 let success = null;
@@ -242,6 +243,12 @@ export const getFormData = async (req, res, next) => {
     let id = req.params.id;
     let { travelers, bookerName, bookerEmail, bookerPhone, bookerAddress, suggestion, members, days, seats } = req.body;
     let user = await req.user;
+    const bookingError = bookingValidationError({ bookerName, bookerEmail, bookerPhone, bookerAddress, members, days });
+    if (bookingError || !Number.isInteger(Number(seats)) || Number(seats) < 1 || Number(seats) > 100) {
+        return res.status(400).json({ success: false, message: bookingError || "Seats must be between 1 and 100." });
+    }
+    bookerName = user.userName;
+    bookerEmail = normalizeEmail(user.email);
 
     let transport;
     try {
@@ -270,7 +277,7 @@ export const getFormData = async (req, res, next) => {
     transport.prices = transport.prices * days;  //calculating price according to days
     try {
         // tourNo = tourNo + 1;
-        transportBooking = new BookingTransport({ transportId: transport.id, carName: transport.carName, prices: transport.prices, checkInDate: date, travelers, bookerName, bookerEmail, bookerPhone, bookerAddress, suggestion, bookerId: user.id, members, days, seats, image: transport.image });
+        transportBooking = new BookingTransport({ transportId: transport.id, carName: transport.carName, prices: transport.prices, checkInDate: date, travelers, bookerName, bookerEmail, bookerPhone: normalizeText(bookerPhone), bookerAddress: normalizeText(bookerAddress), suggestion: normalizeText(suggestion), bookerId: user.id, members: Number(members), days: Number(days), seats: Number(seats), image: transport.image });
         transportBooking = await transportBooking.save();
 
     } catch (error) {
@@ -295,6 +302,10 @@ export const getFormData = async (req, res, next) => {
 export const transportPayment = async (req, res, next) => {
 
     const { amount } = req.body;
+    const amountError = amountValidationError(amount);
+    if (amountError) {
+        return res.status(400).json({ success: false, message: amountError });
+    }
     let user = await req.user;
     let booksCount = 0;
     let transportId = req.params.id;

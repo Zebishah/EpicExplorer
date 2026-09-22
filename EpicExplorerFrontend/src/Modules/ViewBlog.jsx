@@ -1,4 +1,4 @@
-import { useLocation, useNavigate } from "react-router";
+import { useLocation } from "react-router";
 import Footer from "./Footer";
 import Navbar from "./Navbar";
 import { useDispatch, useSelector } from "react-redux";
@@ -17,13 +17,12 @@ const ViewBlog = () => {
   const { Blog } = useSelector((state) => state.showAccommodations);
   useEffect(() => {
     dispatch(showBlogsById(id));
-  }, [dispatch]);
+  }, [dispatch, id]);
 
   useEffect(() => {
     if (Blog) {
       if (Blog.blogs) {
         setBlogs(Blog.blogs);
-        console.log(Blogs);
       }
     }
   }, [Blog]);

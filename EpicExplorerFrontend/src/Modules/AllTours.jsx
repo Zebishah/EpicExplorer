@@ -16,7 +16,7 @@ const AllTours = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { tours, filterTours, perPageTours } = useSelector(
+  const { tours, filterTours } = useSelector(
     (state) => state.showAccommodations
   );
   const [selectedPrices, setSelectedPrices] = useState([]);
@@ -71,6 +71,7 @@ const AllTours = () => {
     selectedMembers,
     selectedLocations,
     searchTerm,
+    tours,
   ]);
   const handleSearch = (e) => {
     setSearchTerm(e.target.value);

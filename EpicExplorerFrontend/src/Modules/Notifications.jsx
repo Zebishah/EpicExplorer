@@ -16,7 +16,7 @@ const Notifications = () => {
   const { notifications } = useSelector((state) => state.userInfoSearch);
   useEffect(() => {
     dispatch(userNotifications());
-    const socket = io("http://localhost:5000");
+    const socket = io(import.meta.env.VITE_API_URL || "http://localhost:5000");
     console.log("Attempting to connect to server...");
 
     socket.on("connect", () => {

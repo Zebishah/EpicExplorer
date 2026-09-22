@@ -3,6 +3,7 @@ import { GoogleLogin } from "@react-oauth/google";
 import { jwtDecode } from "jwt-decode"; // Use named import
 
 const SignInWithGoogle = () => {
+  const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
   //   const [user, setUser] = useState(null);
 
   const handleLoginSuccess = (response) => {
@@ -28,7 +29,7 @@ const SignInWithGoogle = () => {
     <div className="flex flex-col items-center justify-center min-h-screen">
       <h1 className="text-2xl font-bold mb-4">Sign In with Google</h1>
 
-      <GoogleLogin
+      {googleClientId ? <GoogleLogin
         onSuccess={handleLoginSuccess}
         onFailure={handleLoginFailure}
         useOneTap
@@ -41,7 +42,7 @@ const SignInWithGoogle = () => {
             Sign in with Google
           </button>
         )}
-      />
+      /> : <p>Google sign-in is not configured for this environment.</p>}
     </div>
   );
 };

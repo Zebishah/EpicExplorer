@@ -1,56 +1,61 @@
-# 🌍 EpicExplorer
+# EpicExplorer
 
-**EpicExplorer** is a full-stack tour booking platform built with the **MERN Stack**. It provides a modern and responsive interface for exploring travel destinations and tours, backed by a REST API built with Node.js, Express.js, and MongoDB.
+EpicExplorer is a React/Vite travel-booking frontend backed by an Express, MongoDB, Socket.IO API. The backend also contains optional Stripe, SMTP/OTP, Google OAuth, and Stellar testnet integrations.
 
-The project demonstrates full-stack web development using React on the frontend and a structured Node.js backend for handling application data and business logic.
+## Requirements
 
----
+- Node.js 20+ and npm
+- MongoDB 6+ (local or a reachable MongoDB deployment)
+- Credentials for any external flow you intend to use: SMTP, Stripe, Google OAuth, and Stellar testnet
 
-## 🚀 Tech Stack
+## Fresh setup
 
-### Frontend
+1. Install dependencies:
 
-- React.js
-- JavaScript
-- HTML5
-- Tailwind CSS
+   ```sh
+   cd Backend && npm install
+   cd ../EpicExplorerFrontend && npm install
+   ```
 
-### Backend
+2. Create environment files from the checked-in templates:
 
-- Node.js
-- Express.js
-- REST APIs
+   ```sh
+   cp Backend/.env.example Backend/.env
+   cp EpicExplorerFrontend/.env.example EpicExplorerFrontend/.env
+   ```
 
-### Database
+3. Set at least `MONGOURI`, `JWT_SECRET`, and `CLIENT_ORIGIN` in `Backend/.env`. Keep all private values server-side. Set `VITE_API_URL` in the frontend to the backend origin. `VITE_GOOGLE_CLIENT_ID` and `VITE_STRIPE_PUBLISHABLE_KEY` are public browser configuration values; the Stripe secret belongs only in `Backend/.env`.
 
-- MongoDB
+## Run
 
----
+Start MongoDB, then use two terminals:
 
-## ✨ Features
+```sh
+cd Backend
+npm run dev
+```
 
-- Explore available tours and travel destinations
-- View tour information through a responsive interface
-- Full-stack client/server architecture
-- REST API integration
-- MongoDB-based data persistence
-- Responsive design using Tailwind CSS
-- Reusable React components
-- Backend API built with Express.js
+```sh
+cd EpicExplorerFrontend
+npm run dev
+```
 
----
+The API listens on `http://localhost:5000` by default and the Vite app on `http://localhost:5173`. Verify the API with `curl http://localhost:5000/health`.
 
-## 🏗️ Architecture
+## Validation
 
-EpicExplorer follows a standard client-server architecture:
+```sh
+cd Backend && npm test
+cd ../EpicExplorerFrontend && npm run lint && npm run build
+```
 
-```text
-User
-  ↓
-React Frontend
-  ↓
-REST API
-  ↓
-Node.js + Express.js
-  ↓
-MongoDB
+There are no migration or worker services in this repository. Mongoose creates/updates collections from the application models when the API connects; seed data must be supplied separately if a populated catalog is required. Socket.IO is part of the API process and does not require a separate worker.
+
+## External services and limitations
+
+- SMTP is required for signup OTP, resend OTP, and password-reset email delivery.
+- Stripe requires valid server and publishable keys. Payment endpoints use fixed legacy demo amounts and still need product-specific pricing/session reconciliation before production payments.
+- Stellar code targets the Stellar testnet and requires a funded admin account and secret seed. Friendbot/testnet availability is external.
+- Google sign-in requires an OAuth client configured for the frontend origin.
+
+Never commit `.env` files or credentials. Rotate any credentials that were previously present in repository history.

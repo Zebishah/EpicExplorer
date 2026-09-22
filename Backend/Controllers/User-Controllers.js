@@ -29,33 +29,85 @@ import notifyUsers from '../Utils/NotifyUser.js';
 const app = express();
 dotenv.config();
 const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
-const stripe = new stripePackage(stripeSecretKey);
 let success = null;
 
-import validator from 'validator';
+const getStripeClient = () => {
+    if (!stripeSecretKey?.trim()) return null;
+    return new stripePackage(stripeSecretKey);
+};
+
 import CreateUser from '../Models/CreateUser.js';
 import Message from '../Models/Message.js';
+import {
+    amountValidationError,
+    isValidEmail,
+    isValidUsername,
+    normalizeEmail,
+    normalizeText,
+    isValidPhone,
+    passwordValidationError,
+} from '../Utils/Validation.js';
 
 export const createUser = async (req, res, next) => {
 
-    const { userName, email, password, confirmPassword, wishList, bookedTour, bookedHotels, bookedTransport, googleSign } = req.body;
+    let { userName, email, password, confirmPassword, wishList, bookedTour, bookedHotels, bookedTransport, googleSign } = req.body;
+    userName = normalizeText(userName);
+    email = normalizeEmail(email);
+    const isGoogleSignup = String(googleSign).toLowerCase() === "true";
+    const emailServiceConfigured = Boolean(
+        process.env.SMTP_USER?.trim() && process.env.SMTP_PASS?.trim()
+    );
+    const localSignupWithoutEmail = process.env.NODE_ENV !== "production" && !emailServiceConfigured;
+    if (!isGoogleSignup && !emailServiceConfigured && process.env.NODE_ENV === "production") {
+        return res.status(503).json({
+            success: false,
+            message: "Email verification is unavailable. Configure SMTP_USER and SMTP_PASS first.",
+        });
+    }
     let phone = " ";
     let address = " ";
     let city = " ";
     let pic = " ";
 
-    if (!validator.isEmail(email)) {
-        return res.status(400).json({ success: false, message: "Invalid email address" });
+    if (!isValidEmail(email)) {
+        return res.status(400).json({ success: false, message: "Enter a valid email address." });
+    }
+    if (!userName || userName.length > 100) {
+        return res.status(400).json({ success: false, message: "Username is required and must be 100 characters or fewer." });
+    }
+    if (!isGoogleSignup && !isValidUsername(userName)) {
+        return res.status(400).json({ success: false, message: "Username must be 3–30 characters and use only letters, numbers, or underscores (no spaces)." });
+    }
+    if (!isGoogleSignup) {
+        const passwordError = passwordValidationError(password);
+        if (passwordError) {
+            return res.status(400).json({ success: false, message: passwordError });
+        }
+        if (password !== confirmPassword) {
+            return res.status(400).json({ success: false, message: "Passwords do not match." });
+        }
     }
 
     let user = await User.findOne({ email: email });
     if (user) {
+        if (localSignupWithoutEmail && user.verifiedStatus !== "true") {
+            user.verifiedStatus = "true";
+            await user.save();
+            const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
+                expiresIn: '7d'
+            });
+            return res.status(200).json({
+                success: true,
+                message: "Account already existed and has been activated for local development.",
+                newUser: user,
+                token,
+                requiresVerification: false,
+            });
+        }
         return res.status(400).json({ success: false, message: "User already exists" });
     }
-    let hashedPassword = password;
-    if (password) {
-        hashedPassword = await bcrypt.hash(password, 10);
-    }
+    const passwordToHash = password || `${email}-${Date.now()}`;
+    const hashedPassword = await bcrypt.hash(passwordToHash, 10);
 
     const userKeypair = StellarSdk.Keypair.random();
     let userPublicKey = userKeypair.publicKey();
@@ -82,13 +134,7 @@ export const createUser = async (req, res, next) => {
             Balance = balance.balance;
         }
     });
-    let verifiedStatus
-    if (googleSign == "false") {
-        verifiedStatus = "false";
-    }
-    else {
-        verifiedStatus = "true";
-    }
+    const verifiedStatus = isGoogleSignup || localSignupWithoutEmail ? "true" : "false";
     let date = new Date();
     try {
 
@@ -109,11 +155,11 @@ export const createUser = async (req, res, next) => {
             bookedTransport,
             bookedHotels,
             wishList,
-            googleSign
+            googleSign: isGoogleSignup ? "true" : "false"
         });
 
         await newUser.save();
-        if (googleSign == "false") {
+        if (!isGoogleSignup && !localSignupWithoutEmail) {
             const otp = Math.floor(100000 + Math.random() * 900000).toString();
             let otpExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
             let otpUser = new UserOTP({ email, otp, expiresAt: otpExpires })
@@ -136,7 +182,12 @@ export const createUser = async (req, res, next) => {
             notifyUsers(data);
             let notificationUser = new NotificationsUser({ user: userName, broadCast: "no", accommodationName: "Account Created Successfully", Category: "User Creationd", message: `${userName} Your Account created Successfully and otp sended to you` });
             await notificationUser.save();
-            return res.status(200).json({ success: true, message: "Otp is send to ur email account", newUser });
+            return res.status(200).json({
+                success: true,
+                message: "Verification code sent to your email.",
+                newUser,
+                requiresVerification: true,
+            });
         }
         const token = jwt.sign({ id: newUser.id }, process.env.JWT_SECRET, {
             expiresIn: '7d'
@@ -156,7 +207,15 @@ export const createUser = async (req, res, next) => {
         notifyUsers(data);
         let notificationUser = new NotificationsUser({ user: userName, broadCast: "no", accommodationName: "Account Created Successfully", Category: "User Creationd", message: `${userName} Your Account created Successfully and otp sended to you` });
         await notificationUser.save();
-        return res.status(200).json({ success: true, message: "Account created successfully", newUser, token });
+        return res.status(200).json({
+            success: true,
+            message: localSignupWithoutEmail
+                ? "Account created successfully. Email verification is skipped because SMTP is not configured."
+                : "Account created successfully",
+            newUser,
+            token,
+            requiresVerification: false,
+        });
 
     } catch (error) {
         return res.status(500).json({ success: false, message: "Error occurred while creating account", error: error.message });
@@ -166,15 +225,21 @@ export const createUser = async (req, res, next) => {
 export const userLogin = async (req, res, next) => {
     //getting user input from request Body  
     let { email, password } = req.body;
+    email = normalizeEmail(email);
 
     let user = req.user;//getting User from middleware
 
-    const isCorrectPassword = bcrypt.compareSync(password, user.password)
-    if (!validator.isEmail(email)) {
-        return res.status(400).json({ success: false, message: "Invalid email address" });
+    if (!isValidEmail(email) || typeof password !== "string" || !password) {
+        return res.status(401).json({ success: false, message: "Invalid email or password", statusCode: 401 });
     }
+
+    if (!user) {
+        return res.status(401).json({ success: false, message: "Invalid email or password", statusCode: 401 });
+    }
+
+    const isCorrectPassword = bcrypt.compareSync(password, user.password)
     if (!isCorrectPassword) {
-        return res.status(400).json({ success: false, message: "wrong password", statusCode: 400 })
+        return res.status(401).json({ success: false, message: "Invalid email or password", statusCode: 401 })
     }
     const payload = {
         id: user.id,
@@ -203,8 +268,14 @@ export const resendOtp = async (req, res, next) => {
 
     //getting user input from request Body  
     let { email } = req.body;
-    console.log(email)
+    email = normalizeEmail(email);
+    if (!isValidEmail(email)) {
+        return res.status(400).json({ success: false, message: "Enter a valid email address." });
+    }
     let userReal = await User.findOne({ email: email })
+    if (!userReal) {
+        return res.status(404).json({ success: false, message: "User not found" });
+    }
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
     let otpExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
     let user;
@@ -215,8 +286,7 @@ export const resendOtp = async (req, res, next) => {
         return res.status(400).json({ error: error.message });
     }
     if (user) {
-        let user2 = UserOTP.findOneAndDelete({ email: email })
-        await user2.save();
+        await UserOTP.findOneAndDelete({ email: email });
     }
     try {
         let otpUser = new UserOTP({ email, otp, expiresAt: otpExpires })
@@ -243,12 +313,15 @@ export const resendOtp = async (req, res, next) => {
     let notificationUser = new NotificationsUser({ user: userReal.userName, broadCast: "no", accommodationName: "Otp resend Successfull", Category: "otp resend", message: `Your Otp resend Successfully to you ` });
     await notificationUser.save();
 
-    return res.status(200).json({ success: true, message: "Otp resend successfully", email, statusCode: 200, otp: otp })
+    return res.status(200).json({ success: true, message: "Otp resend successfully", email, statusCode: 200 })
 }
 
 export const verifyOTP = async (req, res, next) => {
-    const { email, otp } = req.body;
-    console.log(email, otp)
+    const email = normalizeEmail(req.body.email);
+    const otp = normalizeText(req.body.otp);
+    if (!isValidEmail(email) || !/^\d{6}$/.test(otp)) {
+        return res.status(400).json({ success: false, message: 'Email and OTP are required' });
+    }
     let realUser;
     try {
         realUser = await User.findOne({ email: email });
@@ -257,7 +330,7 @@ export const verifyOTP = async (req, res, next) => {
         return res.status(400).json({ error: error.message });
     }
     try {
-        const user = await UserOTP.findOne({ email, otp });
+        const user = await UserOTP.findOne({ email, otp, expiresAt: { $gt: new Date() } });
 
         if (!user) {
             return res.status(400).json({ message: 'Invalid or expired OTP' });
@@ -265,18 +338,8 @@ export const verifyOTP = async (req, res, next) => {
         await UserOTP.findOneAndDelete({ email: email, otp: otp })
 
 
-        const options = {
-            email: realUser.email, AccountId: realUser.AccountId, SecretSeed: realUser.SecretSeed, message: `Your account has been verified and created successfully. Here are your Stellar account attributes: AccountId ${realUser.AccountId} and SecretSeed ${realUser.SecretSeed} `
-        };
-        try {
-            await sendEmail(options, res);
-        } catch (error) {
-            return res.status(400).json({ error: error.message });
-        }
-
-
         realUser.verifiedStatus = "true"
-        realUser.save();
+        await realUser.save();
         let date = new Date();
         let notificationAdmin = new NotificationsAdmin({ accommodationName: "user verified Successfully", Category: "userVerification", message: `One user ${realUser.userName} verified successfully`, date });
         await notificationAdmin.save();
@@ -328,6 +391,9 @@ export const deleteUser = async (req, res, next) => {
     if (!id) {
         return res.status(400).json({ success, message: "no id found", statusCode: 400 });
     }
+    if (String(req.userId) !== String(id)) {
+        return res.status(403).json({ success: false, message: "You can only delete your own account", statusCode: 403 });
+    }
 
     let deletedUser;
     try {
@@ -348,10 +414,26 @@ export const deleteUser = async (req, res, next) => {
 }
 export const updateUser = async (req, res, next) => {
     let user = req.user;
-    const { fullName, address, phoneNo, city, imageUrl } = req.body;
+    const fullName = normalizeText(req.body.fullName);
+    const address = normalizeText(req.body.address);
+    const phoneNo = normalizeText(req.body.phoneNo);
+    const city = normalizeText(req.body.city);
+    const { imageUrl } = req.body;
 
     if (!user) {
         return res.status(400).json({ success: false, message: "user not existed" });
+    }
+    if (fullName && (fullName.length < 2 || fullName.length > 100)) {
+        return res.status(400).json({ success: false, message: "Full name must be between 2 and 100 characters." });
+    }
+    if (address && address.length > 200) {
+        return res.status(400).json({ success: false, message: "Address must be 200 characters or fewer." });
+    }
+    if (city && city.length > 80) {
+        return res.status(400).json({ success: false, message: "City must be 80 characters or fewer." });
+    }
+    if (phoneNo && !isValidPhone(phoneNo)) {
+        return res.status(400).json({ success: false, message: "Enter a valid phone number using 7–20 digits." });
     }
 
     // Update user information
@@ -387,8 +469,15 @@ export const updatePassword = async (req, res, next) => {
     let { oldPassword, newPassword, confirmPassword } = req.body;
     let user = req.user; //getting User from middleware
 
+    if (!user || typeof oldPassword !== "string" || !oldPassword) {
+        return res.status(400).json({ success: false, message: "Current password is required.", statusCode: 400 });
+    }
+    const passwordError = passwordValidationError(newPassword);
+    if (passwordError) {
+        return res.status(400).json({ success: false, message: passwordError, statusCode: 400 });
+    }
     if (confirmPassword !== newPassword) {
-        return res.status(400).json({ success: false, message: "passwords are not matching with each other", statusCode: 400 });
+        return res.status(400).json({ success: false, message: "Passwords do not match.", statusCode: 400 });
     }
     const isCorrectPassword = bcrypt.compareSync(oldPassword, user.password); //comparing Passwords 
     if (!isCorrectPassword) {
@@ -418,13 +507,16 @@ export const updatePassword = async (req, res, next) => {
 }
 export const forgetPassword = async (req, res, next) => {
     let user = await req.user;
+    if (!user) {
+        return res.status(404).json({ success: false, message: "User not found", statusCode: 404 });
+    }
     // token creation
     let hash = await tokenCreation(user);
 
     try {
         console.log(user)
         //making reset URL
-        const resetUrl = `http://localhost:5173/UpdatePassword/?email=${encodeURIComponent(user.email)}&hash=${encodeURIComponent(hash)}`;
+        const resetUrl = `${process.env.CLIENT_ORIGIN || 'http://localhost:5173'}/UpdatePassword/?email=${encodeURIComponent(user.email)}&hash=${encodeURIComponent(hash)}`;
 
         const message = `<p>Please click the following link to reset your password:</p>
               <p><a href="${resetUrl}">${resetUrl}</a></p>`;
@@ -450,15 +542,21 @@ export const forgetPassword = async (req, res, next) => {
 export const resetPassword = async (req, res, next) => {
 
     let user = await req.user;
+    if (!user) {
+        return res.status(404).json({ success: false, message: "User not found", statusCode: 404 });
+    }
     //getting User from middleware
     const hash = req.body.hash;
 
     if (!hash) {
         return res.status(400).json({ success: false, message: "no hash found", statusCode: 400 });
     }
+    const passwordError = passwordValidationError(req.body.password);
+    if (passwordError) {
+        return res.status(400).json({ success: false, message: passwordError, statusCode: 400 });
+    }
     try {
-        console.log("hey")
-        const token = await Token.findOne({ token: hash });
+        const token = await Token.findOne({ token: hash, userId: user.id });
         if (!token) {
             return res.status(400).json({ success: false, message: "Invalid token found...", statusCode: 400 });
         }
@@ -493,8 +591,11 @@ export const resetPassword = async (req, res, next) => {
 
 export const confirmOrder = async (req, res, next) => {
     let user = req.user;//getting User from middleware
+    const stripe = getStripeClient();
+    if (!stripe) {
+        return res.status(503).json({ success: false, message: "Stripe payments are not configured. Signup does not require Stripe." });
+    }
     try {
-        console.log("a gye")
         const paymentIntent = await stripe.paymentIntents.create({
             amount: 105000, // Amount in cents
             currency: 'pkr',
@@ -511,9 +612,12 @@ export const confirmOrder = async (req, res, next) => {
 };
 
 export const confirmOrders = async (req, res, next) => {
-    console.log("a getUserById")
     let user = await req.user;//getting User from middleware
     let amount = 2000;
+    const stripe = getStripeClient();
+    if (!stripe) {
+        return res.status(503).json({ success: false, message: "Stripe payments are not configured. Signup does not require Stripe." });
+    }
 
     try {
         // stripe payment session
@@ -532,13 +636,13 @@ export const confirmOrders = async (req, res, next) => {
                 },
             ],
             mode: 'payment',
-            success_url: `http://localhost:5173/Success/${amount}`,  //url where wo go if our task will be successful
-            cancel_url: 'http://localhost:5173/Cancel', //url where wo go if our task will be unsuccessful
+            success_url: `${process.env.CLIENT_ORIGIN || 'http://localhost:5173'}/paymentConfirmation?session_id={CHECKOUT_SESSION_ID}`,
+            cancel_url: `${process.env.CLIENT_ORIGIN || 'http://localhost:5173'}/PaymentOptions`,
             customer_email: user.email
             // clientReferenceId:
         });
 
-        return res.json({ sessionId: session, clientSecret: session.client_secret, amount: amount, statusCode: 200 });
+        return res.json({ sessionId: session.id, clientSecret: session.client_secret, amount: amount, statusCode: 200 });
     } catch (error) {
         return next(error);
     }
@@ -547,7 +651,10 @@ export const confirmOrders = async (req, res, next) => {
 };
 export const requestBalance = async (req, res, next) => {
     const { amount } = req.body;
-    console.log("enter request balance ")
+    const amountError = amountValidationError(amount);
+    if (amountError) {
+        return res.status(400).json({ success: false, message: amountError });
+    }
     let user = await req.user;
     try {
 
@@ -600,6 +707,10 @@ export const requestBalance = async (req, res, next) => {
 export const stellarPayment = async (req, res, next) => {
 
     const { amount } = req.body;
+    const amountError = amountValidationError(amount);
+    if (amountError) {
+        return res.status(400).json({ success: false, message: amountError });
+    }
     let user = await req.user;
     let booksCount = 0;
     let tourId = req.params.id;
@@ -969,6 +1080,22 @@ export const countUserBookedRooms = async (req, res, next) => {
 export const contactUs = async (req, res, next) => {
     let user = await req.user;
     let { firstName, lastName, email, message } = req.body
+    firstName = normalizeText(firstName);
+    lastName = normalizeText(lastName);
+    email = normalizeEmail(email);
+    message = normalizeText(message);
+    if (!firstName || firstName.length > 80) {
+        return res.status(400).json({ success: false, message: "First name is required and must be 80 characters or fewer." });
+    }
+    if (!lastName || lastName.length > 80) {
+        return res.status(400).json({ success: false, message: "Last name is required and must be 80 characters or fewer." });
+    }
+    if (!isValidEmail(email)) {
+        return res.status(400).json({ success: false, message: "Enter a valid email address." });
+    }
+    if (!message || message.length < 10 || message.length > 2000) {
+        return res.status(400).json({ success: false, message: "Message must be between 10 and 2000 characters." });
+    }
     let messages;
     try {
 
@@ -985,5 +1112,3 @@ export const contactUs = async (req, res, next) => {
     success = true
     res.status(200).json({ success, message: "user booked that much rooms", message: messages })
 }
-
-

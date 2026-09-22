@@ -5,15 +5,15 @@ import getUserById from '../middleware/UserFromId.js';
 import getAdminById from '../middleware/AdminFromId.js';
 const TransportRoutes = express.Router();
 
-TransportRoutes.post('/addTransport', addTransport);
+TransportRoutes.post('/addTransport', verifyToken, getAdminById, addTransport);
 
 TransportRoutes.get('/showTransport', getTransport);
 
 TransportRoutes.post('/filterTransport', filterTransport);
 
-TransportRoutes.post('/deleteTransport/:id', verifyToken, deleteTransport);
+TransportRoutes.post('/deleteTransport/:id', verifyToken, getAdminById, deleteTransport);
 
-TransportRoutes.post('/updateTransport/:id', updateTransport);
+TransportRoutes.post('/updateTransport/:id', verifyToken, getAdminById, updateTransport);
 
 TransportRoutes.post('/TransportPayment/:id', verifyToken, getUserById, transportPayment);
 

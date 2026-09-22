@@ -13,7 +13,7 @@ const RelatedTour = (id) => {
     if (id) {
       dispatch(showRelatedTours(id));
     }
-  }, []);
+  }, [dispatch, id]);
   useEffect(() => {
     if (relatedTour && relatedTour.tours) {
       setTourDet(relatedTour.tours.slice(0, 3));

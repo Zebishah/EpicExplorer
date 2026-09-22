@@ -24,7 +24,7 @@ async function UserStellarTransaction(account, amount, KeyPair, destination) {
 
 
     } catch (error) {
-        console.error("Error submitting transaction:", error.response.data);
+        console.error("Error submitting transaction:", error.message);
         throw error;
     }
 }

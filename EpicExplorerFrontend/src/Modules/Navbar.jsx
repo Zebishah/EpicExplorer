@@ -41,9 +41,13 @@ const Navbar = () => {
   useEffect(() => {
     dispatch(userSearchFrToken());
   }, [dispatch]);
-  let Logout = () => {
+  const Logout = () => {
     localStorage.removeItem("jwtToken");
-    navigate("/SignIn");
+    dispatch(resetUserSearchState());
+    setUserName("");
+    setImage("");
+    setIsMenuOpen(false);
+    navigate("/SignIn", { replace: true });
   };
   useEffect(() => {
     if (userFrTokenData) {
@@ -253,26 +257,22 @@ const Navbar = () => {
           )}
           <div>
             {localStorage.getItem("jwtToken") ? (
-              <Link
-                to={"/Dashboard"}
+              <button
+                type="button"
+                onClick={Logout}
                 className="font-radios p-3 rounded-xl flex cursor-pointer hover:text-white hover:shadow-lg hover:bg-[#3654ff] hover:shadow-fade-black duration-300 font-semibold text-[#3654ff] sssm:text-sm lg:text-[14px] md:text-[12px] transition-all ease-in-out"
+                aria-label="Logout"
               >
-                {" "}
-                <li
-                  className="flex flex-row gap-x-4 items-center hover:text-white"
-                  onClick={Logout}
-                >
-                  <span className="flex flex-row gap-x-4 text-[#3654ff] hover:text-white items-center transition-all duration-300 ease-in-out cursor-pointer ">
-                    <FontAwesomeIcon
-                      icon={faSignOut}
-                      className="text-lg hover:text-white"
-                    />
-                    <p className="hidden smd:block text-lg font-radios hover:text-white">
-                      Logout
-                    </p>
+                <span className="flex flex-row gap-x-4 text-[#3654ff] hover:text-white items-center transition-all duration-300 ease-in-out cursor-pointer">
+                  <FontAwesomeIcon
+                    icon={faSignOut}
+                    className="text-lg hover:text-white"
+                  />
+                  <span className="hidden smd:block text-lg font-radios hover:text-white">
+                    Logout
                   </span>
-                </li>
-              </Link>
+                </span>
+              </button>
             ) : (
               <Link
                 className="font-radios p-2 rounded-xl hover:shadow-lg hover:shadow-fade-black flex cursor-pointer duration-300 font-semibold text-[#3654ff] sssm:text-sm md:text-[12px] hover:bg-[#3654ff] hover:text-white transition-all ease-in-out"

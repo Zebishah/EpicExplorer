@@ -10,7 +10,6 @@ import { showTourDetail } from "../Redux/Slices/ShowTourDetailsSlice";
 import { useDispatch, useSelector } from "react-redux";
 import image2 from "../images/vecteezy_blue-trendy-background-design-template-for-banner-poster_.jpg";
 import ReviewForm from "./ReviewForm";
-import Review from "../../../Backend/Models/Review";
 import ReviewShowingTour from "./ReviewShowingTour";
 const BookTour = () => {
   const dispatch = useDispatch();
@@ -24,14 +23,14 @@ const BookTour = () => {
     if (id) {
       dispatch(showTourDetail(id));
     }
-  }, [id]);
+  }, [dispatch, id]);
   useEffect(() => {
     if (tourDetail) {
       setTourDet(tourDetail.tour);
-      console.log(tourDet);
     }
   }, [tourDetail]);
-  let ProceedPayment = () => {
+  let ProceedPayment = (event) => {
+    event.preventDefault();
     Navigate("/requestBalance");
   };
   return (
@@ -95,45 +94,84 @@ const BookTour = () => {
           <h1 className="text-[#206eff] text-4xl mb-4 font-joining font-bold mt-3">
             Book Form
           </h1>
-          <form className="flex flex-col space-y-6 w-full mt-8">
+          <form
+            className="flex flex-col space-y-6 w-full mt-8"
+            onSubmit={ProceedPayment}
+          >
             <input
               type="text"
+              name="name"
               placeholder="Name"
+              minLength={2}
+              maxLength={100}
+              autoComplete="name"
+              required
               className="p-4 bg-[#206eff] shadow-lg text-white placeholder-white rounded-xl shadow-fade-black"
             />
             <input
               type="email"
+              name="email"
               placeholder="E-mail"
+              autoComplete="email"
+              required
               className="p-4 bg-[#206eff] shadow-lg text-white placeholder-white rounded-xl shadow-fade-black"
             />
             <input
               type="text"
+              name="phone"
               placeholder="Phone number"
+              inputMode="tel"
+              pattern="[+0-9()\s.-]{7,20}"
+              title="Enter a valid phone number."
+              aria-describedby="tour-phone-format"
+              onInvalid={(event) =>
+                event.currentTarget.setCustomValidity(
+                  "Phone must contain 7–20 digits. Spaces, +, parentheses, hyphens, and periods are allowed."
+                )
+              }
+              onInput={(event) => event.currentTarget.setCustomValidity("")}
+              required
               className="p-4 bg-[#206eff] shadow-lg text-white placeholder-white rounded-xl shadow-fade-black"
             />
+            <p id="tour-phone-format" className="-mt-4 text-xs text-[#206eff]">
+              Format: 7–20 digits; spaces, +, parentheses, hyphens, and periods are allowed.
+            </p>
             <input
               type="number"
+              name="guests"
               placeholder="Total guests"
+              min={1}
+              max={100}
+              required
               className="p-4 bg-[#206eff] shadow-lg text-white placeholder-white rounded-xl shadow-fade-black"
             />
             <input
               type="date"
+              name="checkIn"
               placeholder="Check-in date"
+              required
               className="p-4 bg-[#206eff] shadow-lg text-white placeholder-white rounded-xl shadow-fade-black"
             />
             <input
               type="text"
+              name="dropOff"
               placeholder="Drop Off Location"
+              minLength={2}
+              maxLength={150}
+              required
               className="p-4 bg-[#206eff] shadow-lg text-white placeholder-white rounded-xl shadow-fade-black"
             />
             <input
               type="text"
+              name="pickup"
               placeholder="Pickup Location"
+              minLength={2}
+              maxLength={150}
+              required
               className="p-4 bg-[#206eff] shadow-lg text-white placeholder-white rounded-xl shadow-fade-black"
             />
             <button
               className="bg-[#206eff] text-white font-radios font-bold py-4 rounded-xl hover:bg-[#3e41ff] "
-              onClick={ProceedPayment}
             >
               Submit
             </button>

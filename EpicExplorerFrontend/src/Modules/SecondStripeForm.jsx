@@ -2,7 +2,7 @@ import { loadStripe } from "@stripe/stripe-js";
 import PropTypes from "prop-types";
 
 const stripePromise = loadStripe(
-  "pk_test_51OlT63EhRIYwGoSWf1KwCnKI6NoAfDGxmMPlWmKTKqiLV4n7GYEOWt0xqzjzE1rVsYGpCjB2hxupQWGkdK8OVnqE00nLgRNBzu"
+  import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || ""
 );
 import { Elements } from "@stripe/react-stripe-js";
 import CheckoutForm from "./CheckoutForm";

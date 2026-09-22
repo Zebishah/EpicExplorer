@@ -1,5 +1,4 @@
 import backgroundImage from "../images/duy-pham-Cecb0_8Hx-o-unsplash.jpg";
-import backgroundImage2 from "../images/pexels-pixabay-261102.jpg";
 import { useNavigate } from "react-router";
 const BookMoreTour = () => {
   const navigate = useNavigate();

@@ -13,22 +13,22 @@ AdminRoutes.post('/createAdmin', getAdminByEmail, createAdmin);//create admin ro
 
 AdminRoutes.post('/adminLogin', getAdminByEmail, adminLogin);
 
-AdminRoutes.get('/getAdmins', getAllAdmin, getAdmins);
+AdminRoutes.get('/getAdmins', verifyToken, getAdminById, getAllAdmin, getAdmins);
 
 AdminRoutes.post('/addBalance', verifyToken, getAdminById, addBalance);
 
 AdminRoutes.get('/checkAdminBalance', verifyToken, getAdminById, checkBalance);
 
-AdminRoutes.get('/HotelBookings', HotelBookings);
+AdminRoutes.get('/HotelBookings', verifyToken, getAdminById, HotelBookings);
 
-AdminRoutes.get('/TransportBookings', TransportBookings);
+AdminRoutes.get('/TransportBookings', verifyToken, getAdminById, TransportBookings);
 
-AdminRoutes.get('/TourBookings', TourBookings);
+AdminRoutes.get('/TourBookings', verifyToken, getAdminById, TourBookings);
 
-AdminRoutes.post('/UserHotelBookings', UserHotelBookings);
+AdminRoutes.post('/UserHotelBookings', verifyToken, getAdminById, UserHotelBookings);
 
-AdminRoutes.post('/UserTransportBookings', UserTransportBookings);
+AdminRoutes.post('/UserTransportBookings', verifyToken, getAdminById, UserTransportBookings);
 
-AdminRoutes.post('/UserTourBookings', UserTourBookings);
+AdminRoutes.post('/UserTourBookings', verifyToken, getAdminById, UserTourBookings);
 
 export default AdminRoutes;

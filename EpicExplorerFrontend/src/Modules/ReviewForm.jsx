@@ -3,9 +3,15 @@ import Rating from "react-rating-stars-component";
 import { addReviews } from "../Redux/Slices/ShowTourDetailsSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { ToastContainer, toast } from "react-toastify";
-const ReviewForm = (id) => {
+import PropTypes from "prop-types";
+import {
+  getErrorMessage,
+  validateEmail,
+  validateText,
+} from "../utils/validation";
+const ReviewForm = ({ id }) => {
   const dispatch = useDispatch();
-  const { Review } = useSelector((state) => state.TourDetail);
+  const { Review, errorSearch } = useSelector((state) => state.TourDetail);
   // State to store form inputs
   const [reviewData, setReviewData] = useState({
     name: "",
@@ -25,12 +31,28 @@ const ReviewForm = (id) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    const nameError = validateText("Name", reviewData.name, { min: 2, max: 100 });
+    const emailError = validateEmail(reviewData.email);
+    const reviewError = validateText("Review", reviewData.review, {
+      min: 10,
+      max: 2000,
+    });
+    const ratingError = reviewData.rating
+      ? ""
+      : "Please choose a rating from 1 to 5 stars.";
+    const firstError = [nameError, emailError, reviewError, ratingError].find(
+      Boolean
+    );
+    if (firstError) {
+      toast.error(firstError);
+      return;
+    }
     dispatch(
       addReviews(
-        id,
-        reviewData.name,
-        reviewData.email,
-        reviewData.review,
+        { id },
+        reviewData.name.trim(),
+        reviewData.email.trim().toLowerCase(),
+        reviewData.review.trim(),
         reviewData.rating
       )
     );
@@ -49,6 +71,11 @@ const ReviewForm = (id) => {
       console.log(Review.existingReview);
     }
   }, [Review]);
+  useEffect(() => {
+    if (errorSearch) {
+      toast.error(getErrorMessage(errorSearch, "Unable to submit the review."));
+    }
+  }, [errorSearch]);
 
   return (
     <>
@@ -71,6 +98,8 @@ const ReviewForm = (id) => {
               name="name"
               value={reviewData.name}
               onChange={handleInputChange}
+              minLength={2}
+              maxLength={100}
               placeholder="Write your name here.."
               required
               className="p-4 block w-full placeholder:text-white text-white border-gray-300 bg-[#5aa7ff] rounded-md shadow-lg focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm mt-4"
@@ -84,11 +113,12 @@ const ReviewForm = (id) => {
               email
             </label>
             <input
-              type="text"
+              type="email"
               id="email"
               name="email"
               value={reviewData.email}
               onChange={handleInputChange}
+              maxLength={254}
               placeholder="Write your email here.."
               required
               className="p-4 block w-full placeholder:text-white text-white border-gray-300 bg-[#5aa7ff] rounded-md shadow-lg focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm mt-4"
@@ -107,6 +137,8 @@ const ReviewForm = (id) => {
               name="review"
               value={reviewData.review}
               onChange={handleInputChange}
+              minLength={10}
+              maxLength={2000}
               required
               rows="3"
               placeholder="Write a Review..."
@@ -137,6 +169,10 @@ const ReviewForm = (id) => {
       </div>
     </>
   );
+};
+
+ReviewForm.propTypes = {
+  id: PropTypes.string,
 };
 
 export default ReviewForm;

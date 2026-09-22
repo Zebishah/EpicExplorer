@@ -1,12 +1,10 @@
 import { useDispatch, useSelector } from "react-redux";
 import image1 from "../images/marc-zimmer-a5QnUtau8lo-unsplash.jpg";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router";
 import newIcon from "../images/new-product (2).png";
 import { showLatestTours } from "../Redux/Slices/TourPackagesSlice";
 const LatestTours = () => {
   const [HoneyTours, setHoneyTours] = useState([]);
-  const navigate = useNavigate();
   const dispatch = useDispatch();
   const { latestTour } = useSelector((state) => state.TourPackage);
 

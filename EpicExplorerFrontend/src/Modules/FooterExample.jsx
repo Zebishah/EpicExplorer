@@ -1,4 +1,9 @@
 
+import logo from "../images/Epic_Explorer__1_-removebg-preview.png";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEnvelope, faGlobe, faPhone } from "@fortawesome/free-solid-svg-icons";
+import { faFacebook, faGithub, faInstagram, faYoutube } from "@fortawesome/free-brands-svg-icons";
+
 const FooterExample = () => {
   return (
         <footer className="bg-light-black shadow-lg w-full">

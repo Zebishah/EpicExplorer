@@ -2,7 +2,6 @@ import {
   faBell,
   faCartPlus,
   faDashboard,
-  faDollar,
   faDollarSign,
   faDoorOpen,
   faHeart,
@@ -57,7 +56,8 @@ const SideBar = () => {
   };
   let Logout = () => {
     localStorage.removeItem("jwtToken");
-    navigate("/SignIn");
+    dispatch(resetUserSearchState());
+    navigate("/SignIn", { replace: true });
   };
   let Notifications = () => {
     navigate("/Notifications");

@@ -15,7 +15,6 @@ const TourService = (id) => {
   const [priceInclude, setPriceInclude] = useState([]);
   const [priceExclude, setPriceExclude] = useState([]);
   const [daysServices, setDaysServices] = useState([]);
-  const [ServicesDet, setServicesDet] = useState({});
   const { tourDetail, RelatedBlogs } = useSelector((state) => state.TourDetail);
 
   useEffect(() => {
@@ -23,11 +22,10 @@ const TourService = (id) => {
       dispatch(showTourDetail(id));
       dispatch(showRelatedBlogs(id));
     }
-  }, []);
+  }, [dispatch, id]);
   useEffect(() => {
     if (tourDetail) {
       setTourDet(tourDetail?.tour || {});
-      setServicesDet(tourDetail?.tourServiceIt || {});
       setActivities(tourDetail?.tourServiceIt?.activities || []);
       setPriceInclude(tourDetail?.tourServiceIt?.priceIncludes || []);
       setPriceExclude(tourDetail?.tourServiceIt?.priceExcludes || []);

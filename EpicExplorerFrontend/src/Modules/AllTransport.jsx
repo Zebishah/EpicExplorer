@@ -71,6 +71,7 @@ const AllTransport = () => {
     selectedMembers,
     selectedLocations,
     searchTerm,
+    transport,
   ]);
   const handleSearch = (e) => {
     setSearchTerm(e.target.value);

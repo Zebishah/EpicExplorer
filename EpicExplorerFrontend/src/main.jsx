@@ -6,14 +6,18 @@ import { Provider } from "react-redux";
 import Store from "../Store.js";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 
-let clientId =
-  "1045795584807-hj1qc8fcgsqd20seip2hsc8jci5rk9uk.apps.googleusercontent.com";
+const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+const app = (
+  <Provider store={Store}>
+    <App />
+  </Provider>
+);
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <GoogleOAuthProvider clientId={clientId}>
-      <Provider store={Store}>
-        <App />
-      </Provider>
-    </GoogleOAuthProvider>
+    {clientId ? (
+      <GoogleOAuthProvider clientId={clientId}>{app}</GoogleOAuthProvider>
+    ) : (
+      app
+    )}
   </React.StrictMode>
 );

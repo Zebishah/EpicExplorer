@@ -5,17 +5,17 @@ import getUserById from '../middleware/UserFromId.js';
 import getAdminById from '../middleware/AdminFromId.js';
 const RoomRoutes = express.Router();
 
-RoomRoutes.post('/addRoom', addRoom);
+RoomRoutes.post('/addRoom', verifyToken, getAdminById, addRoom);
 
 RoomRoutes.get('/showRooms', getRoom);
 
 RoomRoutes.post('/deleteRoom/:id', verifyToken, getAdminById, deleteRoom);
 
-RoomRoutes.post('/updateRoom/:id', updateRoom);
+RoomRoutes.post('/updateRoom/:id', verifyToken, getAdminById, updateRoom);
 
 RoomRoutes.post('/RoomPayment/:id', verifyToken, getUserById, roomPayment);
 
-RoomRoutes.post('/openRoom/:id', openRoom);
+RoomRoutes.post('/openRoom/:id', verifyToken, getAdminById, openRoom);
 
 RoomRoutes.post('/getFormData/:id', verifyToken, getUserById, getFormData);
 

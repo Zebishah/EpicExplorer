@@ -2,12 +2,13 @@ import { useState, useEffect } from "react";
 import SideBar from "./SideBar";
 import Footer from "./Footer";
 import Navbar from "./Navbar";
-import { resetManageState, updateUser } from "../Redux/Slices/ManageUserSlice";
+import { updateUser } from "../Redux/Slices/ManageUserSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { userSearchFrToken } from "../Redux/Slices/SearchingUserSlice";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import image2 from "../images/vecteezy_blue-trendy-background-design-template-for-banner-poster_.jpg";
+import { validatePhone, validateText } from "../utils/validation";
 const UserProfile = () => {
   const [email, setEmail] = useState("");
   const [userName, setUserName] = useState("");
@@ -20,7 +21,7 @@ const UserProfile = () => {
     dispatch(userSearchFrToken());
 
     // Clean up function to reset user search state when the component unmounts
-  }, []);
+  }, [dispatch]);
 
   // Effect for setting email when userFrTokenData changes
   useEffect(() => {
@@ -50,7 +51,11 @@ const UserProfile = () => {
     image: null,
     imageUrl: "",
   });
-  const handleUserName = (e) => setUserName(e.target.value);
+  const handleUserName = (e) => {
+    const value = e.target.value;
+    setUserName(value);
+    setFormData((current) => ({ ...current, fullName: value }));
+  };
   const handleChange = (e) => {
     const { name, value } = e.target;
 
@@ -62,6 +67,14 @@ const UserProfile = () => {
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
+    if (file && !file.type.startsWith("image/")) {
+      toast.error("Please select an image file.");
+      return;
+    }
+    if (file && file.size > 5 * 1024 * 1024) {
+      toast.error("Profile image must be 5 MB or smaller.");
+      return;
+    }
     const reader = new FileReader();
     reader.onloadend = () => {
       setFormData({
@@ -75,10 +88,17 @@ const UserProfile = () => {
     }
   };
 
-  const handleSubmit = async () => {
-    // Here you can send the formData to your database
-    if (/\s/.test(userName)) {
-      return toast.error("Please enter a valid username");
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    const firstError = [
+      validateText("Full name", formData.fullName, { min: 2, max: 100 }),
+      validateText("Address", formData.address, { min: 2, max: 200 }),
+      validateText("City", formData.city, { min: 2, max: 80 }),
+      validatePhone(formData.phoneNo),
+    ].find(Boolean);
+    if (firstError) {
+      toast.error(firstError);
+      return;
     }
     dispatch(updateUser(formData));
 
@@ -141,6 +161,10 @@ const UserProfile = () => {
                             className="h-10 mt-1 rounded px-4 w-full bg-[#fcfcfc] shadow-lg border placeholder:font-radios placeholder:text-[#3654ff]"
                             value={userName}
                             onChange={handleUserName}
+                            minLength={2}
+                            maxLength={100}
+                            autoComplete="name"
+                            required
                           />
                         </div>
                         <div className="md:col-span-5">
@@ -173,6 +197,10 @@ const UserProfile = () => {
                             className="h-10 border mt-1 rounded px-4 w-full bg-[#fcfcfc] shadow-lg border placeholder:font-radios placeholder:text-[#3654ff]"
                             value={formData.address}
                             onChange={handleChange}
+                            minLength={2}
+                            maxLength={200}
+                            autoComplete="street-address"
+                            required
                           />
                         </div>
                         <div className="md:col-span-2">
@@ -189,6 +217,10 @@ const UserProfile = () => {
                             className="h-10 border mt-1 rounded px-4 w-full bg-[#fcfcfc] shadow-lg border placeholder:font-radios placeholder:text-[#3654ff]"
                             value={formData.city}
                             onChange={handleChange}
+                            minLength={2}
+                            maxLength={80}
+                            autoComplete="address-level2"
+                            required
                           />
                         </div>
                         <div className="md:col-span-2">
@@ -206,8 +238,23 @@ const UserProfile = () => {
                               className="px-4 appearance-none outline-none text-gray-800 w-full bg-transparent"
                               value={formData.phoneNo}
                               onChange={handleChange}
+                              inputMode="tel"
+                              pattern="[+0-9()\s.-]{7,20}"
+                              title="Enter a valid phone number."
+                              aria-describedby="profile-phone-format"
+                              onInvalid={(event) =>
+                                event.currentTarget.setCustomValidity(
+                                  "Phone must contain 7–20 digits. Spaces, +, parentheses, hyphens, and periods are allowed."
+                                )
+                              }
+                              onInput={(event) => event.currentTarget.setCustomValidity("")}
+                              maxLength={20}
+                              required
                             />
                           </div>
+                          <p id="profile-phone-format" className="mt-1 text-xs text-[#3654ff]">
+                            Format: 7–20 digits; spaces, +, parentheses, hyphens, and periods are allowed.
+                          </p>
                         </div>
                         <div className="md:col-span-2">
                           <label
@@ -223,6 +270,7 @@ const UserProfile = () => {
                               id="image"
                               className="px-4 appearance-none outline-none text-gray-800 w-full bg-transparent"
                               onChange={handleImageChange}
+                              accept="image/png,image/jpeg,image/webp"
                             />
                           </div>
                           {formData.imageUrl && (
@@ -237,8 +285,7 @@ const UserProfile = () => {
                         <div className="md:col-span-5 text-right">
                           <div className="inline-flex items-end">
                             <button
-                              type="button"
-                              onClick={handleSubmit}
+                              type="submit"
                               className=" mt-4 w-auto hover:before:bg-red rounded-xl relative h-[50px] overflow-hidden border border-yellows bg-light-black px-3 text-[#3654ff] shadow-lg transition-all before:absolute before:bottom-0 before:left-0 before:top-0 before:z-0 before:h-full before:w-0 before:bg-white before:transition-all before:duration-500 hover:text-black hover:shadow-yellow-400 hover:before:left-0 hover:before:w-full"
                             >
                               <span className="relative z-10 text-radios text-lg">

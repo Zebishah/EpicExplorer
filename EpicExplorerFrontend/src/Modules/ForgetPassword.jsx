@@ -5,6 +5,7 @@ import Footer from "./Footer";
 import image2 from "../images/vecteezy_blue-trendy-background-design-template-for-banner-poster_.jpg";
 import { forgotPassword } from "../Redux/Slices/ForgetPasswordSlice";
 import { useDispatch, useSelector } from "react-redux";
+import { getErrorMessage, validateEmail } from "../utils/validation";
 
 const ForgetPassword = () => {
   const [email, setEmail] = useState("");
@@ -17,15 +18,16 @@ const ForgetPassword = () => {
   };
   const resetPassword = (e) => {
     e.preventDefault();
-    if (!email) {
-      return toast.error("write email first");
+    const emailError = validateEmail(email);
+    if (emailError) {
+      return toast.error(emailError);
     }
-    dispatch(forgotPassword(email));
+    dispatch(forgotPassword(email.trim().toLowerCase()));
   };
 
   useEffect(() => {
     if (error) {
-      toast.error("Invalid credentials");
+      toast.error(getErrorMessage(error, "Unable to send the reset link."));
     }
 
     if (forgotPasswordData) {
@@ -64,7 +66,7 @@ const ForgetPassword = () => {
               </p>
             </div>
             <div className="mt-5">
-              <form>
+                <form onSubmit={resetPassword}>
                 <div className="grid gap-y-4">
                   <div>
                     <label
@@ -81,13 +83,14 @@ const ForgetPassword = () => {
                         className="py-3 px-4 block w-full border-2 border-gray-300 rounded-md text-sm shadow-sm text-black"
                         value={email}
                         onChange={handleEmailChange}
+                        autoComplete="email"
+                        maxLength={254}
                         required
                       />
                     </div>
                   </div>
                   <button
-                    type="button"
-                    onClick={resetPassword}
+                    type="submit"
                     className=" mt-4 w-full hover:before:bg-red rounded-xl relative h-[50px] overflow-hidden border border-[#3654ff] bg-[#3654ff] px-3 text-white shadow-lg transition-all before:absolute before:bottom-0 before:left-0 before:top-0 before:z-0 before:h-full before:w-0 before:bg-white before:transition-all before:duration-500 hover:text-[#3654ff] hover:shadow-[#3654ff] hover:before:left-0 hover:before:w-full"
                   >
                     <span className="relative z-10 text-radios text-lg">

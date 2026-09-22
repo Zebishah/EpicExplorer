@@ -13,6 +13,7 @@ import { Server } from 'socket.io';
 import io from '../index.js';
 import BookTour from '../Models/BookTour.js';
 import mongoose from 'mongoose';
+import { bookingValidationError, normalizeEmail, normalizeText } from '../Utils/Validation.js';
 
 const app = express();
 const server = createServer(app);
@@ -306,6 +307,12 @@ export const getFormData = async (req, res, next) => {
     let id = req.params.id;
     let { travelers, bookerName, bookerEmail, bookerPhone, bookerAddress, suggestion, members, pickupLocation } = req.body;
     let user = await req.user;
+    const bookingError = bookingValidationError({ bookerName, bookerEmail, bookerPhone, bookerAddress, members });
+    if (bookingError || !normalizeText(pickupLocation)) {
+        return res.status(400).json({ success: false, message: bookingError || "Pickup location is required." });
+    }
+    bookerName = user.userName;
+    bookerEmail = normalizeEmail(user.email);
     console.log(user)
     let tour;
     try {
@@ -334,7 +341,7 @@ export const getFormData = async (req, res, next) => {
     tour.price = tour.price * members;
     try {
         // tourNo = tourNo + 1;
-        tourBooking = new BookingTour({ tourId: tour.id, name: tour.name, image: tour.image, price: tour.price, startDate: tour.startDate, endDate: tour.endDate, checkInDate: date, travelers, bookerName, bookerEmail, bookerPhone, bookerAddress, suggestion, bookerId: user.id, members, pickupLocation });
+        tourBooking = new BookingTour({ tourId: tour.id, name: tour.name, image: tour.image, price: tour.price, startDate: tour.startDate, endDate: tour.endDate, checkInDate: date, travelers, bookerName, bookerEmail, bookerPhone: normalizeText(bookerPhone), bookerAddress: normalizeText(bookerAddress), suggestion: normalizeText(suggestion), bookerId: user.id, members: Number(members), pickupLocation: normalizeText(pickupLocation) });
         tourBooking = await tourBooking.save();
 
     } catch (error) {

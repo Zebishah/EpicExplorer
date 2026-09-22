@@ -2,15 +2,16 @@ import express from 'express';
 import { AllLatestTours, AllTourPackages, DiscountedTours, addTour, countTours, deleteTour, filterTours, getFormData, getTours, openTour, perPageTours, relatedTours, searchTourById, searchTourByName, tourPackages, updateTour } from '../Controllers/Tour-Controllers.js';
 import verifyToken from '../middleware/IdFromToken.js';
 import getUserById from '../middleware/UserFromId.js';
+import getAdminById from '../middleware/AdminFromId.js';
 const TourRoutes = express.Router();
 
-TourRoutes.post('/addTour', verifyToken, addTour);
+TourRoutes.post('/addTour', verifyToken, getAdminById, addTour);
 
 TourRoutes.get('/showTour', getTours);
 
-TourRoutes.post('/deleteTour/:id', deleteTour);
+TourRoutes.post('/deleteTour/:id', verifyToken, getAdminById, deleteTour);
 
-TourRoutes.post('/updateTour/:id', updateTour);
+TourRoutes.post('/updateTour/:id', verifyToken, getAdminById, updateTour);
 
 TourRoutes.post('/filterTour', filterTours);
 

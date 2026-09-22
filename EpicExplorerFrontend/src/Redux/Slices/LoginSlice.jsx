@@ -2,6 +2,8 @@ import { createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 import { setEmail } from "./emailSlice";
 
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+
 const loginSlice = createSlice({
   name: "login",
   initialState: {
@@ -47,7 +49,7 @@ export const signUp = ({
   dispatch(signUpRequest());
   try {
     const response = await axios.post(
-      `http://localhost:5000/User/createUser`,
+      `${API_URL}/User/createUser`,
       { userName, email, password, confirmPassword, googleSign },
       {
         headers: {
@@ -55,7 +57,7 @@ export const signUp = ({
         },
       }
     );
-    if (googleSign == "true") {
+    if (response.data.token) {
       const { token } = response.data;
       localStorage.setItem("jwtToken", token);
     }
@@ -63,10 +65,10 @@ export const signUp = ({
     dispatch(signUpSuccess(response.data));
     dispatch(setEmail(email));
   } catch (error) {
-    const errorMessage =
-      error.response && error.response.data
-        ? error.response.data.message
-        : error.message;
+    const errorMessage = error.response?.data?.message ||
+      (error.request
+        ? `Cannot connect to the server at ${API_URL}. Start the backend and try again.`
+        : error.message);
     dispatch(signUpFailure(errorMessage));
     console.log("errorSearch:", errorMessage);
   }

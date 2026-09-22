@@ -7,11 +7,14 @@ import { SignIn, resetSignInState } from "../Redux/Slices/SignInSlice";
 import AboveNavbar from "./AboveNavbar";
 import { userSearchFrEmail } from "../Redux/Slices/SearchingUserSlice";
 import { Link } from "react-router-dom";
+import { getErrorMessage, validateEmail } from "../utils/validation";
 
 const SignInForm = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState({});
   const dispatch = useDispatch();
   const { error, data } = useSelector((state) => state.SignIn);
   const ReadMore = () => {
@@ -20,20 +23,33 @@ const SignInForm = () => {
 
   const handleEmailChange = (e) => {
     setEmail(e.target.value);
+    setFieldErrors((current) => ({ ...current, email: "" }));
   };
 
   const handlePasswordChange = (e) => {
     setPassword(e.target.value);
+    setFieldErrors((current) => ({ ...current, password: "" }));
   };
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    dispatch(SignIn({ email, password }));
+    const errors = {
+      email: validateEmail(email),
+      password: password ? "" : "Password is required.",
+    };
+    const firstError = Object.values(errors).find(Boolean);
+    if (firstError) {
+      setFieldErrors(errors);
+      toast.error(firstError);
+      return;
+    }
+
+    dispatch(SignIn({ email: email.trim().toLowerCase(), password }));
   };
 
   useEffect(() => {
     if (error) {
-      return toast.error("Invalid credentials");
+      return toast.error(getErrorMessage(error, "Invalid email or password."));
     } else if (data) {
       toast.success("signIn successful!");
       dispatch(userSearchFrEmail(email));
@@ -87,8 +103,14 @@ const SignInForm = () => {
                 placeholder="Email Address"
                 value={email}
                 onChange={handleEmailChange}
+                autoComplete="email"
+                aria-invalid={Boolean(fieldErrors.email)}
+                required
               />
             </div>
+            {fieldErrors.email && (
+              <p className="text-sm text-red-200" role="alert">{fieldErrors.email}</p>
+            )}
             <div className="flex items-center bg-white border-2 border-[#3654ff] shadow-lg shadow-fade-black py-3 px-3 mt-4 rounded-2xl">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -103,15 +125,29 @@ const SignInForm = () => {
                 />
               </svg>
               <input
-                className="pl-2 text-[#3654ff] outline-none bg-transparent bg-light-black placeholder:text-[#3654ff]"
-                type="password"
+                className="pl-2 flex-1 min-w-0 text-[#3654ff] outline-none bg-transparent bg-light-black placeholder:text-[#3654ff]"
+                type={showPassword ? "text" : "password"}
                 name="password"
                 id="password"
                 placeholder="Password"
                 value={password}
                 onChange={handlePasswordChange}
+                autoComplete="current-password"
+                aria-invalid={Boolean(fieldErrors.password)}
+                required
               />
+              <button
+                type="button"
+                onClick={() => setShowPassword((visible) => !visible)}
+                className="ml-2 text-sm font-medium text-[#3654ff] hover:underline"
+                aria-label={showPassword ? "Hide password" : "Show password"}
+              >
+                {showPassword ? "Hide" : "Show"}
+              </button>
             </div>
+            {fieldErrors.password && (
+              <p className="text-sm text-red-200" role="alert">{fieldErrors.password}</p>
+            )}
             <button
               type="submit"
               onSubmit={handleSubmit}

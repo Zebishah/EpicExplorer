@@ -8,19 +8,34 @@ import HotelBookingHistory from '../Models/HotelBookingHistory.js';
 import TransportBookingHistory from '../Models/TransportBookingHistory.js';
 import ToursBookingHistory from '../Models/ToursBookingHistory.js';
 import UserStellarTransaction from '../Utils/UserTransaction.js';
+import { amountValidationError, isValidEmail, isValidPhone, normalizeEmail, normalizeText, passwordValidationError } from '../Utils/Validation.js';
 const server = new Server("https://horizon-testnet.stellar.org");
 let success = null;
 
 export const createAdmin = async (req, res, next) => {
 
-    let { name, email, phone, password, confirmPassword, addedTrips, addedHotels, addedTransports, handledTours, handledTransport, handledHotels } = req.body;
-    //checking if signup credentials are empty or not 
-    if ((name.trim() === "" || email.trim() === "" || phone === "" || password.trim() === "")) {
-        return res.status(400).json({ success: false, message: "enter ur credentials first" });
+    let { name, email, phone, password, confirmPassword, addedTrips, addedHotels, addedTransports, handledTours, handledTransport, handledHotels, address = " ", city = " ", pic = " " } = req.body;
+    name = normalizeText(name);
+    email = normalizeEmail(email);
+    phone = normalizeText(phone);
+    address = normalizeText(address) || " ";
+    city = normalizeText(city) || " ";
+    if (!name || name.length > 100) {
+        return res.status(400).json({ success: false, message: "Name is required and must be 100 characters or fewer." });
+    }
+    if (!isValidEmail(email)) {
+        return res.status(400).json({ success: false, message: "Enter a valid email address." });
+    }
+    if (!isValidPhone(phone)) {
+        return res.status(400).json({ success: false, message: "Enter a valid phone number." });
+    }
+    const passwordError = passwordValidationError(password);
+    if (passwordError) {
+        return res.status(400).json({ success: false, message: passwordError });
     }
     //checking that confirm password matches the above set password
     if (confirmPassword !== password) {
-        return res.status(400).json({ success: false, message: "passwords are not matching with each other" });
+        return res.status(400).json({ success: false, message: "Passwords do not match." });
     }
     // fetching admin
     let admin = await req.admin;
@@ -62,7 +77,7 @@ export const createAdmin = async (req, res, next) => {
 
     try { //creating new admin
 
-        admin = new Admin({ name, email, phone, password: hashedPassword, addedTrips, addedHotels, addedTransports, handledTours, handledTransport, handledHotels, AccountId: sourceAccountId, SecretSeed: sourceSecretSeed, Balance })
+        admin = new Admin({ name, email, phone, password: hashedPassword, address, city, pic, addedTrips, addedHotels, addedTransports, handledTours, handledTransport, handledHotels, AccountId: sourceAccountId, SecretSeed: sourceSecretSeed, Balance })
         admin = await admin.save();
     } catch (error) {
         return next(error);
@@ -73,7 +88,7 @@ export const createAdmin = async (req, res, next) => {
         return res.status(400).json({ success: false, message: "admin not found", statusCode: 400 });
     }
     //sending success response
-    return res.status(200).json({ success: true, message: "Admin account created successfully", sourceAccountId, sourceSecretSeed, account, admin, statusCode: 200 });
+    return res.status(200).json({ success: true, message: "Admin account created successfully", sourceAccountId, account, admin, statusCode: 200 });
 
 };
 
@@ -81,20 +96,24 @@ export const createAdmin = async (req, res, next) => {
 export const adminLogin = async (req, res, next) => {
 
     let { email, password } = req.body;
-    if (email.trim() === "" || password.trim() === "") {
-        return res.status(400).json({ success: false, message: "enter ur credentials first", statusCode: 400 });
+    email = normalizeEmail(email);
+    if (!isValidEmail(email) || typeof password !== "string" || !password) {
+        return res.status(401).json({ success: false, message: "Invalid email or password", statusCode: 401 });
     }
     //fetching admin 
     let admin = await req.admin;
+    if (!admin) {
+        return res.status(401).json({ success: false, message: "Invalid email or password", statusCode: 401 });
+    }
     const isCorrectPassword = bcrypt.compareSync(password, admin.password)
 
     if (!isCorrectPassword) {
-        return res.status(400).json({ success: false, message: "wrong password", statusCode: 400 })
+        return res.status(401).json({ success: false, message: "Invalid email or password", statusCode: 401 })
     }
     const token = jwt.sign({ id: admin._id }, process.env.JWT_SECRET, {  //signing jwt token
         expiresIn: "7d"
     });
-    return res.status(200).json({ success: true, message: "User signed in successfully", token: token, id: admin._id, admin: admin, statusCode: 200 })
+    return res.status(200).json({ success: true, message: "Admin signed in successfully", token: token, id: admin._id, admin: admin, statusCode: 200 })
 
 }
 
@@ -108,6 +127,10 @@ export const getAdmins = async (req, res, next) => {
 export const addBalance = async (req, res, next) => {
 
     const { amount } = req.body;  //fetching data from request body
+    const amountError = amountValidationError(amount);
+    if (amountError) {
+        return res.status(400).json({ success: false, message: amountError });
+    }
     //fetching admin
     let admin = await req.admin;
 

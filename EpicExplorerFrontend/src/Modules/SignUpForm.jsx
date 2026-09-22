@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 import { ToastContainer, toast } from "react-toastify";
@@ -7,6 +7,56 @@ import { resetLoginState, signUp } from "../Redux/Slices/LoginSlice";
 import AboveNavbar from "./AboveNavbar";
 import { useGoogleLogin } from "@react-oauth/google";
 import axios from "axios";
+import PropTypes from "prop-types";
+import {
+  getErrorMessage,
+  validateConfirmPassword,
+  validateEmail,
+  validatePassword,
+  validateUsername,
+} from "../utils/validation";
+
+const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+
+const GoogleSignupButton = ({ onSuccess, onFailure }) => {
+  const login = useGoogleLogin({ onSuccess, onError: onFailure });
+
+  return (
+    <button
+      type="button"
+      onClick={() => login()}
+      className="bg-[#3654ff] text-white text-balance p-4 rounded-lg shadow-lg shadow-fade-black"
+    >
+      Sign in with Google 🚀
+    </button>
+  );
+};
+GoogleSignupButton.propTypes = {
+  onSuccess: PropTypes.func,
+  onFailure: PropTypes.func,
+};
+
+const FieldError = ({ message }) =>
+  message ? (
+    <p className="mt-1 text-sm text-red-600" role="alert">
+      {message}
+    </p>
+  ) : null;
+
+FieldError.propTypes = {
+  message: PropTypes.string,
+};
+
+const FieldHint = ({ children, id }) => (
+  <p id={id} className="mt-1 text-xs text-[#3654ff]" aria-live="polite">
+    {children}
+  </p>
+);
+
+FieldHint.propTypes = {
+  children: PropTypes.node,
+  id: PropTypes.string,
+};
 
 const SignUpForm = () => {
   const navigate = useNavigate();
@@ -19,13 +69,31 @@ const SignUpForm = () => {
   const [googleEmail, setGoogleEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const termsCheckbox = document.getElementById("termsCheckbox");
+  const [fieldErrors, setFieldErrors] = useState({});
+  const termsCheckboxRef = useRef(null);
   const [user, setUser] = useState({});
-  const handleUserNameChange = (e) => setUserName(e.target.value);
-  const handleEmailChange = (e) => setEmail(e.target.value);
-  const handlePasswordChange = (e) => setPassword(e.target.value);
-  const handleConfirmPasswordChange = (e) => setConfirmPassword(e.target.value);
+  const clearFieldError = (field) =>
+    setFieldErrors((current) => ({ ...current, [field]: "" }));
+  const handleUserNameChange = (e) => {
+    setUserName(e.target.value);
+    clearFieldError("userName");
+  };
+  const handleEmailChange = (e) => {
+    setEmail(e.target.value);
+    clearFieldError("email");
+  };
+  const handlePasswordChange = (e) => {
+    setPassword(e.target.value);
+    clearFieldError("password");
+    clearFieldError("confirmPassword");
+  };
+  const handleConfirmPasswordChange = (e) => {
+    setConfirmPassword(e.target.value);
+    clearFieldError("confirmPassword");
+  };
   const handleLoginFailure = (error) => {
     console.error("Login Failed:", error);
     // Handle login failure here
@@ -65,11 +133,6 @@ const SignUpForm = () => {
       console.error("Error fetching user info:", error);
     }
   };
-  const login = useGoogleLogin({
-    onSuccess: (tokenResponse) => handleLoginSuccess(tokenResponse),
-    onFailure: (error) => handleLoginFailure(error),
-  });
-
   const ReadMore = () => {
     console.log("Read More");
   };
@@ -78,20 +141,19 @@ const SignUpForm = () => {
     let googleSign = "false";
     setGoogleLogin(false);
     e.preventDefault();
-    if (!termsCheckbox.checked) {
-      toast.error("Please agree to the terms before signing up");
-      return;
-    }
-    if (/\s/.test(userName)) {
-      toast.error("UserName should not have space in it");
-      return;
-    }
-    if (password.length < 10) {
-      toast.error("Passwords should not be that much smaller");
-      return;
-    }
-    if (password !== confirmPassword) {
-      toast.error("Passwords do not match");
+    const errors = {
+      userName: validateUsername(userName),
+      email: validateEmail(email),
+      password: validatePassword(password),
+      confirmPassword: validateConfirmPassword(password, confirmPassword),
+      terms: termsCheckboxRef.current?.checked
+        ? ""
+        : "Please agree to the terms before signing up.",
+    };
+    const firstError = Object.values(errors).find(Boolean);
+    if (firstError) {
+      setFieldErrors(errors);
+      toast.error(firstError);
       return;
     }
 
@@ -99,8 +161,8 @@ const SignUpForm = () => {
 
     dispatch(
       signUp({
-        userName,
-        email,
+        userName: userName.trim(),
+        email: email.trim().toLowerCase(),
         password,
         confirmPassword,
         googleSign,
@@ -110,20 +172,21 @@ const SignUpForm = () => {
   useEffect(() => {
     if (error) {
       setLoading(false);
-      toast.error("Invalid credentials");
+      toast.error(getErrorMessage(error, "Signup failed. Please review the form."));
     }
     if (data) {
       setLoading(false);
-      if (googleLogin == false) {
+      const requiresVerification = data.requiresVerification !== false;
+      if (googleLogin == false && requiresVerification) {
         toast.success(
-          " User SignedUp successfully and OTP Sended for authentication!"
+          "Account created successfully. Verification code sent to your email."
         );
       } else {
-        toast.success("user signed up successfully");
+        toast.success("Account created successfully.");
       }
 
-      setTimeout(() => {
-        if (googleLogin == false) {
+      const redirectTimer = setTimeout(() => {
+        if (googleLogin == false && requiresVerification) {
           navigate(`/otp?email=${encodeURIComponent(email)}`);
           setUserName("");
           setPassword("");
@@ -135,10 +198,14 @@ const SignUpForm = () => {
               googleEmail
             )}&userName=${encodeURIComponent(googleUserName)}`
           );
+        } else {
+          navigate("/", { replace: true });
         }
 
         dispatch(resetLoginState());
-      }, 5000);
+      }, 1200);
+
+      return () => clearTimeout(redirectTimer);
     }
   }, [
     data,
@@ -201,15 +268,32 @@ const SignUpForm = () => {
                 />
               </svg>
               <input
-                className="pl-2 text-white outline-none bg-transparent bg-light-black placeholder:text-[#3654ff]"
+                className="pl-2 text-[#3654ff] outline-none bg-white placeholder:text-[#3654ff]"
                 type="text"
                 name="userName"
                 placeholder="userName"
                 value={userName}
                 onChange={handleUserNameChange}
+                autoComplete="username"
+                minLength={3}
+                maxLength={30}
+                pattern="[A-Za-z0-9_]{3,30}"
+                aria-invalid={Boolean(fieldErrors.userName)}
+                aria-describedby="username-format"
+                title="Use 3–30 letters, numbers, or underscores only. Spaces are not allowed."
+                onInvalid={(event) =>
+                  event.currentTarget.setCustomValidity(
+                    "Username must be 3–30 characters and use only letters, numbers, or underscores. Spaces are not allowed."
+                  )
+                }
+                onInput={(event) => event.currentTarget.setCustomValidity("")}
                 required
               />
             </div>
+            <FieldHint id="username-format">
+              Format: 3–30 characters using letters, numbers, or underscores only; no spaces.
+            </FieldHint>
+            <FieldError message={fieldErrors.userName} />
             <div className="flex items-center border-2 shadow-lg shadow-fade-black py-3 px-3 mt-4 rounded-2xl">
               {/* Email input */}
               <svg
@@ -227,15 +311,23 @@ const SignUpForm = () => {
                 />
               </svg>
               <input
-                className="pl-2 text-white outline-none bg-transparent bg-light-black placeholder:text-[#3654ff]"
-                type="text"
+                className="pl-2 text-[#3654ff] outline-none bg-white placeholder:text-[#3654ff]"
+                type="email"
                 name="email"
                 placeholder="Email Address"
                 value={email}
                 onChange={handleEmailChange}
+                autoComplete="email"
+                maxLength={254}
+                aria-invalid={Boolean(fieldErrors.email)}
+                aria-describedby="email-format"
                 required
               />
             </div>
+            <FieldHint id="email-format">
+              Format: a valid address such as name@example.com.
+            </FieldHint>
+            <FieldError message={fieldErrors.email} />
             <div className="flex items-center border-2 shadow-lg shadow-fade-black py-3 px-3 mt-4 rounded-2xl">
               {/* Password input */}
               <svg
@@ -251,15 +343,32 @@ const SignUpForm = () => {
                 />
               </svg>
               <input
-                className="pl-2 text-white outline-none bg-transparent bg-light-black placeholder:text-[#3654ff]"
-                type="password"
+                className="pl-2 flex-1 min-w-0 text-[#3654ff] outline-none bg-white placeholder:text-[#3654ff]"
+                type={showPassword ? "text" : "password"}
                 name="password"
                 placeholder="Password"
                 value={password}
                 onChange={handlePasswordChange}
+                autoComplete="new-password"
+                minLength={10}
+                maxLength={128}
+                aria-invalid={Boolean(fieldErrors.password)}
+                aria-describedby="password-format"
                 required
               />
+              <button
+                type="button"
+                onClick={() => setShowPassword((visible) => !visible)}
+                className="ml-2 text-sm font-medium text-[#3654ff] hover:underline"
+                aria-label={showPassword ? "Hide password" : "Show password"}
+              >
+                {showPassword ? "Hide" : "Show"}
+              </button>
             </div>
+            <FieldHint id="password-format">
+              Format: 10+ characters with uppercase, lowercase, number, and special character.
+            </FieldHint>
+            <FieldError message={fieldErrors.password} />
             <div className="flex items-center border-2 shadow-lg shadow-fade-black py-3 px-3 mt-4 rounded-2xl relative">
               {/* Confirm Password input */}
               <svg
@@ -275,17 +384,42 @@ const SignUpForm = () => {
                 />
               </svg>
               <input
-                className="pl-2 text-white outline-none bg-transparent placeholder:text-[#3654ff] transition duration-300 ease-in-out focus:border-pink-500 focus:shadow-lg"
-                type="password"
+                className="pl-2 flex-1 min-w-0 text-[#3654ff] outline-none bg-white placeholder:text-[#3654ff] transition duration-300 ease-in-out focus:border-pink-500 focus:shadow-lg"
+                type={showConfirmPassword ? "text" : "password"}
                 name="confirmPassword"
                 placeholder="Confirm Password"
                 value={confirmPassword}
                 onChange={handleConfirmPasswordChange}
+                autoComplete="new-password"
+                minLength={10}
+                maxLength={128}
+                aria-invalid={Boolean(fieldErrors.confirmPassword)}
+                aria-describedby="confirm-password-format"
                 required
               />
+              <button
+                type="button"
+                onClick={() => setShowConfirmPassword((visible) => !visible)}
+                className="ml-2 text-sm font-medium text-[#3654ff] hover:underline"
+                aria-label={
+                  showConfirmPassword ? "Hide confirmed password" : "Show confirmed password"
+                }
+              >
+                {showConfirmPassword ? "Hide" : "Show"}
+              </button>
             </div>
+            <FieldHint id="confirm-password-format">
+              Format: enter the exact same password again.
+            </FieldHint>
+            <FieldError message={fieldErrors.confirmPassword} />
             <div className="flex flex-row gap-x-2 mt-4 items-center">
-              <input type="checkbox" id="termsCheckbox" className="text-lg" />
+              <input
+                ref={termsCheckboxRef}
+                type="checkbox"
+                id="termsCheckbox"
+                className="text-lg"
+                aria-invalid={Boolean(fieldErrors.terms)}
+              />
               <label
                 htmlFor="termsCheckbox"
                 className="text-lg text-[#3654ff] cursor-pointer"
@@ -293,18 +427,18 @@ const SignUpForm = () => {
                 I agree to the conditions and terms
               </label>
             </div>
+            <FieldError message={fieldErrors.terms} />
             {/* Submit button */}
             {/* <GoogleLogin
               onSuccess={handleLoginSuccess}
               onError={handleLoginFailure}
             /> */}
-            <button
-              type="button"
-              onClick={() => login()}
-              className="bg-[#3654ff] text-white text-balance p-4 rounded-lg shadow-lg shadow-fade-black"
-            >
-              Sign in with Google 🚀
-            </button>
+            {googleClientId && (
+              <GoogleSignupButton
+                onSuccess={handleLoginSuccess}
+                onFailure={handleLoginFailure}
+              />
+            )}
 
             <button
               type="submit"

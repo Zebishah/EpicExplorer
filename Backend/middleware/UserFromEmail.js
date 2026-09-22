@@ -1,7 +1,8 @@
 import User from "../Models/User.js";
+import { normalizeEmail } from "../Utils/Validation.js";
 
 const UserFromEmail = async (req, res, next) => {
-    const email = req.body.email;
+    const email = normalizeEmail(req.body.email);
     let user;
     try {
         user = await User.findOne({ email: email });

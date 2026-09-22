@@ -4,14 +4,17 @@ import { connect } from 'mongoose';
 config();
 
 // Instead of a hardcoded connection string, use the environment variable
-const mongo_URI = process.env.MONGOURI;
+const mongoUri = process.env.MONGOURI;
 
 const connectDB = async () => {
-    await connect(mongo_URI).then((result) => {
-        console.log("Database is connected on Connection String " + mongo_URI);
-    }).catch((err) => {
-        console.log("Database is not connected we got an error  " + err);
+    if (!mongoUri) {
+        throw new Error('MONGOURI is required to connect to MongoDB');
+    }
+
+    await connect(mongoUri, {
+        serverSelectionTimeoutMS: Number(process.env.MONGO_SERVER_SELECTION_TIMEOUT_MS || 5000),
     });
+    console.log('Database connected');
 }
 
 export default connectDB;

@@ -18,6 +18,7 @@ import StellarTransaction from '../Utils/Transaction.js';
 import NotificationsAdmin from '../Models/NotificationsAdmin.js';
 import NotificationsUser from '../Models/NotificationsUser.js';
 import notifyUsers from '../Utils/NotifyUser.js';
+import { amountValidationError, bookingValidationError, normalizeEmail, normalizeText } from '../Utils/Validation.js';
 const server = new Server("https://horizon-testnet.stellar.org/");
 const app = express();
 dotenv.config();
@@ -262,6 +263,12 @@ export const getFormData = async (req, res, next) => {
     let id = req.params.id;
     let { guests, bookerName, bookerEmail, bookerPhone, bookerAddress, suggestion, days, members } = req.body;
     let user = await req.user;
+    const bookingError = bookingValidationError({ bookerName, bookerEmail, bookerPhone, bookerAddress, members: members ?? guests, days });
+    if (bookingError) {
+        return res.status(400).json({ success: false, message: bookingError });
+    }
+    bookerName = user.userName;
+    bookerEmail = normalizeEmail(user.email);
     let room;
     try {
         room = await Room.findById(id);
@@ -288,7 +295,7 @@ export const getFormData = async (req, res, next) => {
     let roomBooking;
     room.prices = room.prices * days;
     try {
-        roomBooking = new BookingHotel({ hotelId: room.hotelId, roomId: room.id, roomName: room.name, image: room.image, roomPrice: room.prices, roomType: room.type, checkInDate: date, guests: guests, bookerName, bookerEmail, bookerPhone, bookerAddress, suggestion, bookerId: user.id, members, days });
+        roomBooking = new BookingHotel({ hotelId: room.hotelId, roomId: room.id, roomName: room.name, image: room.image, roomPrice: room.prices, roomType: room.type, checkInDate: date, guests: Number(guests), bookerName, bookerEmail, bookerPhone: normalizeText(bookerPhone), bookerAddress: normalizeText(bookerAddress), suggestion: normalizeText(suggestion), bookerId: user.id, members: Number(members), days: Number(days) });
         roomBooking = await roomBooking.save();
 
     } catch (error) {
@@ -309,6 +316,10 @@ export const getFormData = async (req, res, next) => {
 export const roomPayment = async (req, res, next) => {
 
     const { amount } = req.body;
+    const amountError = amountValidationError(amount);
+    if (amountError) {
+        return res.status(400).json({ success: false, message: amountError });
+    }
     //fetching user
     let user = await req.user;
     //fetching room id from params

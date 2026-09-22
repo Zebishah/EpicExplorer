@@ -10,7 +10,7 @@ const ReviewShowingTour = (id) => {
 
   useEffect(() => {
     dispatch(showTourReviews(id));
-  }, [dispatch]);
+  }, [dispatch, id]);
 
   useEffect(() => {
     if (TourReviews) {

@@ -5,25 +5,17 @@ import Navbar from "./Navbar";
 const RequestBalance = () => {
   let amount = 1000;
   let navigate = useNavigate();
-  const ProceedPayment = async () => {
-    console.log("hey");
+  const ProceedPayment = async (event) => {
+    event.preventDefault();
     let amount = 100;
     try {
       const response = await axios.post(
-        "http://localhost:5000/User/requestBalance",
-        { amount },
-        {
-          headers: {
-            auth_token:
-              "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2NGQ3MjM0ZDc1OTA4MzI1ZTA3NWZlNCIsImlhdCI6MTcxNjM1NTU5NiwiZXhwIjoxNzE2OTYwMzk2fQ._90KYlRErV9dTJCOR3HR8X3AsHdDz3rzDa5zifcaP5w",
-            "Content-Type": "application/json",
-          },
-        }
+        "/User/requestBalance",
+        { amount }
       );
 
       const data = response.data;
-      console.log(data);
-      if (data.success == true) {
+      if (data.success === true) {
         navigate("/paymentConfirmation");
       }
       console.log("Successful");
@@ -35,7 +27,10 @@ const RequestBalance = () => {
     <div className="bg-light-black">
       <Navbar />
       <div className=" flex flex-col items-center justify-center h-screen bg-light-black">
-        <form className=" flex flex-col gap-y-6 justify-center items-center bg-fade-black w-[60%] h-[60%] rounded-lg shadow-lg">
+        <form
+          onSubmit={ProceedPayment}
+          className=" flex flex-col gap-y-6 justify-center items-center bg-fade-black w-[60%] h-[60%] rounded-lg shadow-lg"
+        >
           <p className="text-yellows text-radios text-lg text-center">
             You have booked swaat tour and your total Payment amount in PKR is
             4000 pkr
@@ -54,6 +49,8 @@ const RequestBalance = () => {
                 id="name"
                 className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                 placeholder="Type tour name"
+                minLength={10}
+                maxLength={100}
                 required
               />
             </div>
@@ -70,6 +67,8 @@ const RequestBalance = () => {
                 id="startDate"
                 className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                 placeholder="startDate"
+                minLength={10}
+                maxLength={100}
                 required
               />
             </div>
@@ -86,13 +85,15 @@ const RequestBalance = () => {
                 id="price"
                 className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                 placeholder="$2999"
+                min={1}
+                max={100000000}
+                step="0.01"
                 required
               />
             </div>
 
             <button
               type="submit"
-              onClick={ProceedPayment}
               className="bg-yellows text-black font-radios p-3 rounded-lg shadow-sm"
             >
               Pay ${amount}

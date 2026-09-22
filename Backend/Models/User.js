@@ -81,4 +81,12 @@ let userSchema = new Schema({
 
 })
 
+userSchema.set('toJSON', {
+    transform: (_doc, ret) => {
+        delete ret.password;
+        delete ret.SecretSeed;
+        return ret;
+    },
+});
+
 export default mongoose.model('User', userSchema);
