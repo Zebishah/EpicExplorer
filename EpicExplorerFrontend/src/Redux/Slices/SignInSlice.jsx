@@ -1,6 +1,7 @@
 /* eslint-disable react-refresh/only-export-components */
 import { createSlice } from "@reduxjs/toolkit";
-import axios from "axios";
+import apiClient from "../../api/client";
+import { clearSession } from "../../auth/session";
 
 const SignInSlice = createSlice({
   name: "SignIn",
@@ -40,8 +41,8 @@ export const {
 export const SignIn = ({ email, password }) => async (dispatch) => {
   dispatch(SignInRequest());
   try {
-    const response = await axios.post(
-      `http://localhost:5000/User/userLogin`,
+    const response = await apiClient.post(
+      "/User/userLogin",
       { email, password },
       {
         headers: {
@@ -50,6 +51,7 @@ export const SignIn = ({ email, password }) => async (dispatch) => {
       }
     );
     const { token, ...userData } = response.data;
+    clearSession("admin");
     localStorage.setItem("jwtToken", token);
     dispatch(SignInSuccess(userData));
     console.log("Successful SignIn");

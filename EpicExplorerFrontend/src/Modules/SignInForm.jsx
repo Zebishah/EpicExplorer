@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
 
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 import { SignIn, resetSignInState } from "../Redux/Slices/SignInSlice";
 import AboveNavbar from "./AboveNavbar";
 import { userSearchFrEmail } from "../Redux/Slices/SearchingUserSlice";
@@ -11,6 +11,7 @@ import { getErrorMessage, validateEmail } from "../utils/validation";
 
 const SignInForm = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -48,17 +49,30 @@ const SignInForm = () => {
   };
 
   useEffect(() => {
+    const successMessage = sessionStorage.getItem("verificationSuccessMessage");
+    if (successMessage) {
+      sessionStorage.removeItem("verificationSuccessMessage");
+      toast.success(successMessage, { toastId: "email-verification-success" });
+    }
+  }, []);
+
+  useEffect(() => {
     if (error) {
-      return toast.error(getErrorMessage(error, "Invalid email or password."));
+      toast.error(getErrorMessage(error, "Invalid email or password."));
+      if (error?.code === "EMAIL_NOT_VERIFIED" && error?.email) {
+        sessionStorage.setItem("pendingVerificationEmail", error.email);
+        navigate(`/verify-email?email=${encodeURIComponent(error.email)}`, { replace: true });
+      }
+      return;
     } else if (data) {
       toast.success("signIn successful!");
       dispatch(userSearchFrEmail(email));
 
       setTimeout(() => {
-        navigate("/");
+        navigate(location.state?.from || "/");
       }, 3000);
     }
-  }, [error, data, dispatch, email, navigate]);
+  }, [error, data, dispatch, email, location.state, navigate]);
 
   useEffect(() => {
     return () => {

@@ -6,6 +6,7 @@ import SideBar from "./SideBar";
 import image1 from "../images/vecteezy_blue-trendy-background-design-template-for-banner-poster_.jpg";
 import { useDispatch, useSelector } from "react-redux";
 import { userNotifications } from "../Redux/Slices/userInfoSlice";
+import { baseURL } from "../api/client";
 
 // Ensure this matches your server's address and port
 
@@ -16,7 +17,7 @@ const Notifications = () => {
   const { notifications } = useSelector((state) => state.userInfoSearch);
   useEffect(() => {
     dispatch(userNotifications());
-    const socket = io(import.meta.env.VITE_API_URL || "http://localhost:5000");
+    const socket = io(baseURL);
     console.log("Attempting to connect to server...");
 
     socket.on("connect", () => {

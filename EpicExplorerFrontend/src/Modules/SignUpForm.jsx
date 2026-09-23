@@ -63,10 +63,7 @@ const SignUpForm = () => {
   const dispatch = useDispatch();
   const { error, data } = useSelector((state) => state.login);
   const [email, setEmail] = useState("");
-  const [googleLogin, setGoogleLogin] = useState(false);
-  const [googleUserName, setGoogleUserName] = useState("");
   const [userName, setUserName] = useState("");
-  const [googleEmail, setGoogleEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -74,7 +71,7 @@ const SignUpForm = () => {
   const [loading, setLoading] = useState(false);
   const [fieldErrors, setFieldErrors] = useState({});
   const termsCheckboxRef = useRef(null);
-  const [user, setUser] = useState({});
+  const signupContextRef = useRef({ email: "", google: false, googleEmail: "", googleUserName: "" });
   const clearFieldError = (field) =>
     setFieldErrors((current) => ({ ...current, [field]: "" }));
   const handleUserNameChange = (e) => {
@@ -99,7 +96,6 @@ const SignUpForm = () => {
     // Handle login failure here
   };
   const handleLoginSuccess = async (tokenResponse) => {
-    setGoogleLogin(true);
     let googleSign = "true";
     try {
       const token = tokenResponse.access_token;
@@ -113,12 +109,15 @@ const SignUpForm = () => {
       );
       const userInfo = response.data;
       console.log("Login Success:", userInfo);
-      setUser(userInfo);
       let password = " ",
         confirmPassword = " ";
       setLoading(true);
-      setGoogleUserName(userInfo.name);
-      setGoogleEmail(userInfo.email);
+      signupContextRef.current = {
+        email: userInfo.email,
+        google: true,
+        googleEmail: userInfo.email,
+        googleUserName: userInfo.name,
+      };
       dispatch(
         signUp({
           userName: userInfo.name,
@@ -126,9 +125,9 @@ const SignUpForm = () => {
           password,
           confirmPassword,
           googleSign,
+          googleAccessToken: token,
         })
       );
-      console.log(user);
     } catch (error) {
       console.error("Error fetching user info:", error);
     }
@@ -138,8 +137,7 @@ const SignUpForm = () => {
   };
 
   const handleSubmit = (e) => {
-    let googleSign = "false";
-    setGoogleLogin(false);
+    const googleSign = "false";
     e.preventDefault();
     const errors = {
       userName: validateUsername(userName),
@@ -158,6 +156,12 @@ const SignUpForm = () => {
     }
 
     setLoading(true);
+    signupContextRef.current = {
+      email: email.trim().toLowerCase(),
+      google: false,
+      googleEmail: "",
+      googleUserName: "",
+    };
 
     dispatch(
       signUp({
@@ -172,31 +176,41 @@ const SignUpForm = () => {
   useEffect(() => {
     if (error) {
       setLoading(false);
-      toast.error(getErrorMessage(error, "Signup failed. Please review the form."));
+      toast.error(getErrorMessage(error, "Signup failed. Please review the form."), {
+        toastId: "signup-error",
+      });
+      if (error?.code === "EMAIL_NOT_VERIFIED" && error?.email) {
+        sessionStorage.setItem("pendingVerificationEmail", error.email);
+        navigate(`/verify-email?email=${encodeURIComponent(error.email)}`, { replace: true });
+      }
     }
+  }, [error, navigate]);
+
+  useEffect(() => {
     if (data) {
       setLoading(false);
+      const signupContext = signupContextRef.current;
       const requiresVerification = data.requiresVerification !== false;
-      if (googleLogin == false && requiresVerification) {
+      if (!signupContext.google && requiresVerification) {
         toast.success(
-          "Account created successfully. Verification code sent to your email."
+          "Account created successfully. Verification code sent to your email.",
+          { toastId: "signup-success" }
         );
       } else {
-        toast.success("Account created successfully.");
+        toast.success("Account created successfully.", { toastId: "signup-success" });
       }
 
       const redirectTimer = setTimeout(() => {
-        if (googleLogin == false && requiresVerification) {
-          navigate(`/otp?email=${encodeURIComponent(email)}`);
+        if (!signupContext.google && requiresVerification) {
+          sessionStorage.setItem("pendingVerificationEmail", signupContext.email);
+          navigate(`/verify-email?email=${encodeURIComponent(signupContext.email)}`);
           setUserName("");
           setPassword("");
           setConfirmPassword("");
           setEmail("");
-        } else if (googleLogin == true) {
+        } else if (signupContext.google) {
           navigate(
-            `/?email=${encodeURIComponent(
-              googleEmail
-            )}&userName=${encodeURIComponent(googleUserName)}`
+            `/?email=${encodeURIComponent(signupContext.googleEmail)}&userName=${encodeURIComponent(signupContext.googleUserName)}`
           );
         } else {
           navigate("/", { replace: true });
@@ -207,16 +221,7 @@ const SignUpForm = () => {
 
       return () => clearTimeout(redirectTimer);
     }
-  }, [
-    data,
-    error,
-    navigate,
-    dispatch,
-    email,
-    googleLogin,
-    googleEmail,
-    googleUserName,
-  ]);
+  }, [data, navigate, dispatch]);
   useEffect(() => {
     return () => {
       dispatch(resetLoginState());
@@ -224,7 +229,7 @@ const SignUpForm = () => {
   }, [dispatch]);
   return (
     <div className="h-screen flex ">
-      <ToastContainer />
+      <ToastContainer limit={1} />
       <AboveNavbar />
       <div className="hidden smd:flex w-1/2 bg-[#3654ff] i justify-around items-center">
         <div>

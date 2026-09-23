@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import axios from "axios";
+import apiClient from "../../api/client";
 
 const otpSlice = createSlice({
   name: "OTP",
@@ -40,8 +40,8 @@ export const otpSender = (otp, email) => async (dispatch) => {
   dispatch(OTPRequest());
 
   try {
-    const response = await axios.post(
-      `http://localhost:5000/User/verifyOTP`,
+    const response = await apiClient.post(
+      "/User/verifyOTP",
       { otp, email }, // Include email in the request payload
       {
         headers: {

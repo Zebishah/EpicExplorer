@@ -6,6 +6,7 @@ import Footer from "./Footer";
 import Navbar from "./Navbar";
 import SideBar from "./SideBar";
 import image1 from "../images/vecteezy_blue-trendy-background-design-template-for-banner-poster_.jpg";
+import EntityImage from "../components/EntityImage";
 
 const TourBookingDet = () => {
   const location = useLocation();
@@ -109,10 +110,11 @@ const TourBookingDet = () => {
                     Image
                   </dt>
                   <dd className="mt-1 text-sm text-white sm:mt-0 sm:col-span-2 font-radios">
-                    <img
-                      src={tourImage !== " " ? tourImage : image1}
-                      alt="Tour"
-                      className="h-8 w-8 md:h-14 md:w-14 rounded-full object-cover"
+                    <EntityImage
+                      src={tourImage}
+                      type="tour"
+                      alt={`${tourName || "Tour"} image`}
+                      className="h-8 w-8 rounded-full object-cover md:h-14 md:w-14"
                     />
                   </dd>
                 </div>

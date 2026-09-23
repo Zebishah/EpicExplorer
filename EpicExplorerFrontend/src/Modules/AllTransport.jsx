@@ -1,5 +1,4 @@
 import image from "../images//r-nolan-1ZhZpP91olQ-unsplash.jpg";
-import image1 from "../images//r-nolan-1ZhZpP91olQ-unsplash.jpg";
 import Navbar from "./Navbar";
 
 import Footer from "./Footer";
@@ -11,6 +10,7 @@ import {
 } from "../Redux/Slices/showAccommodationsSlice";
 import { useNavigate } from "react-router";
 import image2 from "../images/vecteezy_blue-trendy-background-design-template-for-banner-poster_.jpg";
+import EntityImage from "../components/EntityImage";
 const AllTransport = () => {
   const [Transport, setTransport] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -279,12 +279,17 @@ const AllTransport = () => {
 
               <div className="flex flex-wrap gap-8 justify-center">
                 {currentTransport.length > 0 &&
-                  currentTransport.map((tour, index) => (
+                  currentTransport.map((tour) => (
                     <div
                       className="bg-[#3654ff] w-full max-w-sm rounded-lg overflow-hidden font-[sans-serif] shadow-lg shadow-black"
-                      key={index}
+                      key={tour._id}
                     >
-                      <img src={image1} className="w-full" alt="Car" />
+                      <EntityImage
+                        entity={tour}
+                        type="transport"
+                        alt={`${tour.carName || tour.name || "Transport"} image`}
+                        className="h-56 w-full object-cover"
+                      />
                       <div className="px-4 py-6 border-[#3654ff] border-2 border-t-0">
                         <div className="flex flex-row justify-between">
                           <h3 className="text-white text-xl font-radios">

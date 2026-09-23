@@ -9,7 +9,8 @@ import Token from '../Models/Token.js';
 import stripePackage from 'stripe';
 import dotenv from 'dotenv';
 import express, { response } from 'express';
-import sendEmail from '../Utils/NodeMailer.js';
+import { isEmailConfigured, sendPasswordReset, sendVerificationOtp } from '../Utils/NodeMailer.js';
+import { OTP_MAX_ATTEMPTS, OTP_RESEND_COOLDOWN_MS, OTP_TTL_MS, generateOtp, hashOtp } from '../Utils/Otp.js';
 import tokenCreation from '../Utils/TokenCreator.js';
 import BookTour from '../Models/BookTour.js';
 import Tour from '../Models/Tour.js';
@@ -50,19 +51,27 @@ import {
 
 export const createUser = async (req, res, next) => {
 
-    let { userName, email, password, confirmPassword, wishList, bookedTour, bookedHotels, bookedTransport, googleSign } = req.body;
+    let { userName, email, password, confirmPassword, wishList, bookedTour, bookedHotels, bookedTransport, googleSign, googleAccessToken } = req.body;
     userName = normalizeText(userName);
     email = normalizeEmail(email);
-    const isGoogleSignup = String(googleSign).toLowerCase() === "true";
-    const emailServiceConfigured = Boolean(
-        process.env.SMTP_USER?.trim() && process.env.SMTP_PASS?.trim()
-    );
-    const localSignupWithoutEmail = process.env.NODE_ENV !== "production" && !emailServiceConfigured;
-    if (!isGoogleSignup && !emailServiceConfigured && process.env.NODE_ENV === "production") {
-        return res.status(503).json({
-            success: false,
-            message: "Email verification is unavailable. Configure SMTP_USER and SMTP_PASS first.",
-        });
+    let isGoogleSignup = false;
+    if (String(googleSign).toLowerCase() === "true") {
+        if (!googleAccessToken) {
+            return res.status(400).json({ success: false, message: "Google sign-up requires a valid Google authorization token." });
+        }
+        try {
+            const googleResponse = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+                headers: { Authorization: `Bearer ${googleAccessToken}` },
+            });
+            if (!googleResponse.ok) throw new Error('Google authorization failed');
+            const googleProfile = await googleResponse.json();
+            if (!googleProfile.email || googleProfile.email_verified !== true) throw new Error('Google email is not verified');
+            email = normalizeEmail(googleProfile.email);
+            userName = normalizeText(googleProfile.name || userName);
+            isGoogleSignup = true;
+        } catch {
+            return res.status(401).json({ success: false, message: "Google authorization could not be verified." });
+        }
     }
     let phone = " ";
     let address = " ";
@@ -87,21 +96,23 @@ export const createUser = async (req, res, next) => {
             return res.status(400).json({ success: false, message: "Passwords do not match." });
         }
     }
+    if (!isGoogleSignup && !isEmailConfigured()) {
+        return res.status(503).json({
+            success: false,
+            code: "EMAIL_SERVICE_UNAVAILABLE",
+            message: "Email verification is temporarily unavailable. Configure SMTP_USER and SMTP_PASS first.",
+        });
+    }
 
     let user = await User.findOne({ email: email });
     if (user) {
-        if (localSignupWithoutEmail && user.verifiedStatus !== "true") {
-            user.verifiedStatus = "true";
-            await user.save();
-            const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
-                expiresIn: '7d'
-            });
-            return res.status(200).json({
-                success: true,
-                message: "Account already existed and has been activated for local development.",
-                newUser: user,
-                token,
-                requiresVerification: false,
+        if (user.verifiedStatus !== "true" && !isGoogleSignup) {
+            return res.status(409).json({
+                success: false,
+                code: "EMAIL_NOT_VERIFIED",
+                message: "This account already exists and still needs email verification.",
+                requiresVerification: true,
+                email,
             });
         }
         return res.status(400).json({ success: false, message: "User already exists" });
@@ -112,29 +123,10 @@ export const createUser = async (req, res, next) => {
     const userKeypair = StellarSdk.Keypair.random();
     let userPublicKey = userKeypair.publicKey();
     let userPrivateKey = userKeypair.secret();
-    let account;
-    try {
-        account = await server.loadAccount(userPublicKey);
-    } catch (error) {
-        if (error instanceof StellarSdk.NotFoundError) {
-            try {
-                await fetch(`https://friendbot.stellar.org/?addr=${userPublicKey}`);
-                account = await server.loadAccount(userPublicKey);
-            } catch (friendbotError) {
-                return res.status(400).json({ success: false, message: "Failed to create account using Friendbot" });
-            }
-        } else {
-            return res.status(400).json({ success: false, message: "Failed to load account" });
-        }
-    }
-
-    let Balance = 0;
-    account.balances.forEach(function (balance) {
-        if (balance.asset_type === 'native') {
-            Balance = balance.balance;
-        }
-    });
-    const verifiedStatus = isGoogleSignup || localSignupWithoutEmail ? "true" : "false";
+    // Creating a user must not depend on a remote Friendbot/Horizon request.
+    // The generated account can be funded later by the wallet/payment workflow.
+    const Balance = 0;
+    const verifiedStatus = isGoogleSignup ? "true" : "false";
     let date = new Date();
     try {
 
@@ -159,28 +151,30 @@ export const createUser = async (req, res, next) => {
         });
 
         await newUser.save();
-        if (!isGoogleSignup && !localSignupWithoutEmail) {
-            const otp = Math.floor(100000 + Math.random() * 900000).toString();
-            let otpExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
-            let otpUser = new UserOTP({ email, otp, expiresAt: otpExpires })
+        if (!isGoogleSignup) {
+            const otp = generateOtp();
+            const otpUser = new UserOTP({ email, otpHash: hashOtp(otp), expiresAt: new Date(Date.now() + OTP_TTL_MS) });
             await otpUser.save();
-            const options = {
-                email: email, message: `Your account has been created successfully.And OTP for authentication is ${otp}`
-            };
-            await sendEmail(options);
+            try {
+                await sendVerificationOtp(email, otp);
+            } catch (emailError) {
+                await otpUser.deleteOne();
+                await newUser.deleteOne();
+                throw emailError;
+            }
             let notificationAdmin = new NotificationsAdmin({ accommodationName: "user Created Successfully", Category: "User Creation", message: `One user ${userName} is added to our site`, date });
             await notificationAdmin.save();
 
             let data = {
                 type: 'User Creation',
-                message: `${userName} Your Account created Successfully and otp sended to you `,
+                message: `${userName} Your Account created Successfully and verification email sent `,
                 date: date,
                 title: "Account Created Successfully"
 
             };
 
             notifyUsers(data);
-            let notificationUser = new NotificationsUser({ user: userName, broadCast: "no", accommodationName: "Account Created Successfully", Category: "User Creationd", message: `${userName} Your Account created Successfully and otp sended to you` });
+            let notificationUser = new NotificationsUser({ user: userName, broadCast: "no", accommodationName: "Account Created Successfully", Category: "User Creationd", message: `${userName} Your Account created Successfully and verification email sent` });
             await notificationUser.save();
             return res.status(200).json({
                 success: true,
@@ -189,7 +183,7 @@ export const createUser = async (req, res, next) => {
                 requiresVerification: true,
             });
         }
-        const token = jwt.sign({ id: newUser.id }, process.env.JWT_SECRET, {
+        const token = jwt.sign({ id: newUser.id, type: 'user' }, process.env.JWT_SECRET, {
             expiresIn: '7d'
         });
 
@@ -209,9 +203,7 @@ export const createUser = async (req, res, next) => {
         await notificationUser.save();
         return res.status(200).json({
             success: true,
-            message: localSignupWithoutEmail
-                ? "Account created successfully. Email verification is skipped because SMTP is not configured."
-                : "Account created successfully",
+            message: "Account created successfully",
             newUser,
             token,
             requiresVerification: false,
@@ -241,8 +233,21 @@ export const userLogin = async (req, res, next) => {
     if (!isCorrectPassword) {
         return res.status(401).json({ success: false, message: "Invalid email or password", statusCode: 401 })
     }
+    if (String(user.verifiedStatus).toLowerCase() !== "true") {
+        return res.status(403).json({
+            success: false,
+            code: "EMAIL_NOT_VERIFIED",
+            message: "Please verify your email before signing in.",
+            requiresVerification: true,
+            email,
+        });
+    }
+    if (user.isActive === false) {
+        return res.status(403).json({ success: false, message: "This account has been disabled." });
+    }
     const payload = {
         id: user.id,
+        type: 'user',
         createdAt: Date.now() // Add createdAt timestamp
     };
     const token = jwt.sign(payload, process.env.JWT_SECRET, {
@@ -276,28 +281,24 @@ export const resendOtp = async (req, res, next) => {
     if (!userReal) {
         return res.status(404).json({ success: false, message: "User not found" });
     }
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    let otpExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
-    let user;
-    try {
-        user = await UserOTP.findOne({ email });
-
-    } catch (error) {
-        return res.status(400).json({ error: error.message });
+    if (String(userReal.verifiedStatus).toLowerCase() === "true") {
+        return res.status(400).json({ success: false, message: "This email is already verified." });
     }
-    if (user) {
-        await UserOTP.findOneAndDelete({ email: email });
+    const existingOtp = await UserOTP.findOne({ email });
+    if (existingOtp?.createdAt && Date.now() - new Date(existingOtp.createdAt).getTime() < OTP_RESEND_COOLDOWN_MS) {
+        const waitSeconds = Math.ceil((OTP_RESEND_COOLDOWN_MS - (Date.now() - new Date(existingOtp.createdAt).getTime())) / 1000);
+        return res.status(429).json({ success: false, code: "OTP_COOLDOWN", message: `Please wait ${waitSeconds} seconds before requesting another code.`, retryAfterSeconds: waitSeconds });
     }
     try {
-        let otpUser = new UserOTP({ email, otp, expiresAt: otpExpires })
+        const otp = generateOtp();
+        const otpUser = new UserOTP({ email, otpHash: hashOtp(otp), expiresAt: new Date(Date.now() + OTP_TTL_MS) });
+        await UserOTP.findOneAndDelete({ email });
         await otpUser.save();
+        await sendVerificationOtp(email, otp);
     } catch (error) {
-        return res.status(400).json({ error: error.message });
+        await UserOTP.deleteOne({ email });
+        return res.status(503).json({ success: false, code: "EMAIL_SERVICE_UNAVAILABLE", message: "The verification email could not be sent. Please try again later." });
     }
-    const options = {
-        email: email, message: `Your account sended again Success.And OTP for authentication is ${otp}`
-    };
-    await sendEmail(options);
     let date = new Date();
 
 
@@ -313,32 +314,37 @@ export const resendOtp = async (req, res, next) => {
     let notificationUser = new NotificationsUser({ user: userReal.userName, broadCast: "no", accommodationName: "Otp resend Successfull", Category: "otp resend", message: `Your Otp resend Successfully to you ` });
     await notificationUser.save();
 
-    return res.status(200).json({ success: true, message: "Otp resend successfully", email, statusCode: 200 })
+    return res.status(200).json({ success: true, message: "A new verification code was sent.", email, statusCode: 200 })
 }
 
 export const verifyOTP = async (req, res, next) => {
     const email = normalizeEmail(req.body.email);
     const otp = normalizeText(req.body.otp);
     if (!isValidEmail(email) || !/^\d{6}$/.test(otp)) {
-        return res.status(400).json({ success: false, message: 'Email and OTP are required' });
-    }
-    let realUser;
-    try {
-        realUser = await User.findOne({ email: email });
-
-    } catch (error) {
-        return res.status(400).json({ error: error.message });
+        return res.status(400).json({ success: false, message: 'Enter the email and the 6-digit verification code.' });
     }
     try {
-        const user = await UserOTP.findOne({ email, otp, expiresAt: { $gt: new Date() } });
-
-        if (!user) {
-            return res.status(400).json({ message: 'Invalid or expired OTP' });
+        const realUser = await User.findOne({ email });
+        const otpRecord = await UserOTP.findOne({ email });
+        if (!realUser || !otpRecord) {
+            return res.status(400).json({ success: false, code: "INVALID_OTP", message: 'That code is invalid or expired. Request a new code.' });
         }
-        await UserOTP.findOneAndDelete({ email: email, otp: otp })
-
-
-        realUser.verifiedStatus = "true"
+        if (new Date(otpRecord.expiresAt).getTime() <= Date.now()) {
+            await otpRecord.deleteOne();
+            return res.status(400).json({ success: false, code: "OTP_EXPIRED", message: 'That code has expired. Request a new code.' });
+        }
+        if (otpRecord.attempts >= OTP_MAX_ATTEMPTS) {
+            await otpRecord.deleteOne();
+            return res.status(429).json({ success: false, code: "OTP_ATTEMPTS_EXCEEDED", message: 'Too many incorrect attempts. Request a new code.' });
+        }
+        if (hashOtp(otp) !== otpRecord.otpHash) {
+            otpRecord.attempts += 1;
+            await otpRecord.save();
+            const remaining = Math.max(0, OTP_MAX_ATTEMPTS - otpRecord.attempts);
+            return res.status(400).json({ success: false, code: "INVALID_OTP", message: remaining ? `Incorrect code. ${remaining} attempt${remaining === 1 ? '' : 's'} remaining.` : 'Too many incorrect attempts. Request a new code.' });
+        }
+        await otpRecord.deleteOne();
+        realUser.verifiedStatus = "true";
         await realUser.save();
         let date = new Date();
         let notificationAdmin = new NotificationsAdmin({ accommodationName: "user verified Successfully", Category: "userVerification", message: `One user ${realUser.userName} verified successfully`, date });
@@ -357,9 +363,9 @@ export const verifyOTP = async (req, res, next) => {
         let notificationUser = new NotificationsUser({ user: realUser.userName, broadCast: "no", accommodationName: "Account verified Successfully", Category: "userVerification", message: `${realUser.userName}Your Account verified Successfully... ` });
         await notificationUser.save();
 
-        return res.status(200).json({ success: true, message: 'User signed up successfully and verified' });
+        return res.status(200).json({ success: true, message: 'Email verified successfully. You can now sign in.' });
     } catch (error) {
-        return res.status(400).json({ error: error.message });
+        return res.status(500).json({ success: false, message: 'Unable to verify the account right now.' });
     }
 };
 
@@ -514,27 +520,20 @@ export const forgetPassword = async (req, res, next) => {
     let hash = await tokenCreation(user);
 
     try {
-        console.log(user)
         //making reset URL
         const resetUrl = `${process.env.CLIENT_ORIGIN || 'http://localhost:5173'}/UpdatePassword/?email=${encodeURIComponent(user.email)}&hash=${encodeURIComponent(hash)}`;
-
-        const message = `<p>Please click the following link to reset your password:</p>
-              <p><a href="${resetUrl}">${resetUrl}</a></p>`;
-
-        const options = { email: user.email, message: message };
-        await sendEmail(options);
+        await sendPasswordReset(user.email, resetUrl);
 
         return res.status(200).json({
             success: true,
             message: "Password reset link has been sent to your email.",
-            hash,
-            message,
             statusCode: 200
         });
     } catch (error) {
-        return res.status(400).json({
+        return res.status(503).json({
             success: false,
-            message: "Password reset link not sent to you.", statusCode: 400
+            code: "EMAIL_SERVICE_UNAVAILABLE",
+            message: "Password reset email is temporarily unavailable. Please try again later.", statusCode: 503
         });
     }
 

@@ -1,8 +1,8 @@
 import { useDispatch, useSelector } from "react-redux";
-import image1 from "../images/marc-zimmer-a5QnUtau8lo-unsplash.jpg";
 import { useEffect, useState } from "react";
 import newIcon from "../images/new-product (2).png";
 import { showLatestTours } from "../Redux/Slices/TourPackagesSlice";
+import EntityImage from "../components/EntityImage";
 const LatestTours = () => {
   const [HoneyTours, setHoneyTours] = useState([]);
   const dispatch = useDispatch();
@@ -30,16 +30,21 @@ const LatestTours = () => {
         Latest Tours
       </h1>
       <div className="flex flex-row md:mt-0 sssm:mt-72 gap-y-4 flex-wrap w-[100%] md:w-[80%]">
-        {HoneyTours.map((tour, index) => (
+        {HoneyTours.map((tour) => (
           <div
             className="bg-[#206eff] w-full max-w-sm rounded-lg overflow-hidden mx-auto font-[sans-serif] shadow-lg shadow-fade-black "
-            key={index}
+            key={tour._id}
           >
             <div className="relative">
               <div className="absolute top-8 right-0 transform translate-y-[-50%] animate-blink">
                 <img src={newIcon} alt="icon" />
               </div>
-              <img src={image1} className="w-full" />
+              <EntityImage
+                entity={tour}
+                type="tour"
+                alt={`${tour.name || "Tour"} image`}
+                className="h-56 w-full object-cover"
+              />
             </div>
             <div className="px-4 py-6 border-[#3654ff] border-2 border-t-0">
               <div className="flex flex-row justify-between">

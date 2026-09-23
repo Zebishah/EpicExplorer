@@ -58,7 +58,7 @@ export const showTourPackages = () => async (dispatch) => {
 
   try {
     const response = await axios.get(
-      `http://localhost:5000/Tour/TourPackages`,
+      `/Tour/TourPackages`,
       {},
       {
         headers: {
@@ -82,7 +82,7 @@ export const showLatestTours = () => async (dispatch) => {
 
   try {
     const response = await axios.get(
-      `http://localhost:5000/Tour/LatestTour`,
+      `/Tour/LatestTour`,
       {},
       {
         headers: {
@@ -106,7 +106,7 @@ export const showReviewStart = () => async (dispatch) => {
 
   try {
     const response = await axios.get(
-      `http://localhost:5000/Review/getReviews`,
+      `/Review/getReviews`,
       {},
       {
         headers: {

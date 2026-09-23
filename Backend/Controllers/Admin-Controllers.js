@@ -105,12 +105,15 @@ export const adminLogin = async (req, res, next) => {
     if (!admin) {
         return res.status(401).json({ success: false, message: "Invalid email or password", statusCode: 401 });
     }
+    if (admin.isActive === false) {
+        return res.status(403).json({ success: false, message: "This administrator account is disabled." });
+    }
     const isCorrectPassword = bcrypt.compareSync(password, admin.password)
 
     if (!isCorrectPassword) {
         return res.status(401).json({ success: false, message: "Invalid email or password", statusCode: 401 })
     }
-    const token = jwt.sign({ id: admin._id }, process.env.JWT_SECRET, {  //signing jwt token
+    const token = jwt.sign({ id: admin._id, type: 'admin', role: admin.role || 'ADMIN' }, process.env.JWT_SECRET, {  //signing jwt token
         expiresIn: "7d"
     });
     return res.status(200).json({ success: true, message: "Admin signed in successfully", token: token, id: admin._id, admin: admin, statusCode: 200 })

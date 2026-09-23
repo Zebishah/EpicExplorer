@@ -19,6 +19,7 @@ import {
   resetUserSearchState,
   userSearchFrToken,
 } from "../Redux/Slices/SearchingUserSlice";
+import { clearSession } from "../auth/session";
 
 const SideBar = () => {
   const [userName, setUserName] = useState("");
@@ -55,7 +56,7 @@ const SideBar = () => {
     navigate("/PaymentOptions");
   };
   let Logout = () => {
-    localStorage.removeItem("jwtToken");
+    clearSession("user");
     dispatch(resetUserSearchState());
     navigate("/SignIn", { replace: true });
   };

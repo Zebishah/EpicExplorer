@@ -49,7 +49,7 @@ export const updateUser = (formData) => async (dispatch) => {
 
   try {
     const response = await axios.post(
-      `http://localhost:5000/User/updateUser`,
+      `/User/updateUser`,
       {
         fullName: formData.fullName,
         address: formData.address,
@@ -82,7 +82,7 @@ export const getUserFavorite = () => async (dispatch) => {
 
   try {
     const response = await axios.post(
-      `http://localhost:5000/UserFavrt/getUserFavorite`,
+      `/UserFavrt/getUserFavorite`,
       {},
       {
         headers: {

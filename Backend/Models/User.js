@@ -43,6 +43,10 @@ let userSchema = new Schema({
         type: String,
         required: true
     },
+    isActive: {
+        type: Boolean,
+        default: true,
+    },
     AccountId: {
         type: String,
         required: true

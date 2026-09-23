@@ -5,6 +5,7 @@ import { useNavigate } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 import { showBlogs } from "../Redux/Slices/showAccommodationsSlice";
 import image2 from "../images/vecteezy_blue-trendy-background-design-template-for-banner-poster_.jpg";
+import EntityImage from "../components/EntityImage";
 const Blogs = () => {
   const [Blogs, setBlogs] = useState([]);
   // const [FamilyTours, setFamilyTours] = useState([]);
@@ -30,10 +31,11 @@ const Blogs = () => {
     navigate(`/ViewBlog?id=${encodeURIComponent(id)}`);
   };
   const formatDate = (dateString) => {
+    if (!dateString) return "Date unavailable";
+    const date = new Date(dateString);
+    if (Number.isNaN(date.getTime())) return "Date unavailable";
     const options = { day: "2-digit", month: "2-digit", year: "numeric" };
-    return new Intl.DateTimeFormat("en-GB", options).format(
-      new Date(dateString)
-    );
+    return new Intl.DateTimeFormat("en-GB", options).format(date);
   };
   return (
     <div
@@ -49,16 +51,17 @@ const Blogs = () => {
             Our popular blogs
           </h2>
           <div className="flex justify-center mb-14 gap-y-10 lg:gap-y-10 flex-wrap lg:flex-row lg:justify-between lg:gap-x-8 ">
-            {Blogs.map((blog, index) => (
+            {Blogs.map((blog) => (
               <div
                 className="group flex flex-col gap-y-4 cursor-pointer w-full max-lg:max-w-xl lg:w-[30%] border bg-white shadow-lg shadow-fade-black rounded-lg p-4 border-gray-300 rounded-2xl p-5 transition-all duration-300 hover:border-indigo-600"
-                key={index}
+                key={blog._id}
               >
                 <div className="flex items-center">
-                  <img
-                    src="https://pagedone.io/asset/uploads/1696244619.png"
-                    alt="Alexa image"
-                    className="rounded-lg w-full"
+                  <EntityImage
+                    src={blog.pic}
+                    type="blog"
+                    alt={`${blog.name || "Blog"} featured image`}
+                    className="h-56 w-full rounded-lg object-cover"
                   />
                 </div>
                 <div className="flex flex-col gap-y-5">

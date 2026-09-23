@@ -113,7 +113,7 @@ export const userTourBookings = () => async (dispatch) => {
 
   try {
     const response = await axios.post(
-      `http://localhost:5000/User/TourHistory`,
+      `/User/TourHistory`,
       {},
       {
         headers: {
@@ -139,7 +139,7 @@ export const userHotelBookings = () => async (dispatch) => {
 
   try {
     const response = await axios.post(
-      `http://localhost:5000/User/HotelHistory`,
+      `/User/HotelHistory`,
       {},
       {
         headers: {
@@ -165,7 +165,7 @@ export const userTransportBooking = () => async (dispatch) => {
 
   try {
     const response = await axios.post(
-      `http://localhost:5000/User/TransportHistory`,
+      `/User/TransportHistory`,
       {},
       {
         headers: {
@@ -191,7 +191,7 @@ export const userTourPayment = () => async (dispatch) => {
 
   try {
     const response = await axios.post(
-      `http://localhost:5000/Bill/getUserTourBill`,
+      `/Bill/getUserTourBill`,
       {},
       {
         headers: {
@@ -217,7 +217,7 @@ export const userHotelPayment = () => async (dispatch) => {
 
   try {
     const response = await axios.post(
-      `http://localhost:5000/Bill/getUserHotelBill`,
+      `/Bill/getUserHotelBill`,
       {},
       {
         headers: {
@@ -243,7 +243,7 @@ export const userTransportPayment = () => async (dispatch) => {
 
   try {
     const response = await axios.post(
-      `http://localhost:5000/Bill/getUserTransportBill`,
+      `/Bill/getUserTransportBill`,
       {},
       {
         headers: {
@@ -269,7 +269,7 @@ export const tourBookingDetail = (id) => async (dispatch) => {
   console.log(id);
   try {
     const response = await axios.post(
-      `http://localhost:5000/Tour/searchTour`,
+      `/Tour/searchTour`,
       { id },
       {
         headers: {
@@ -294,7 +294,7 @@ export const HotelBookingDetail = (id) => async (dispatch) => {
 
   try {
     const response = await axios.post(
-      `http://localhost:5000/Room/searchRoomById`,
+      `/Room/searchRoomById`,
       { id },
       {
         headers: {
@@ -319,7 +319,7 @@ export const transportBookingDetail = (id) => async (dispatch) => {
 
   try {
     const response = await axios.post(
-      `http://localhost:5000/Transport/searchTransportById`,
+      `/Transport/searchTransportById`,
       { id },
       {
         headers: {
@@ -343,7 +343,7 @@ export const tourPaymentDetail = (id) => async (dispatch) => {
 
   try {
     const response = await axios.post(
-      `http://localhost:5000/Bill/searchTourBillFId`,
+      `/Bill/searchTourBillFId`,
       { id },
       {
         headers: {
@@ -367,7 +367,7 @@ export const HotelPaymentDetail = (id) => async (dispatch) => {
 
   try {
     const response = await axios.post(
-      `http://localhost:5000/Bill/searchHotelBillFId`,
+      `/Bill/searchHotelBillFId`,
       { id },
       {
         headers: {
@@ -391,7 +391,7 @@ export const transportPaymentDetail = (id) => async (dispatch) => {
 
   try {
     const response = await axios.post(
-      `http://localhost:5000/Bill/searchTransportBillFId`,
+      `/Bill/searchTransportBillFId`,
       { id },
       {
         headers: {

@@ -25,6 +25,7 @@ import {
   resetUserSearchState,
   userSearchFrToken,
 } from "../Redux/Slices/SearchingUserSlice";
+import { clearSession, isUserAuthenticated } from "../auth/session";
 
 // const queryParams = new URLSearchParams(location.search);
 // const userName = queryParams.get("userName") || "";
@@ -39,10 +40,11 @@ const Navbar = () => {
   const { userFrTokenData } = useSelector((state) => state.userSearch);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   useEffect(() => {
+    if (!isUserAuthenticated()) return;
     dispatch(userSearchFrToken());
   }, [dispatch]);
   const Logout = () => {
-    localStorage.removeItem("jwtToken");
+    clearSession("user");
     dispatch(resetUserSearchState());
     setUserName("");
     setImage("");
@@ -219,7 +221,7 @@ const Navbar = () => {
           </Link>
         </div>
         <div className=" flex items-center smd:space-x-5 sssm:space-x-2">
-          {localStorage.getItem("jwtToken") ? (
+          {isUserAuthenticated() ? (
             <Link
               to={"/Dashboard"}
               className="font-radios p-2 rounded-xl flex cursor-pointer hover:shadow-lg hover:bg-[#3654ff] hover:shadow-fade-black duration-300 font-semibold text-[#3654ff] hover:text-white sssm:text-sm lg:text-[14px] md:text-[12px] transition-all ease-in-out"
@@ -256,7 +258,7 @@ const Navbar = () => {
             </Link>
           )}
           <div>
-            {localStorage.getItem("jwtToken") ? (
+            {isUserAuthenticated() ? (
               <button
                 type="button"
                 onClick={Logout}

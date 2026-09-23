@@ -6,6 +6,7 @@ import Footer from "./Footer";
 import Navbar from "./Navbar";
 import SideBar from "./SideBar";
 import image1 from "../images/vecteezy_blue-trendy-background-design-template-for-banner-poster_.jpg";
+import EntityImage from "../components/EntityImage";
 const HotelBookingDet = () => {
   const location = useLocation();
   const dispatch = useDispatch();
@@ -23,6 +24,7 @@ const HotelBookingDet = () => {
   const [bookedRoomNo, setBookedRoomNo] = useState(0);
 
   const [RoomName, setRoomName] = useState("");
+  const [roomImage, setRoomImage] = useState("");
   const [RoomPrice, setRoomPrice] = useState(0);
   const [RoomType, setRoomType] = useState("");
   const [checkOutDate, setCheckOutDate] = useState("");
@@ -39,6 +41,7 @@ const HotelBookingDet = () => {
   const resetState = () => {
     setBookedRoomNo(0);
     setRoomName("");
+    setRoomImage("");
     setRoomPrice(0);
     setRoomType("");
     setCheckOutDate("");
@@ -64,6 +67,7 @@ const HotelBookingDet = () => {
       setBookedRoomNo(room.bookedRoomNo);
 
       setRoomName(room.roomName);
+      setRoomImage(room.image);
       setRoomPrice(room.roomPrice);
       setRoomType(room.roomType);
       setCheckOutDate(room.checkoutDate);
@@ -103,6 +107,10 @@ const HotelBookingDet = () => {
             </div>
             <div className="border-t border-gray-200 w-full flex justify-center items-center">
               <dl className="flex flex-col">
+                <div className="px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                  <dt className="text-sm font-medium text-yellows font-radios">Image</dt>
+                  <dd className="mt-1 text-sm text-white sm:mt-0 sm:col-span-2 font-radios"><EntityImage src={roomImage} type="room" alt={`${RoomName || "Room"} image`} className="h-14 w-14 rounded-full object-cover" /></dd>
+                </div>
                 <div className="px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                   <dt className="text-sm font-medium text-yellows font-radios">
                     Room Type

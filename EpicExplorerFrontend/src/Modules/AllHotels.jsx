@@ -1,12 +1,12 @@
 import Navbar from "./Navbar";
 import image from "../images/gregory-dalleau-wAOKtzvZ350-unsplash.jpg";
-import image1 from "../images/jed-villejo-8y0VL09lDXM-unsplash.jpg";
 import Footer from "./Footer";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { showHotels } from "../Redux/Slices/showAccommodationsSlice";
 import { useNavigate } from "react-router";
 import image2 from "../images/vecteezy_blue-trendy-background-design-template-for-banner-poster_.jpg";
+import EntityImage from "../components/EntityImage";
 
 const AllHotels = () => {
   const [Hotels, setHotels] = useState([]);
@@ -62,12 +62,17 @@ const AllHotels = () => {
 
           <div className="flex flex-wrap gap-8 justify-center">
             {currentHotels.length > 0 &&
-              currentHotels.map((tour, index) => (
+              currentHotels.map((tour) => (
                 <div
                   className="bg-[#3654ff] w-full max-w-sm rounded-lg overflow-hidden font-[sans-serif] shadow-lg shadow-black"
-                  key={index}
+                  key={tour._id}
                 >
-                  <img src={image1} className="w-full" alt="Car" />
+                  <EntityImage
+                    entity={tour}
+                    type="hotel"
+                    alt={`${tour.name || "Hotel"} image`}
+                    className="h-56 w-full object-cover"
+                  />
                   <div className="px-4 py-6 border-[#3654ff] border-2 border-t-0">
                     <div className="flex flex-row justify-between">
                       <h3 className="text-white text-xl font-radios">

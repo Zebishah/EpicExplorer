@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import axios from "axios";
+import apiClient from "../../api/client";
 
 const resendOtpSlice = createSlice({
   name: "ResendOtp",
@@ -40,8 +40,8 @@ export const resendOtp = (email) => async (dispatch) => {
   dispatch(ResendOTPRequest());
 
   try {
-    const response = await axios.post(
-      `http://localhost:5000/User/resendOtp`,
+    const response = await apiClient.post(
+      "/User/resendOtp",
       { email },
       {
         headers: {

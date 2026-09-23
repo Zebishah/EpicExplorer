@@ -1,5 +1,4 @@
 import { useDispatch, useSelector } from "react-redux";
-import image1 from "../images/marc-zimmer-a5QnUtau8lo-unsplash.jpg";
 import { useEffect, useState } from "react";
 import { showTourPackages } from "../Redux/Slices/TourPackagesSlice";
 import { useNavigate } from "react-router";
@@ -8,6 +7,7 @@ import image2 from "../images/vecteezy_blue-trendy-background-design-template-fo
 import image from "../images/felix-rostig-UmV2wr-Vbq8-unsplash.jpg";
 import Footer from "./Footer";
 import BookMoreTour from "./BookMoreTour";
+import EntityImage from "../components/EntityImage";
 const HoneyMoonPackages = () => {
   const [honeymoonTours, setHoneymoonTours] = useState([]);
   const navigate = useNavigate();
@@ -57,10 +57,10 @@ const HoneyMoonPackages = () => {
         </h1>
 
         <div className="flex flex-row gap-y-4 w-full flex-wrap">
-          {honeymoonTours.map((tour, index) => (
+          {honeymoonTours.map((tour) => (
             <div
               className="bg-[#206eff] w-full max-w-sm rounded-lg overflow-hidden mx-auto font-[sans-serif] shadow-lg shadow-fade-black "
-              key={index}
+              key={tour._id}
             >
               <div className="relative">
                 <div className="absolute top-8 right-0 transform translate-y-[-50%]">
@@ -68,7 +68,7 @@ const HoneyMoonPackages = () => {
                     Package
                   </div>
                 </div>
-                <img src={image1} className="w-full" />
+                <EntityImage entity={tour} type="tour" alt={`${tour.name || "Honeymoon tour"} image`} className="h-56 w-full object-cover" />
               </div>
               <div className="px-4 py-6 border-[#3654ff] border-2 border-t-0 ">
                 <div className="flex flex-row justify-between">

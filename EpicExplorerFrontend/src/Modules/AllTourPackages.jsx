@@ -1,5 +1,4 @@
 import { useDispatch, useSelector } from "react-redux";
-import image1 from "../images/marc-zimmer-a5QnUtau8lo-unsplash.jpg";
 import { useEffect, useState } from "react";
 import { showTourPackages } from "../Redux/Slices/TourPackagesSlice";
 import { useNavigate } from "react-router";
@@ -7,6 +6,7 @@ import Navbar from "./Navbar";
 import image2 from "../images/vecteezy_blue-trendy-background-design-template-for-banner-poster_.jpg";
 import Footer from "./Footer";
 import image from "../images/benjamin-davies-EsH2Haii2jw-unsplash.jpg";
+import EntityImage from "../components/EntityImage";
 const AllTourPackages = () => {
   const [HoneyTours, setHoneyTours] = useState([]);
   const navigate = useNavigate();
@@ -58,10 +58,10 @@ const AllTourPackages = () => {
         </h1>
 
         <div className="flex flex-row gap-y-4 flex-wrap">
-          {HoneyTours.map((tour, index) => (
+          {HoneyTours.map((tour) => (
             <div
               className="bg-[#206eff] w-full max-w-sm rounded-lg overflow-hidden mx-auto font-[sans-serif] shadow-lg shadow-fade-black "
-              key={index}
+              key={tour._id}
             >
               <div className="relative">
                 <div className="absolute top-8 right-0 transform translate-y-[-50%]">
@@ -69,7 +69,7 @@ const AllTourPackages = () => {
                     Package
                   </div>
                 </div>
-                <img src={image1} className="w-full" />
+                <EntityImage entity={tour} type="tour" alt={`${tour.name || "Tour package"} image`} className="h-56 w-full object-cover" />
               </div>
               <div className="px-4 py-6 border-[#3654ff] border-2 border-t-0 ">
                 <div className="flex flex-row justify-between">

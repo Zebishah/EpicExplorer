@@ -1,5 +1,4 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import backgroundImage from "../images/marc-zimmer-a5QnUtau8lo-unsplash.jpg";
 import { faSun } from "@fortawesome/free-solid-svg-icons";
 import { useEffect, useState } from "react";
 import {
@@ -7,6 +6,7 @@ import {
   showTourDetail,
 } from "../Redux/Slices/ShowTourDetailsSlice";
 import { useDispatch, useSelector } from "react-redux";
+import EntityImage from "../components/EntityImage";
 const TourService = (id) => {
   const dispatch = useDispatch();
   const [tourDet, setTourDet] = useState({});
@@ -161,12 +161,13 @@ const TourService = (id) => {
                 Related Blogs
               </h2>
               <div className="flex flex-col justify-center items-center gap-y-4">
-                {TourBlog.map((blog, index) => (
-                  <div className="relative h-[30vh] w-full" key={index}>
-                    <img
-                      src={backgroundImage}
-                      alt="Skardu Blog"
-                      className="object-cover h-[70%] w-full rounded-lg"
+                {TourBlog.map((blog) => (
+                  <div className="relative h-[30vh] w-full" key={blog._id}>
+                    <EntityImage
+                      src={blog.pic}
+                      type="blog"
+                      alt={`${blog.name || "Related blog"} image`}
+                      className="h-[70%] w-full rounded-lg object-cover"
                     />
                     <button className="bg-white text-[#206eff] font-radios font-bold py-2 rounded w-full mt-2">
                       {blog.name} Blog

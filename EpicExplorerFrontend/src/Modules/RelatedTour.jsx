@@ -1,8 +1,8 @@
-import image1 from "../images/marc-zimmer-a5QnUtau8lo-unsplash.jpg";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { showRelatedTours } from "../Redux/Slices/ShowTourDetailsSlice";
 import { useNavigate } from "react-router";
+import EntityImage from "../components/EntityImage";
 const RelatedTour = (id) => {
   const dispatch = useDispatch();
   const [tourDet, setTourDet] = useState([]);
@@ -28,14 +28,16 @@ const RelatedTour = (id) => {
         Related Transport
       </h1>
       <div className="flex flex-row md:mt-0 sssm:mt-72 gap-y-4 flex-wrap w-[85%]">
-        {tourDet.map((tour, index) => (
+        {tourDet.map((tour) => (
           <div
             className="bg-[#206eff] w-full max-w-sm rounded-lg overflow-hidden mx-auto font-[sans-serif] shadow-lg shadow-fade-black "
-            key={index}
+            key={tour._id}
           >
-            <img
-              src={image1}
-              className="w-full border-2 border-[#3654ff] border-b-0"
+            <EntityImage
+              entity={tour}
+              type="tour"
+              alt={`${tour.name || "Related tour"} image`}
+              className="h-56 w-full border-2 border-[#3654ff] border-b-0 object-cover"
             />
             <div className="px-4 py-6 border-[#3654ff] border-2 border-t-0 ">
               <div className="flex flex-row justify-between">

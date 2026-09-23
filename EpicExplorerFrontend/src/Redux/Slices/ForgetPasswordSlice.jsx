@@ -55,7 +55,7 @@ export const forgotPassword = (email) => async (dispatch) => {
 
   try {
     const response = await axios.post(
-      `http://localhost:5000/User/forgetPassword`,
+      `/User/forgetPassword`,
       { email },
       {
         headers: {
@@ -82,7 +82,7 @@ export const updatePasswordUser = (email, hash, password) => async (
   const token = localStorage.getItem("jwtToken");
   try {
     const response = await axios.post(
-      `http://localhost:5000/User/resetPassword`,
+      `/User/resetPassword`,
       { email, hash, password },
       {
         headers: {
@@ -111,7 +111,7 @@ export const changeUserPassword = (
   const token = localStorage.getItem("jwtToken");
   try {
     const response = await axios.post(
-      `http://localhost:5000/User/updatePassword`,
+      `/User/updatePassword`,
       { oldPassword, newPassword, confirmPassword },
       {
         headers: {
@@ -137,7 +137,7 @@ export const userBookedHotels = () => async (dispatch) => {
 
   try {
     const response = await axios.post(
-      `http://localhost:5000/User/updatePassword`,
+      `/User/updatePassword`,
       {},
       {
         headers: {

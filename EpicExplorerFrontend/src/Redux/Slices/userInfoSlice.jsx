@@ -69,7 +69,7 @@ export const userBookedTours = () => async (dispatch) => {
 
   try {
     const response = await axios.post(
-      `http://localhost:5000/User/toursBooked`,
+      `/User/toursBooked`,
       {},
       {
         headers: {
@@ -99,7 +99,7 @@ export const userBookedTransport = () => async (dispatch) => {
 
   try {
     const response = await axios.post(
-      `http://localhost:5000/User/transportBooked`,
+      `/User/transportBooked`,
       {},
       {
         headers: {
@@ -129,7 +129,7 @@ export const userBookedHotels = () => async (dispatch) => {
 
   try {
     const response = await axios.post(
-      `http://localhost:5000/User/RoomsBooked`,
+      `/User/RoomsBooked`,
       {},
       {
         headers: {
@@ -159,7 +159,7 @@ export const userTransactions = () => async (dispatch) => {
 
   try {
     const response = await axios.post(
-      `http://localhost:5000/User/userTotalTransactions`,
+      `/User/userTotalTransactions`,
       {},
       {
         headers: {
@@ -189,7 +189,7 @@ export const userNotifications = () => async (dispatch) => {
 
   try {
     const response = await axios.post(
-      `http://localhost:5000/Notification/getUserNotifications`,
+      `/Notification/getUserNotifications`,
       {},
       {
         headers: {

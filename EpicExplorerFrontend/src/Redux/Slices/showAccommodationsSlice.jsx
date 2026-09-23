@@ -122,7 +122,7 @@ export const showTours = () => async (dispatch) => {
 
   try {
     const response = await axios.get(
-      `http://localhost:5000/Tour/showTour`,
+      `/Tour/showTour`,
       {},
       {
         headers: {
@@ -146,7 +146,7 @@ export const showBlogs = () => async (dispatch) => {
 
   try {
     const response = await axios.get(
-      `http://localhost:5000/Blog/getBlog`,
+      `/Blog/getBlog`,
       {},
       {
         headers: {
@@ -171,7 +171,7 @@ export const showBlogsById = (id) => async (dispatch) => {
 
   try {
     const response = await axios.post(
-      `http://localhost:5000/Blog/getBlogById`,
+      `/Blog/getBlogById`,
       { id },
       {
         headers: {
@@ -198,7 +198,7 @@ export const contactMessage = (firstName, lastName, email, message) => async (
   let token = localStorage.getItem("jwtToken");
   try {
     const response = await axios.post(
-      `http://localhost:5000/User/contactUs`,
+      `/User/contactUs`,
       { firstName, lastName, email, message },
       {
         headers: {
@@ -224,7 +224,7 @@ export const showDiscountedTours = () => async (dispatch) => {
 
   try {
     const response = await axios.get(
-      `http://localhost:5000/Tour/DiscountedTours`,
+      `/Tour/DiscountedTours`,
       {},
       {
         headers: {
@@ -249,7 +249,7 @@ export const showHotels = () => async (dispatch) => {
 
   try {
     const response = await axios.get(
-      `http://localhost:5000/Hotel/showHotel`,
+      `/Hotel/showHotel`,
       {},
       {
         headers: {
@@ -273,7 +273,7 @@ export const showTransport = () => async (dispatch) => {
 
   try {
     const response = await axios.get(
-      `http://localhost:5000/Transport/showTransport`,
+      `/Transport/showTransport`,
       {},
       {
         headers: {
@@ -298,7 +298,7 @@ export const showRooms = (id) => async (dispatch) => {
   console.log(id);
   try {
     const response = await axios.post(
-      `http://localhost:5000/Hotel/showHotelRooms`,
+      `/Hotel/showHotelRooms`,
       { id },
       {
         headers: {
@@ -321,7 +321,7 @@ export const showAllRooms = () => async (dispatch) => {
   dispatch(userSearchRequest());
   try {
     const response = await axios.get(
-      `http://localhost:5000/Room/showRooms`,
+      `/Room/showRooms`,
       {},
       {
         headers: {
@@ -345,7 +345,7 @@ export const searchTours = () => async (dispatch) => {
 
   try {
     const response = await axios.get(
-      `http://localhost:5000/Tour/searchTourByName`,
+      `/Tour/searchTourByName`,
       {},
       {
         headers: {
@@ -375,7 +375,7 @@ export const showFilterTours = (
   console.log(name);
   try {
     const response = await axios.post(
-      `http://localhost:5000/Tour/filterTour`,
+      `/Tour/filterTour`,
       { type, price, membersLimit, tourLocation, name },
       {
         headers: {
@@ -405,7 +405,7 @@ export const showFilterRoom = (
   console.log(name);
   try {
     const response = await axios.post(
-      `http://localhost:5000/Room/RoomFilters`,
+      `/Room/RoomFilters`,
       { type, prices, noOfGuests, location, name },
       {
         headers: {
@@ -436,7 +436,7 @@ export const showFilterTransport = (
 
   try {
     const response = await axios.post(
-      `http://localhost:5000/Transport/filterTransport`,
+      `/Transport/filterTransport`,
       { type, prices, allowedGuests, seats, carName },
       {
         headers: {
@@ -460,7 +460,7 @@ export const pagination = (page, perPage) => async (dispatch) => {
 
   try {
     const response = await axios.post(
-      `http://localhost:5000/Tour/perPageTours`,
+      `/Tour/perPageTours`,
       { page, perPage },
       {
         headers: {

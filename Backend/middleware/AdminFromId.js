@@ -2,12 +2,18 @@ import Admin from "../Models/Admin.js";
 
 
 const getAdminById = async (req, res, next) => {
+    if (req.auth?.type !== 'admin') {
+        return res.status(403).json({ success: false, message: 'Administrator access required.' });
+    }
     const adminId = req.userId;
     let admin; // Assuming you have already extracted the userId from the token
     try {
         admin = await Admin.findById(adminId);
         if (!admin) {
             return res.status(404).json({ success: false, message: 'admin not found' });
+        }
+        if (admin.isActive === false) {
+            return res.status(403).json({ success: false, message: 'This administrator account is disabled.' });
         }
         req.admin = admin; // Attach the user object to the request object
         next();

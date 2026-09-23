@@ -59,6 +59,15 @@ import AllRoom from "./Modules/AllRoom";
 import Room from "./Modules/Room";
 import HoneyMoonPackages from "./Modules/HoneyMoonPackages";
 import ViewBlog from "./Modules/ViewBlog";
+import AdminLogin from "./Admin/AdminLogin";
+import AdminGate from "./Admin/AdminGate";
+import AdminDashboard from "./Admin/AdminDashboard";
+import AdminResourcePage from "./Admin/AdminResourcePage";
+import AdminSettings from "./Admin/AdminSettings";
+import ProtectedRoute from "./auth/ProtectedRoute";
+import GuestRoute from "./auth/GuestRoute";
+
+const protectedPage = (element) => <ProtectedRoute>{element}</ProtectedRoute>;
 function App() {
   return (
     <>
@@ -77,57 +86,64 @@ function App() {
           <Route path="/AllTourPackages" element={<AllTourPackages />} />
           <Route
             path="/TransportPaymentDet"
-            element={<TransportPaymentDet />}
+            element={protectedPage(<TransportPaymentDet />)}
           />
-          <Route path="/HotelPaymentDet" element={<HotelPaymentDet />} />
-          <Route path="/TourPaymentDet" element={<TourPaymentDet />} />
+          <Route path="/HotelPaymentDet" element={protectedPage(<HotelPaymentDet />)} />
+          <Route path="/TourPaymentDet" element={protectedPage(<TourPaymentDet />)} />
           <Route
             path="/TransportBookingDet"
-            element={<TransportBookingDet />}
+            element={protectedPage(<TransportBookingDet />)}
           />
-          <Route path="/HotelBookingDet" element={<HotelBookingDet />} />
-          <Route path="/TourBookingDet" element={<TourBookingDet />} />
-          <Route path="/tourPayment" element={<TourPayments />} />
-          <Route path="/hotelPayment" element={<HotelPayments />} />
-          <Route path="/transportPayment" element={<TransportPayments />} />
-          <Route path="/PaymentOptions" element={<PaymentOptions />} />
+          <Route path="/HotelBookingDet" element={protectedPage(<HotelBookingDet />)} />
+          <Route path="/TourBookingDet" element={protectedPage(<TourBookingDet />)} />
+          <Route path="/tourPayment" element={protectedPage(<TourPayments />)} />
+          <Route path="/hotelPayment" element={protectedPage(<HotelPayments />)} />
+          <Route path="/transportPayment" element={protectedPage(<TransportPayments />)} />
+          <Route path="/PaymentOptions" element={protectedPage(<PaymentOptions />)} />
           <Route path="/indOtp" element={<IndependentOTP />} />
           <Route path="/UpdatePassword" element={<UpdatePassword />} />
           <Route path="/ResetPassword" element={<ForgetPassword />} />
-          <Route path="/tourBooked" element={<TourBookings />} />
-          <Route path="/transportBooked" element={<TransportBookings />} />
-          <Route path="/hotelBooked" element={<HotelBookings />} />
+          <Route path="/tourBooked" element={protectedPage(<TourBookings />)} />
+          <Route path="/transportBooked" element={protectedPage(<TransportBookings />)} />
+          <Route path="/hotelBooked" element={protectedPage(<HotelBookings />)} />
           <Route path="/SignInWithGoogle" element={<SignInWithGoogle />} />
           <Route path="/OTP" element={<OtpPage />} />
-          <Route path="/Notifications" element={<Notifications />} />
-          <Route path="/changePassword" element={<ChangePassword />} />
-          <Route path="/UserBooking" element={<UserBookingsRecord />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/userProfile" element={<UserProfile />} />
-          <Route path="/Bookings" element={<BookingOptions />} />
-          <Route path="/Favorites" element={<Favorites />} />
+          <Route path="/verify-email" element={<OtpPage />} />
+          <Route path="/Notifications" element={protectedPage(<Notifications />)} />
+          <Route path="/changePassword" element={protectedPage(<ChangePassword />)} />
+          <Route path="/UserBooking" element={protectedPage(<UserBookingsRecord />)} />
+          <Route path="/dashboard" element={protectedPage(<Dashboard />)} />
+          <Route path="/userProfile" element={protectedPage(<UserProfile />)} />
+          <Route path="/Bookings" element={protectedPage(<BookingOptions />)} />
+          <Route path="/Favorites" element={protectedPage(<Favorites />)} />
           <Route path="/FamilyTour" element={<FamilyTour />} />
           <Route path="/Blogs" element={<Blogs />} />
           <Route path="/DiscountedTour" element={<DiscountedTours />} />
-          <Route path="/BookTour" element={<BookTour />} />
-          <Route path="/ContactUs" element={<ContactUs />} />
+          <Route path="/BookTour" element={protectedPage(<BookTour />)} />
+          <Route path="/ContactUs" element={protectedPage(<ContactUs />)} />
           <Route path="/AllTransport" element={<AllTransport />} />
           <Route path="/AllHotels" element={<AllHotels />} />
           <Route path="/HotelRelRooms" element={<HotelRelRooms />} />
           <Route path="/AllTours" element={<AllTours />} />
-          <Route path="/BookTransport" element={<BookTransport />} />
-          <Route path="/BookHotel" element={<HotelBooking />} />
-          <Route path="/BookTour" element={<BookTour />} />
+          <Route path="/BookTransport" element={protectedPage(<BookTransport />)} />
+          <Route path="/BookHotel" element={protectedPage(<HotelBooking />)} />
+          <Route path="/BookTour" element={protectedPage(<BookTour />)} />
           <Route path="/TourBanner" element={<BookTourBanner />} />
-          <Route path="/signUp" element={<SignUpForm />} />
-          <Route path="/SignIn" element={<SignInForm />} />
+          <Route path="/signUp" element={<GuestRoute><SignUpForm /></GuestRoute>} />
+          <Route path="/SignIn" element={<GuestRoute><SignInForm /></GuestRoute>} />
           <Route path="/LandingPage" element={<LandingPage />} />
-          <Route path="/StripeForm" element={<StripeMainForm />} />
-          <Route path="/requestBalance" element={<RequestBalance />} />
-          <Route path="/CheckoutForm" element={<CheckoutForm />} />
-          <Route path="/Confirmation" element={<Confirmation />} />
-          <Route path="/Ticket" element={<Ticket />} />
-          <Route path="/paymentConfirmation" element={<PaymentSuccess />} />
+          <Route path="/StripeForm" element={protectedPage(<StripeMainForm />)} />
+          <Route path="/requestBalance" element={protectedPage(<RequestBalance />)} />
+          <Route path="/CheckoutForm" element={protectedPage(<CheckoutForm />)} />
+          <Route path="/Confirmation" element={protectedPage(<Confirmation />)} />
+          <Route path="/Ticket" element={protectedPage(<Ticket />)} />
+          <Route path="/paymentConfirmation" element={protectedPage(<PaymentSuccess />)} />
+          <Route path="/admin/login" element={<AdminLogin />} />
+          <Route path="/admin" element={<AdminGate />}>
+            <Route index element={<AdminDashboard />} />
+            <Route path="settings" element={<AdminSettings />} />
+            <Route path=":resource" element={<AdminResourcePage />} />
+          </Route>
         </Routes>
       </Router>
     </>

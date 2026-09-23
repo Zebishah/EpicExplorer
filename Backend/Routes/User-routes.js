@@ -1,67 +1,67 @@
 import express from 'express';
 
-import { checkUserBalance, confirmOrder, confirmOrders, contactUs, countUserBookedRooms, countUserBookedTours, countUserBookedTransport, countUserTransactions, createUser, deleteUser, forgetPassword, getUserFrEmail, getUserFrToken, getUserInfo, getUsers, requestBalance, resendOtp, resetPassword, searchUserStellarAcc, stellarLedger, stellarPayment, updatePassword, updateUser, userHotelBookings, userLogin, userTourBookings, userTransportBookings, verifyOTP } from '../Controllers/User-Controllers.js';
+import { checkUserBalance, confirmOrder, confirmOrders, contactUs, countUserBookedRooms, countUserBookedTours, countUserBookedTransport, countUserTransactions, createUser, deleteUser, forgetPassword, getUserFrEmail, getUserFrToken, getUserInfo, requestBalance, resendOtp, resetPassword, searchUserStellarAcc, stellarLedger, stellarPayment, updatePassword, updateUser, userHotelBookings, userLogin, userTourBookings, userTransportBookings, verifyOTP } from '../Controllers/User-Controllers.js';
 import verifyToken from '../middleware/IdFromToken.js';
 import UserFromEmail from '../middleware/UserFromEmail.js';
-import getallUser from '../middleware/AllUser.js';
 import getUserById from '../middleware/UserFromId.js';
+import { authRateLimit, otpRateLimit } from '../middleware/RateLimit.js';
+import requireUser from '../middleware/RequireUser.js';
 
 const UserRoutes = express.Router();
+const verifyUserToken = (req, res, next) => verifyToken(req, res, () => requireUser(req, res, next));
 
 
-UserRoutes.post('/createUser', UserFromEmail, createUser);
+UserRoutes.post('/createUser', authRateLimit, UserFromEmail, createUser);
 
-UserRoutes.post('/verifyOTP', verifyOTP);
+UserRoutes.post('/verifyOTP', otpRateLimit, verifyOTP);
 
-UserRoutes.post('/resendOtp', resendOtp);
+UserRoutes.post('/resendOtp', otpRateLimit, resendOtp);
 
-UserRoutes.post('/userLogin', UserFromEmail, userLogin);
+UserRoutes.post('/userLogin', authRateLimit, UserFromEmail, userLogin);
 
-UserRoutes.get('/getUsers', getallUser, getUsers);
+UserRoutes.get('/checkUserBalance', verifyUserToken, getUserById, checkUserBalance);
 
-UserRoutes.get('/checkUserBalance', verifyToken, getUserById, checkUserBalance);
+UserRoutes.post('/deleteUser/:id', verifyUserToken, deleteUser);
 
-UserRoutes.post('/deleteUser/:id', verifyToken, deleteUser);
+UserRoutes.post('/updateUser', verifyUserToken, getUserById, updateUser);
 
-UserRoutes.post('/updateUser', verifyToken, getUserById, updateUser);
+UserRoutes.post('/updatePassword', verifyUserToken, getUserById, updatePassword);
 
-UserRoutes.post('/updatePassword', verifyToken, getUserById, updatePassword);
-
-UserRoutes.post('/forgetPassword', UserFromEmail, forgetPassword);
+UserRoutes.post('/forgetPassword', authRateLimit, UserFromEmail, forgetPassword);
 
 UserRoutes.post("/resetPassword", UserFromEmail, resetPassword);
 
-UserRoutes.post('/create-payment-intent', verifyToken, confirmOrder);
+UserRoutes.post('/create-payment-intent', verifyUserToken, confirmOrder);
 
-UserRoutes.post('/create-checkout-session', verifyToken, getUserById, confirmOrders);
+UserRoutes.post('/create-checkout-session', verifyUserToken, getUserById, confirmOrders);
 
-UserRoutes.post('/requestBalance', verifyToken, getUserById, requestBalance);
+UserRoutes.post('/requestBalance', verifyUserToken, getUserById, requestBalance);
 
-UserRoutes.post('/stellarPayment/:id', verifyToken, getUserById, stellarPayment);
+UserRoutes.post('/stellarPayment/:id', verifyUserToken, getUserById, stellarPayment);
 
-UserRoutes.post("/TourHistory", verifyToken, getUserById, userTourBookings);
+UserRoutes.post("/TourHistory", verifyUserToken, getUserById, userTourBookings);
 
-UserRoutes.post("/TransportHistory", verifyToken, getUserById, userTransportBookings);
+UserRoutes.post("/TransportHistory", verifyUserToken, getUserById, userTransportBookings);
 
-UserRoutes.post("/HotelHistory", verifyToken, getUserById, userHotelBookings);
+UserRoutes.post("/HotelHistory", verifyUserToken, getUserById, userHotelBookings);
 
-UserRoutes.post("/userInfo/:id", verifyToken, getUserById, getUserInfo);
+UserRoutes.post("/userInfo/:id", verifyUserToken, getUserById, getUserInfo);
 
-UserRoutes.post("/userInfo", verifyToken, getUserById, getUserFrToken);
+UserRoutes.post("/userInfo", verifyUserToken, getUserById, getUserFrToken);
 
-UserRoutes.post("/toursBooked", verifyToken, getUserById, countUserBookedTours);
+UserRoutes.post("/toursBooked", verifyUserToken, getUserById, countUserBookedTours);
 
-UserRoutes.post("/userTotalTransactions", verifyToken, getUserById, countUserTransactions);
+UserRoutes.post("/userTotalTransactions", verifyUserToken, getUserById, countUserTransactions);
 
-UserRoutes.post("/transportBooked", verifyToken, getUserById, countUserBookedTransport);
+UserRoutes.post("/transportBooked", verifyUserToken, getUserById, countUserBookedTransport);
 
-UserRoutes.post("/RoomsBooked", verifyToken, getUserById, countUserBookedRooms);
+UserRoutes.post("/RoomsBooked", verifyUserToken, getUserById, countUserBookedRooms);
 
 UserRoutes.post("/userInfoFrEmail", getUserFrEmail);
 
 UserRoutes.get("/stellarLedger", stellarLedger);
 
-UserRoutes.post("/contactUs", verifyToken, getUserById, contactUs);
+UserRoutes.post("/contactUs", verifyUserToken, getUserById, contactUs);
 
 UserRoutes.get("/searchStellarAccount", searchUserStellarAcc);
 

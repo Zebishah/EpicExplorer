@@ -18,7 +18,19 @@ let adminSchema = new Schema({
     password: {
         type: String,
         required: true
-    }, address: {
+    },
+    role: {
+        type: String,
+        enum: ['SUPER_ADMIN', 'ADMIN'],
+        default: 'ADMIN',
+        index: true,
+    },
+    isActive: {
+        type: Boolean,
+        default: true,
+        index: true,
+    },
+    address: {
         type: String,
         required: true
     },

@@ -6,6 +6,7 @@ import Footer from "./Footer";
 import Navbar from "./Navbar";
 import SideBar from "./SideBar";
 import image1 from "../images/vecteezy_blue-trendy-background-design-template-for-banner-poster_.jpg";
+import EntityImage from "../components/EntityImage";
 const TransportBookingDet = () => {
   const location = useLocation();
   const dispatch = useDispatch();
@@ -23,6 +24,7 @@ const TransportBookingDet = () => {
   const [bookedTransportNo, setBookedTransportNo] = useState(0);
 
   const [CarName, setCarName] = useState("");
+  const [transportImage, setTransportImage] = useState("");
   const [price, setPrice] = useState(0);
   const [Seats, setSeats] = useState("");
   const [ReserveDays, setReserveDays] = useState("");
@@ -38,6 +40,7 @@ const TransportBookingDet = () => {
   const resetState = () => {
     setBookedTransportNo(0);
     setCarName("");
+    setTransportImage("");
     setPrice(0);
     setSeats("");
 
@@ -63,6 +66,7 @@ const TransportBookingDet = () => {
       setBookedTransportNo(transport.bookedTransportNo);
 
       setCarName(transport.carName);
+      setTransportImage(transport.image);
       setPrice(transport.price);
       setSeats(transport.seats);
       setReserveDays(transport.days);
@@ -101,6 +105,10 @@ const TransportBookingDet = () => {
             </div>
             <div className="border-t border-gray-200 w-full flex justify-center items-center">
               <dl className="flex flex-col">
+                <div className="px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                  <dt className="text-sm font-medium text-yellows font-radios">Image</dt>
+                  <dd className="mt-1 text-sm text-white sm:mt-0 sm:col-span-2 font-radios"><EntityImage src={transportImage} type="transport" alt={`${CarName || "Transport"} image`} className="h-14 w-14 rounded-full object-cover" /></dd>
+                </div>
                 <div className="px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                   <dt className="text-sm font-medium text-yellows font-radios">
                     transport Type

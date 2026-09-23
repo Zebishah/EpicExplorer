@@ -15,7 +15,7 @@ RoomRoutes.post('/updateRoom/:id', verifyToken, getAdminById, updateRoom);
 
 RoomRoutes.post('/RoomPayment/:id', verifyToken, getUserById, roomPayment);
 
-RoomRoutes.post('/openRoom/:id', verifyToken, getAdminById, openRoom);
+RoomRoutes.post('/openRoom/:id', verifyToken, getUserById, openRoom);
 
 RoomRoutes.post('/getFormData/:id', verifyToken, getUserById, getFormData);
 

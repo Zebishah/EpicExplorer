@@ -71,7 +71,7 @@ export const showTourDetail = ({ id }) => async (dispatch) => {
   const newId = id.toString();
   try {
     const response = await axios.post(
-      `http://localhost:5000/Tour/openTour/${newId}`,
+      `/Tour/openTour/${newId}`,
       {},
       {
         headers: {
@@ -96,7 +96,7 @@ export const showRelatedTours = ({ id }) => async (dispatch) => {
   id = id.toString();
   try {
     const response = await axios.post(
-      `http://localhost:5000/Tour/RelatedTour`,
+      `/Tour/RelatedTour`,
       { id },
       {
         headers: {
@@ -120,7 +120,7 @@ export const showRelatedBlogs = ({ id }) => async (dispatch) => {
   id = id.toString();
   try {
     const response = await axios.post(
-      `http://localhost:5000/Blog/getTourBlog`,
+      `/Blog/getTourBlog`,
       { id },
       {
         headers: {
@@ -144,7 +144,7 @@ export const showTourReviews = ({ id }) => async (dispatch) => {
   id = id.toString();
   try {
     const response = await axios.post(
-      `http://localhost:5000/Review/getTourReviews`,
+      `/Review/getTourReviews`,
       { id },
       {
         headers: {
@@ -171,7 +171,7 @@ export const addReviews = ({ id }, name, email, words, rating) => async (
   const token = localStorage.getItem("jwtToken");
   try {
     const response = await axios.post(
-      `http://localhost:5000/Review/addReviews`,
+      `/Review/addReviews`,
       { id, name, email, words, rating },
       {
         headers: {

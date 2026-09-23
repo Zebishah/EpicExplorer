@@ -47,7 +47,7 @@ export const userSearchFrEmail = (email) => async (dispatch) => {
   dispatch(userSearchRequest());
   try {
     const response = await axios.post(
-      `http://localhost:5000/User/userInfoFrEmail`,
+      `/User/userInfoFrEmail`,
       { email },
       {
         headers: {
@@ -80,7 +80,7 @@ export const userSearchFrToken = () => async (dispatch) => {
 
   try {
     const response = await axios.post(
-      `http://localhost:5000/User/userInfo`,
+      `/User/userInfo`,
       {},
       {
         headers: {
